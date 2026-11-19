@@ -1,0 +1,1403 @@
+[
+ {
+  "id": 51,
+  "category": "Generics e Collections",
+  "title": "Generics: classi generiche",
+  "lesson": "I generics permettono di scrivere classi che lavorano con un tipo scelto da chi le usa, senza perdere la sicurezza dei tipi. Una classe generica dichiara uno o più parametri di tipo tra parentesi angolari, per convenzione lettere maiuscole singole come T (type), E (element), K (key) e V (value).\n\nPer esempio, class Scatola<T> può contenere un oggetto di qualsiasi tipo: Scatola<String> contiene stringhe, Scatola<Integer> numeri interi. Il compilatore controlla che tu non inserisca un tipo sbagliato e ti evita i cast manuali, che prima dei generics causavano errori a runtime (ClassCastException).\n\nIl parametro di tipo può essere solo un tipo riferimento, quindi non puoi scrivere Scatola<int>: devi usare il wrapper Integer. Con l'operatore diamante <> il compilatore deduce il tipo sul lato destro: Scatola<String> s = new Scatola<>();.\n\nRicorda che i generics esistono solo in fase di compilazione: a runtime vale la type erasure, cioè le informazioni sul tipo vengono cancellate. Per questo non puoi scrivere new T() né creare array generici direttamente. Si possono dichiarare anche più parametri, come in class Coppia<A, B>.",
+  "example": "class Scatola<T> {\n    private T valore;\n    void imposta(T v) { valore = v; }\n    T leggi() { return valore; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Scatola<String> s = new Scatola<>();\n        s.imposta(\"Java\");\n        String testo = s.leggi();\n        System.out.println(testo);\n    }\n}",
+  "help": "Dichiara la classe con il parametro <T>, poi il campo di tipo T, il setter che accetta T e il getter che restituisce T. Non si può istanziare T con new, quindi quella riga va scartata.",
+  "exercise": {
+   "prompt": "Componi una classe generica Scatola con setter e getter.",
+   "lines": [
+    "public class Scatola<T> {",
+    "    private T valore;",
+    "    public void imposta(T v) { valore = v; }",
+    "    public T leggi() { return valore; }",
+    "}"
+   ],
+   "distractors": [
+    "    private T valore = new T();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa rappresenta T in class Scatola<T>?",
+    "options": [
+     "Un parametro di tipo",
+     "Una costante",
+     "Un package",
+     "Un metodo statico"
+    ],
+    "answer": 0,
+    "explain": "T è il segnaposto del tipo scelto da chi usa la classe."
+   },
+   {
+    "q": "Quale dichiarazione è valida?",
+    "options": [
+     "Scatola<int> s;",
+     "Scatola<Integer> s;",
+     "Scatola<> s;",
+     "Scatola(Integer) s;"
+    ],
+    "answer": 1,
+    "explain": "I generics accettano solo tipi riferimento, quindi Integer."
+   },
+   {
+    "q": "Cosa succede ai generics a runtime?",
+    "options": [
+     "Restano visibili ovunque",
+     "Vengono compilati in nativo",
+     "Vengono cancellati (type erasure)",
+     "Diventano record"
+    ],
+    "answer": 2,
+    "explain": "Il compilatore cancella le informazioni di tipo: è la type erasure."
+   }
+  ]
+ },
+ {
+  "id": 52,
+  "category": "Generics e Collections",
+  "title": "Generics: metodi e bounded types",
+  "lesson": "Anche un singolo metodo può essere generico, indipendentemente dalla classe che lo contiene. Il parametro di tipo si dichiara prima del tipo di ritorno: static <T> void stampa(T x). Il compilatore deduce T dagli argomenti passati, quindi di solito non serve indicarlo a mano.\n\nA volte vuoi limitare i tipi ammessi con un bounded type, usando la parola chiave extends. Con <T extends Number> accetti solo Integer, Double e le altre sottoclassi di Number, e dentro il metodo puoi chiamare i metodi di Number, come doubleValue(). Qui extends vale sia per classi sia per interfacce.\n\nUn caso molto comune è <T extends Comparable<T>>: garantisce che gli oggetti possano essere confrontati con compareTo(), e permette di scrivere algoritmi come massimo o ordinamento validi per qualsiasi tipo confrontabile.\n\nPuoi combinare più vincoli con la &, per esempio <T extends Number & Comparable<T>>; se compare una classe, deve essere indicata per prima. Questo approccio evita duplicazioni: invece di scrivere un metodo per ogni tipo, ne scrivi uno solo, sicuro e riutilizzabile.",
+  "example": "public class Main {\n    static <T extends Comparable<T>> T massimo(T a, T b) {\n        return a.compareTo(b) >= 0 ? a : b;\n    }\n\n    static <T> void stampa(T x) {\n        System.out.println(\"Valore: \" + x);\n    }\n\n    public static void main(String[] args) {\n        stampa(massimo(3, 9));\n        stampa(massimo(\"mela\", \"pera\"));\n    }\n}",
+  "help": "Il metodo deve dichiarare <T extends Comparable<T>> prima del tipo di ritorno. Il confronto si fa con compareTo, non con gli operatori > e <, che non valgono per T.",
+  "exercise": {
+   "prompt": "Scrivi un metodo generico che restituisce il maggiore tra due valori.",
+   "lines": [
+    "public static <T extends Comparable<T>> T massimo(T a, T b) {",
+    "    if (a.compareTo(b) >= 0) {",
+    "        return a;",
+    "    }",
+    "    return b;",
+    "}"
+   ],
+   "distractors": [
+    "    if (a > b) {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Dove si dichiara il parametro di tipo di un metodo generico?",
+    "options": [
+     "Dopo il nome del metodo",
+     "Prima del tipo di ritorno",
+     "Dentro il corpo",
+     "Nel file module-info"
+    ],
+    "answer": 1,
+    "explain": "Si scrive <T> prima del tipo di ritorno."
+   },
+   {
+    "q": "Cosa significa <T extends Number>?",
+    "options": [
+     "T deve essere esattamente Number",
+     "T può essere qualsiasi tipo",
+     "T è Number o una sua sottoclasse",
+     "T è un primitivo numerico"
+    ],
+    "answer": 2,
+    "explain": "extends pone un limite superiore: Number o sottoclassi."
+   },
+   {
+    "q": "Perché serve Comparable<T> per usare compareTo?",
+    "options": [
+     "Per velocizzare il codice",
+     "Garantisce che T abbia compareTo",
+     "Serve per la serializzazione",
+     "Evita la type erasure"
+    ],
+    "answer": 1,
+    "explain": "Il vincolo assicura che il metodo sia disponibile su T."
+   }
+  ]
+ },
+ {
+  "id": 53,
+  "category": "Generics e Collections",
+  "title": "Wildcards: ?, extends e super",
+  "lesson": "Il carattere jolly ? (wildcard) rappresenta un tipo sconosciuto. Serve perché i generics sono invarianti: List<Integer> NON è un sottotipo di List<Number>, anche se Integer estende Number. Senza wildcard non potresti scrivere un metodo che accetta liste di tipi diversi.\n\nCi sono tre forme. List<?> accetta una lista di qualsiasi tipo, ma puoi solo leggere elementi come Object. List<? extends Number> accetta liste di Number o sue sottoclassi: puoi leggere elementi come Number, ma non puoi aggiungerne (tranne null), perché non sai il tipo esatto. List<? super Integer> accetta liste di Integer o dei suoi supertipi, per esempio List<Number> o List<Object>: puoi aggiungere Integer, ma leggendo ottieni solo Object.\n\nLa regola mnemonica è PECS: Producer Extends, Consumer Super. Se la collezione produce dati che leggi, usa extends; se consuma dati che inserisci, usa super.\n\nLe wildcard si usano nei parametri dei metodi, non per dichiarare classi. Rendono le API flessibili senza sacrificare la sicurezza dei tipi, come fa Collections.copy(dest, src).",
+  "example": "import java.util.*;\n\npublic class Main {\n    static double somma(List<? extends Number> lista) {\n        double tot = 0;\n        for (Number n : lista) tot += n.doubleValue();\n        return tot;\n    }\n    public static void main(String[] args) {\n        System.out.println(somma(List.of(1, 2.5, 3L)));\n        List<? super Integer> dest = new ArrayList<Number>();\n        dest.add(42);\n        System.out.println(dest);\n    }\n}",
+  "help": "Il parametro List<? extends Number> permette di leggere ogni elemento come Number e usare doubleValue(). Aggiungere elementi a una lista extends non è consentito, quindi la riga con add va scartata.",
+  "exercise": {
+   "prompt": "Completa il metodo che somma i valori di una lista di numeri.",
+   "lines": [
+    "static double somma(List<? extends Number> lista) {",
+    "    double tot = 0;",
+    "    for (Number n : lista) {",
+    "        tot += n.doubleValue();",
+    "    }",
+    "    return tot;",
+    "}"
+   ],
+   "distractors": [
+    "    lista.add(1);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "List<Integer> è sottotipo di List<Number>?",
+    "options": [
+     "Sì, sempre",
+     "Sì, solo se final",
+     "Solo con il cast",
+     "No, i generics sono invarianti"
+    ],
+    "answer": 3,
+    "explain": "Gli argomenti generici sono invarianti."
+   },
+   {
+    "q": "Cosa significa PECS?",
+    "options": [
+     "Producer Extends, Consumer Super",
+     "Public Extends, Class Super",
+     "Parse Extends, Convert Super",
+     "Producer Super, Consumer Extends"
+    ],
+    "answer": 0,
+    "explain": "Chi produce dati usa extends, chi li consuma usa super."
+   },
+   {
+    "q": "Su List<? extends Number> cosa NON puoi fare?",
+    "options": [
+     "Leggere elementi",
+     "Chiamare size()",
+     "Aggiungere un Integer",
+     "Iterare con for-each"
+    ],
+    "answer": 2,
+    "explain": "Il tipo esatto è ignoto, quindi add non è sicuro."
+   }
+  ]
+ },
+ {
+  "id": 54,
+  "category": "Generics e Collections",
+  "title": "List e ArrayList",
+  "lesson": "List è l'interfaccia delle sequenze ordinate che ammettono duplicati e accesso per indice. L'implementazione più usata è ArrayList, basata su un array che si ridimensiona automaticamente. Si dichiara in genere con il tipo interfaccia: List<String> nomi = new ArrayList<>();, così puoi cambiare implementazione senza toccare il resto del codice.\n\nI metodi principali sono add(elemento) per aggiungere in coda, add(indice, elemento) per inserire, get(indice) per leggere, set(indice, elemento) per sostituire, remove(indice) o remove(oggetto) per eliminare, size() per contare, contains() e indexOf() per cercare, isEmpty() per verificare se è vuota.\n\nAttenzione: per le liste si usa size(), non length, che appartiene agli array. Gli indici partono da 0 e uno fuori range genera IndexOutOfBoundsException. Con List<Integer>, remove(1) elimina l'indice 1, mentre remove(Integer.valueOf(1)) elimina il valore 1.\n\nL'accesso per indice in ArrayList è veloce, l'inserimento in mezzo è più lento perché sposta gli elementi. Puoi scorrere la lista con il for-each. LinkedList è l'alternativa, utile per molte aggiunte e rimozioni agli estremi.",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> nomi = new ArrayList<>();\n        nomi.add(\"Anna\");\n        nomi.add(\"Luca\");\n        nomi.add(1, \"Marco\");\n        nomi.remove(\"Anna\");\n        System.out.println(nomi.get(0));\n        System.out.println(nomi.size());\n        System.out.println(nomi);\n    }\n}",
+  "help": "Crea la lista con ArrayList, aggiungi i nomi, rimuovi Anna e stampa la dimensione con size(). length non esiste per le liste.",
+  "exercise": {
+   "prompt": "Crea una lista, aggiungi e rimuovi elementi, poi stampa la dimensione.",
+   "lines": [
+    "List<String> nomi = new ArrayList<>();",
+    "nomi.add(\"Anna\");",
+    "nomi.add(\"Luca\");",
+    "nomi.remove(\"Anna\");",
+    "System.out.println(nomi.size());"
+   ],
+   "distractors": [
+    "System.out.println(nomi.length);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale metodo restituisce il numero di elementi di una List?",
+    "options": [
+     "length()",
+     "count",
+     "size()",
+     "length"
+    ],
+    "answer": 2,
+    "explain": "Le collection usano size()."
+   },
+   {
+    "q": "Che eccezione lancia get(10) su una lista di 3 elementi?",
+    "options": [
+     "NullPointerException",
+     "IndexOutOfBoundsException",
+     "ClassCastException",
+     "IllegalStateException"
+    ],
+    "answer": 1,
+    "explain": "L'indice è fuori dai limiti."
+   },
+   {
+    "q": "Perché si scrive List<String> x = new ArrayList<>()?",
+    "options": [
+     "È obbligatorio",
+     "ArrayList non ha add",
+     "Per usare l'interfaccia e poter cambiare implementazione",
+     "Per velocizzare il codice"
+    ],
+    "answer": 2,
+    "explain": "Programmare verso l'interfaccia rende il codice flessibile."
+   }
+  ]
+ },
+ {
+  "id": 55,
+  "category": "Generics e Collections",
+  "title": "Set: HashSet e TreeSet",
+  "lesson": "Un Set è una collezione che non ammette duplicati. Se provi ad aggiungere un elemento già presente, add() restituisce false e il set resta invariato. Non offre accesso per indice: si usa contains() per cercare e il for-each per scorrere.\n\nLe implementazioni principali sono tre. HashSet usa una tabella hash: aggiunta, ricerca e rimozione sono molto veloci, ma l'ordine di iterazione non è garantito. LinkedHashSet mantiene l'ordine di inserimento. TreeSet mantiene gli elementi ordinati (ordine naturale o un Comparator) ed è implementato con un albero; le operazioni costano O(log n) e offre metodi come first(), last(), floor() e ceiling().\n\nPer il corretto funzionamento di HashSet gli oggetti devono implementare coerentemente equals() e hashCode(); per TreeSet devono essere confrontabili (Comparable) oppure devi fornire un Comparator.\n\nUn uso classico è eliminare i duplicati da una lista: new HashSet<>(lista). Gli insiemi permettono anche operazioni matematiche: addAll() per l'unione, retainAll() per l'intersezione, removeAll() per la differenza.",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<Integer> numeri = new TreeSet<>();\n        numeri.add(5);\n        numeri.add(2);\n        boolean nuovo = numeri.add(5);\n        System.out.println(nuovo);\n        System.out.println(numeri);\n        System.out.println(numeri.contains(2));\n    }\n}",
+  "help": "TreeSet ordina gli elementi e ignora i duplicati, quindi dopo i tre add contiene 2 e 5. Un Set non ha il metodo get per indice.",
+  "exercise": {
+   "prompt": "Usa un TreeSet: aggiungi un duplicato e stampa il contenuto ordinato.",
+   "lines": [
+    "Set<Integer> numeri = new TreeSet<>();",
+    "numeri.add(5);",
+    "numeri.add(2);",
+    "numeri.add(8);",
+    "System.out.println(numeri);"
+   ],
+   "distractors": [
+    "System.out.println(numeri.get(0));"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa add() con un elemento già presente in un Set?",
+    "options": [
+     "Lo duplica",
+     "Lancia eccezione",
+     "Restituisce false senza modificare il set",
+     "Lo sostituisce e restituisce true"
+    ],
+    "answer": 2,
+    "explain": "I duplicati non sono ammessi, add restituisce false."
+   },
+   {
+    "q": "Quale Set mantiene gli elementi ordinati?",
+    "options": [
+     "HashSet",
+     "TreeSet",
+     "Set.of",
+     "ArrayList"
+    ],
+    "answer": 1,
+    "explain": "TreeSet ordina in modo naturale o con Comparator."
+   },
+   {
+    "q": "Cosa serve per usare bene oggetti in un HashSet?",
+    "options": [
+     "Implementare Runnable",
+     "Essere final",
+     "Implementare equals e hashCode",
+     "Avere un costruttore vuoto"
+    ],
+    "answer": 2,
+    "explain": "HashSet si basa su hashCode ed equals."
+   }
+  ]
+ },
+ {
+  "id": 56,
+  "category": "Generics e Collections",
+  "title": "Map: HashMap e TreeMap",
+  "lesson": "Una Map associa chiavi a valori: ogni chiave è unica e punta a un solo valore. Non è una Collection e si dichiara con due parametri di tipo, per esempio Map<String, Integer>.\n\nMetodi fondamentali: put(k, v) inserisce o sostituisce, get(k) restituisce il valore o null se la chiave manca, getOrDefault(k, def) evita il null, containsKey() verifica la presenza, remove(k) elimina, size() conta. Dalla versione 8 esistono comodi metodi come putIfAbsent(), computeIfAbsent() e merge(), molto usati per i conteggi: mappa.merge(parola, 1, Integer::sum).\n\nLe implementazioni: HashMap è la più veloce ma non garantisce l'ordine; LinkedHashMap conserva l'ordine di inserimento; TreeMap ordina le chiavi (ordine naturale o Comparator) ed espone firstKey(), lastKey(), headMap() e tailMap().\n\nPer scorrere una mappa usa entrySet(): for (Map.Entry<String,Integer> e : mappa.entrySet()) con getKey() e getValue(). Esistono anche keySet() e values(). Le chiavi dovrebbero essere immutabili e, per HashMap, implementare equals() e hashCode().",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Map<String, Integer> eta = new TreeMap<>();\n        eta.put(\"Luca\", 25);\n        eta.put(\"Anna\", 30);\n        eta.merge(\"Anna\", 1, Integer::sum);\n        for (Map.Entry<String, Integer> e : eta.entrySet()) {\n            System.out.println(e.getKey() + \"=\" + e.getValue());\n        }\n        System.out.println(eta.getOrDefault(\"Zoe\", -1));\n    }\n}",
+  "help": "Per inserire si usa put, non add. merge con Integer::sum somma 1 al valore esistente di Anna, quindi get restituisce 31.",
+  "exercise": {
+   "prompt": "Riempi una mappa e incrementa un valore con merge.",
+   "lines": [
+    "Map<String, Integer> eta = new HashMap<>();",
+    "eta.put(\"Anna\", 30);",
+    "eta.put(\"Luca\", 25);",
+    "eta.merge(\"Anna\", 1, Integer::sum);",
+    "System.out.println(eta.get(\"Anna\"));"
+   ],
+   "distractors": [
+    "eta.add(\"Anna\", 30);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce get() per una chiave assente?",
+    "options": [
+     "0",
+     "Lancia eccezione",
+     "Una stringa vuota",
+     "null"
+    ],
+    "answer": 3,
+    "explain": "get restituisce null se la chiave non esiste."
+   },
+   {
+    "q": "Quale mappa ordina le chiavi?",
+    "options": [
+     "TreeMap",
+     "HashMap",
+     "Map.of",
+     "LinkedHashMap"
+    ],
+    "answer": 0,
+    "explain": "TreeMap mantiene le chiavi ordinate."
+   },
+   {
+    "q": "Come si scorrono chiave e valore insieme?",
+    "options": [
+     "keySet() soltanto",
+     "values() soltanto",
+     "entrySet()",
+     "get(0)"
+    ],
+    "answer": 2,
+    "explain": "entrySet fornisce coppie Map.Entry."
+   }
+  ]
+ },
+ {
+  "id": 57,
+  "category": "Generics e Collections",
+  "title": "Queue e Deque",
+  "lesson": "Una Queue (coda) è una collezione pensata per elaborare elementi in ordine, tipicamente FIFO: il primo inserito è il primo estratto. I metodi principali esistono in due versioni: quelli che lanciano eccezione (add, remove, element) e quelli che restituiscono un valore speciale (offer, poll, peek). Con poll() e peek() una coda vuota restituisce null invece di sollevare eccezioni.\n\nDeque (double-ended queue) permette di inserire e rimuovere a entrambe le estremità: addFirst, addLast, pollFirst, pollLast, peekFirst, peekLast. Può quindi fare da coda FIFO oppure da pila LIFO con push(), pop() e peek(), dove push inserisce in testa e pop rimuove dalla testa.\n\nL'implementazione consigliata per entrambe è ArrayDeque: più veloce di LinkedList e di Stack, che è una classe legacy da evitare. ArrayDeque non ammette elementi null.\n\nPriorityQueue è una coda speciale che estrae sempre l'elemento minimo secondo l'ordine naturale o un Comparator: utile per scheduler e algoritmi su grafi. Attenzione: la sua iterazione non è ordinata, solo poll() lo è.",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Deque<String> pila = new ArrayDeque<>();\n        pila.push(\"a\");\n        pila.push(\"b\");\n        System.out.println(pila.pop());\n\n        Queue<Integer> coda = new ArrayDeque<>();\n        coda.offer(1);\n        coda.offer(2);\n        System.out.println(coda.poll());\n    }\n}",
+  "help": "Con push inserisci in testa e con pop estrai dalla testa, quindi l'ultimo inserito esce per primo. Il metodo pushFirst non esiste.",
+  "exercise": {
+   "prompt": "Usa un Deque come pila: inserisci due elementi ed estrai l'ultimo.",
+   "lines": [
+    "Deque<String> pila = new ArrayDeque<>();",
+    "pila.push(\"a\");",
+    "pila.push(\"b\");",
+    "String cima = pila.pop();",
+    "System.out.println(cima);"
+   ],
+   "distractors": [
+    "pila.pushFirst(\"c\");"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale ordine segue una coda classica?",
+    "options": [
+     "LIFO",
+     "FIFO",
+     "Casuale",
+     "Alfabetico"
+    ],
+    "answer": 1,
+    "explain": "First In, First Out."
+   },
+   {
+    "q": "Cosa restituisce poll() su una coda vuota?",
+    "options": [
+     "Lancia eccezione",
+     "0",
+     "Stringa vuota",
+     "null"
+    ],
+    "answer": 3,
+    "explain": "poll restituisce null, remove lancerebbe eccezione."
+   },
+   {
+    "q": "Quale classe è consigliata al posto di Stack?",
+    "options": [
+     "Vector",
+     "ArrayDeque",
+     "TreeSet",
+     "Hashtable"
+    ],
+    "answer": 1,
+    "explain": "ArrayDeque è più moderna e veloce di Stack."
+   }
+  ]
+ },
+ {
+  "id": 58,
+  "category": "Generics e Collections",
+  "title": "Iterator, Comparable e Comparator",
+  "lesson": "Un Iterator permette di scorrere una collezione elemento per elemento. Ha tre metodi: hasNext() verifica se ci sono altri elementi, next() restituisce il successivo e remove() elimina l'ultimo restituito. È l'unico modo sicuro per rimuovere elementi durante l'iterazione: se modifichi la lista dentro un for-each ottieni ConcurrentModificationException. Il for-each usa internamente un Iterator, e funziona con qualsiasi classe che implementa Iterable.\n\nPer ordinare oggetti serve definire un criterio. Comparable<T> definisce l'ordine naturale della classe con il metodo compareTo(T altro), che restituisce un numero negativo, zero o positivo. Comparator<T> è invece un criterio esterno, con il metodo compare(a, b), e permette più ordinamenti diversi della stessa classe.\n\nCon le lambda i Comparator si costruiscono facilmente: Comparator.comparing(Persona::nome), poi .thenComparing(Persona::eta) per i pareggi e .reversed() per invertire. Si usano con list.sort(comparator), Collections.sort() e con TreeSet o TreeMap. Evita di sottrarre numeri nel compareTo, perché rischi l'overflow: usa Integer.compare().",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> p = new ArrayList<>(List.of(\"zeta\", \"a\", \"mm\"));\n        p.sort(Comparator.comparing(String::length));\n        System.out.println(p);\n\n        Iterator<String> it = p.iterator();\n        while (it.hasNext()) {\n            if (it.next().length() == 1) it.remove();\n        }\n        System.out.println(p);\n    }\n}",
+  "help": "Ordina con Comparator.comparing e il method reference String::length, poi stampa con un for-each. List.sort accetta un Comparator, non una funzione semplice.",
+  "exercise": {
+   "prompt": "Ordina le stringhe per lunghezza e stampale una per riga.",
+   "lines": [
+    "List<String> p = new ArrayList<>(List.of(\"zeta\", \"a\", \"mm\"));",
+    "p.sort(Comparator.comparing(String::length));",
+    "for (String s : p) {",
+    "    System.out.println(s);",
+    "}"
+   ],
+   "distractors": [
+    "p.sort(String::length);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale metodo definisce l'ordine naturale di una classe?",
+    "options": [
+     "compare",
+     "compareTo",
+     "equals",
+     "sort"
+    ],
+    "answer": 1,
+    "explain": "Comparable richiede compareTo."
+   },
+   {
+    "q": "Come si rimuove in sicurezza durante l'iterazione?",
+    "options": [
+     "list.remove nel for-each",
+     "Con Iterator.remove()",
+     "Con break",
+     "Con size()"
+    ],
+    "answer": 1,
+    "explain": "Iterator.remove evita la ConcurrentModificationException."
+   },
+   {
+    "q": "Quale interfaccia permette ordinamenti esterni alla classe?",
+    "options": [
+     "Iterable",
+     "Cloneable",
+     "Comparator",
+     "Comparable"
+    ],
+    "answer": 2,
+    "explain": "Comparator è un criterio separato dalla classe."
+   }
+  ]
+ },
+ {
+  "id": 59,
+  "category": "Generics e Collections",
+  "title": "Collections e factory List.of",
+  "lesson": "Dal Java 9 esistono i metodi factory List.of(), Set.of() e Map.of() per creare collezioni in modo compatto: List<String> l = List.of(\"a\", \"b\");. Le collezioni create sono immutabili: add, remove o set lanciano UnsupportedOperationException. Non accettano elementi null e Set.of e Map.of rifiutano duplicati con IllegalArgumentException. Per mappe più grandi si usa Map.ofEntries(Map.entry(k, v), ...). Per copiare in modo immutabile esiste List.copyOf(altra).\n\nAttenzione a non confondere List.of con Arrays.asList(), che restituisce una vista a dimensione fissa su un array: permette set ma non add.\n\nLa classe di utilità Collections offre algoritmi pronti: sort(), reverse(), shuffle(), max(), min(), frequency(), swap(), binarySearch() (su lista ordinata), unmodifiableList() per una vista di sola lettura, emptyList() e nCopies(). Non confonderla con l'interfaccia Collection, al singolare.\n\nUsare strutture immutabili rende il codice più sicuro, perché nessuno può modificarle per sbaglio, ed è utile con la concorrenza. Quando serve una copia modificabile basta new ArrayList<>(List.of(...)).",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<Integer> v = new ArrayList<>(List.of(3, 1, 2));\n        Collections.sort(v);\n        System.out.println(v);\n        Collections.reverse(v);\n        System.out.println(Collections.max(v));\n\n        List<Integer> fisso = List.copyOf(v);\n        Map<String, Integer> m = Map.of(\"a\", 1, \"b\", 2);\n        System.out.println(fisso + \" \" + m.size());\n    }\n}",
+  "help": "Parti da una lista modificabile, ordinala e invertila con Collections, poi creane una copia immutabile con List.copyOf. List.of(1,2) è già immutabile, quindi add fallirebbe.",
+  "exercise": {
+   "prompt": "Ordina, inverti e crea una copia immutabile di una lista.",
+   "lines": [
+    "List<Integer> v = new ArrayList<>(List.of(3, 1, 2));",
+    "Collections.sort(v);",
+    "Collections.reverse(v);",
+    "List<Integer> fisso = List.copyOf(v);",
+    "System.out.println(fisso);"
+   ],
+   "distractors": [
+    "List.of(1, 2).add(3);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa succede con List.of(1,2).add(3)?",
+    "options": [
+     "Aggiunge 3",
+     "UnsupportedOperationException",
+     "Restituisce false",
+     "Errore di compilazione"
+    ],
+    "answer": 1,
+    "explain": "List.of crea una lista immutabile."
+   },
+   {
+    "q": "List.of accetta elementi null?",
+    "options": [
+     "Sì",
+     "Solo il primo",
+     "Solo in Java 8",
+     "No, lancia NullPointerException"
+    ],
+    "answer": 3,
+    "explain": "Le collezioni factory rifiutano null."
+   },
+   {
+    "q": "Quale classe contiene sort() e reverse() statici?",
+    "options": [
+     "Collection",
+     "Collections",
+     "Arrays",
+     "Objects"
+    ],
+    "answer": 1,
+    "explain": "Collections è la classe di utilità."
+   }
+  ]
+ },
+ {
+  "id": 60,
+  "category": "Generics e Collections",
+  "title": "Sequenced Collections (Java 21)",
+  "lesson": "Java 21 ha introdotto le Sequenced Collections, tre nuove interfacce che rendono uniforme l'accesso al primo e all'ultimo elemento di una collezione con un ordine definito. Prima di Java 21 per ottenere l'ultimo elemento di una List servivano get(size() - 1), per un Deque getLast(), per un SortedSet last(): ogni tipo aveva un nome diverso.\n\nSequencedCollection aggiunge a List, Deque, LinkedHashSet e altre i metodi getFirst(), getLast(), addFirst(), addLast(), removeFirst(), removeLast() e reversed(). Il metodo reversed() restituisce una vista inversa, non una copia: le modifiche si riflettono sull'originale.\n\nSequencedSet è la versione per gli insiemi ordinati (LinkedHashSet, TreeSet). SequencedMap è la versione per le mappe (LinkedHashMap, TreeMap) e aggiunge firstEntry(), lastEntry(), pollFirstEntry(), pollLastEntry(), putFirst(), putLast() e reversed().\n\nSe la collezione è vuota, getFirst e getLast lanciano NoSuchElementException. Le liste immutabili come List.of permettono getFirst e getLast, ma non addFirst. Un HashSet non è sequenziato, perché non ha un ordine definito.",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> l = new ArrayList<>(List.of(\"b\", \"c\"));\n        l.addFirst(\"a\");\n        System.out.println(l.getFirst());\n        System.out.println(l.getLast());\n        System.out.println(l.reversed());\n        var m = new LinkedHashMap<String, Integer>();\n        m.putFirst(\"y\", 0);\n        System.out.println(m.firstEntry());\n    }\n}",
+  "help": "Con addFirst aggiungi in testa, getLast legge l'ultimo e reversed restituisce la vista inversa. getFirst non accetta argomenti.",
+  "exercise": {
+   "prompt": "Aggiungi in testa a una lista e leggi ultimo elemento e vista inversa.",
+   "lines": [
+    "List<String> l = new ArrayList<>(List.of(\"b\", \"c\"));",
+    "l.addFirst(\"a\");",
+    "String ultimo = l.getLast();",
+    "List<String> inv = l.reversed();",
+    "System.out.println(inv + \" \" + ultimo);"
+   ],
+   "distractors": [
+    "l.getFirst(0);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce reversed()?",
+    "options": [
+     "Una copia ordinata",
+     "Una vista inversa",
+     "Un array",
+     "Un Iterator"
+    ],
+    "answer": 1,
+    "explain": "È una vista, non una copia."
+   },
+   {
+    "q": "Quale tra queste NON è sequenziata?",
+    "options": [
+     "LinkedHashSet",
+     "ArrayList",
+     "ArrayDeque",
+     "HashSet"
+    ],
+    "answer": 3,
+    "explain": "HashSet non ha un ordine definito."
+   },
+   {
+    "q": "getLast() su una lista vuota lancia...",
+    "options": [
+     "NoSuchElementException",
+     "IndexOutOfBounds",
+     "null",
+     "Nulla, restituisce 0"
+    ],
+    "answer": 0,
+    "explain": "Nelle sequenced collection lancia NoSuchElementException."
+   }
+  ]
+ },
+ {
+  "id": 61,
+  "category": "Lambda e Stream",
+  "title": "Lambda expression",
+  "lesson": "Una lambda è una funzione anonima compatta che puoi passare come valore. La sintassi è (parametri) -> espressione oppure (parametri) -> { istruzioni; }. Per esempio (a, b) -> a + b somma due numeri. Con un solo parametro le parentesi sono facoltative: x -> x * 2. I tipi dei parametri di solito si omettono, perché il compilatore li deduce dal contesto.\n\nUna lambda può essere usata solo dove è richiesta un'interfaccia funzionale, cioè con un solo metodo astratto, come Runnable, Comparator o le interfacce di java.util.function. Il compilatore trasforma la lambda in un'istanza di quell'interfaccia: Runnable r = () -> System.out.println(\"Ciao\"); e poi r.run().\n\nLe lambda possono catturare variabili locali dall'ambiente esterno, ma solo se sono final o effettivamente final, cioè mai riassegnate dopo l'inizializzazione. I campi di istanza, invece, si possono modificare. Dentro la lambda this si riferisce alla classe che la contiene, non alla lambda stessa, a differenza delle classi anonime.\n\nLe lambda rendono il codice più breve e leggibile, e sono la base delle Stream API, di Comparator e della programmazione asincrona.",
+  "example": "import java.util.*;\nimport java.util.function.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Runnable r = () -> System.out.println(\"Ciao\");\n        r.run();\n        BinaryOperator<Integer> somma = (a, b) -> a + b;\n        System.out.println(somma.apply(2, 3));\n        List<String> l = new ArrayList<>(List.of(\"bb\", \"a\"));\n        l.sort((x, y) -> x.length() - y.length());\n        System.out.println(l);\n    }\n}",
+  "help": "Crea il Runnable con una lambda senza parametri, eseguilo con run, poi definisci un BinaryOperator e applicalo con apply. La freccia è ->, non =>.",
+  "exercise": {
+   "prompt": "Definisci un Runnable e un BinaryOperator come lambda e usali.",
+   "lines": [
+    "Runnable r = () -> System.out.println(\"Ciao\");",
+    "r.run();",
+    "BinaryOperator<Integer> somma = (a, b) -> a + b;",
+    "System.out.println(somma.apply(2, 3));"
+   ],
+   "distractors": [
+    "Runnable r2 = () => 5;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Dove si può usare una lambda?",
+    "options": [
+     "Ovunque",
+     "Solo nei metodi static",
+     "Dove serve un'interfaccia funzionale",
+     "Solo con le classi astratte"
+    ],
+    "answer": 2,
+    "explain": "Serve un tipo con un solo metodo astratto."
+   },
+   {
+    "q": "Quale variabile locale può catturare una lambda?",
+    "options": [
+     "Final o effettivamente final",
+     "Qualsiasi",
+     "Solo static",
+     "Solo primitive"
+    ],
+    "answer": 0,
+    "explain": "Non devono essere riassegnate."
+   },
+   {
+    "q": "Quale sintassi è corretta?",
+    "options": [
+     "(a, b) => a + b",
+     "a, b -> a + b",
+     "(a, b) -> a + b",
+     "lambda(a, b): a + b"
+    ],
+    "answer": 2,
+    "explain": "Parametri, freccia ->, corpo."
+   }
+  ]
+ },
+ {
+  "id": 62,
+  "category": "Lambda e Stream",
+  "title": "Method reference",
+  "lesson": "Un method reference è una scorciatoia per una lambda che si limita a chiamare un metodo esistente. Si scrive con i due punti doppi ::. Invece di s -> s.toUpperCase() puoi scrivere String::toUpperCase: più breve e spesso più leggibile.\n\nEsistono quattro forme. Primo: riferimento a metodo statico, Integer::parseInt equivale a s -> Integer.parseInt(s). Secondo: riferimento a metodo di istanza di un oggetto specifico, System.out::println equivale a x -> System.out.println(x). Terzo: riferimento a metodo di istanza di un oggetto arbitrario di un certo tipo, String::length equivale a s -> s.length(): il primo parametro diventa il ricevente della chiamata. Quarto: riferimento a costruttore, ArrayList::new equivale a () -> new ArrayList<>(), mentre int[]::new crea array.\n\nIl compilatore sceglie il metodo giusto in base all'interfaccia funzionale di destinazione, perciò firma e tipi devono essere compatibili. Se più overload sono possibili, il riferimento può risultare ambiguo.\n\nSi usano molto con le stream, per esempio map(String::trim), forEach(System.out::println) e collect(Collectors.toCollection(TreeSet::new)). Preferisci la lambda quando il corpo è più complesso.",
+  "example": "import java.util.*;\nimport java.util.function.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> n = List.of(\"anna\", \"luca\");\n        n.stream()\n            .map(String::toUpperCase)\n            .forEach(System.out::println);\n\n        Function<String, Integer> conv = Integer::parseInt;\n        Supplier<List<String>> nuova = ArrayList::new;\n        System.out.println(conv.apply(\"42\") + nuova.get().size());\n    }\n}",
+  "help": "Dopo n.stream() applica map con String::toUpperCase e poi forEach con System.out::println. La forma String.toUpperCase con il punto non è un method reference.",
+  "exercise": {
+   "prompt": "Trasforma i nomi in maiuscolo e stampali con method reference.",
+   "lines": [
+    "List<String> n = List.of(\"anna\", \"luca\");",
+    "n.stream()",
+    "    .map(String::toUpperCase)",
+    "    .forEach(System.out::println);"
+   ],
+   "distractors": [
+    "    .map(String.toUpperCase)"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale simbolo introduce un method reference?",
+    "options": [
+     ":",
+     "->",
+     "::",
+     "=>"
+    ],
+    "answer": 2,
+    "explain": "Si usano i due punti doppi."
+   },
+   {
+    "q": "Cosa equivale a Integer::parseInt?",
+    "options": [
+     "s -> Integer.parseInt(s)",
+     "() -> parseInt",
+     "s -> s.parseInt()",
+     "new Integer()"
+    ],
+    "answer": 0,
+    "explain": "È una scorciatoia per la lambda che chiama il metodo statico."
+   },
+   {
+    "q": "ArrayList::new è un riferimento a...",
+    "options": [
+     "Metodo statico",
+     "Metodo di istanza",
+     "Costruttore",
+     "Campo"
+    ],
+    "answer": 2,
+    "explain": "::new riferisce un costruttore."
+   }
+  ]
+ },
+ {
+  "id": 63,
+  "category": "Lambda e Stream",
+  "title": "Function, Predicate, Supplier, Consumer",
+  "lesson": "Il package java.util.function contiene interfacce funzionali pronte all'uso, così non devi inventarne di nuove. Le quattro fondamentali sono queste.\n\nFunction<T, R> trasforma un valore di tipo T in uno di tipo R con il metodo apply(). Predicate<T> verifica una condizione e restituisce boolean con test(). Supplier<T> non riceve nulla e fornisce un valore con get(). Consumer<T> riceve un valore e non restituisce nulla, con accept().\n\nEsistono varianti: BiFunction, BiPredicate e BiConsumer con due argomenti, UnaryOperator<T> e BinaryOperator<T> quando input e output hanno lo stesso tipo, e versioni primitive come IntFunction, IntPredicate e ToIntFunction che evitano l'autoboxing.\n\nMolte interfacce hanno metodi default per comporre il comportamento: Function ha andThen() e compose(), Predicate ha and(), or() e negate(), Consumer ha andThen(). Per esempio pari.and(positivo) crea un nuovo predicato.\n\nSono i mattoni delle Stream API: filter richiede un Predicate, map una Function, forEach un Consumer e generate un Supplier. Conoscerle ti permette di leggere la firma di qualsiasi metodo funzionale.",
+  "example": "import java.util.function.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Function<Integer, Integer> doppio = x -> x * 2;\n        Predicate<Integer> pari = x -> x % 2 == 0;\n        Supplier<String> saluto = () -> \"Ciao\";\n        Consumer<String> stampa = System.out::println;\n\n        stampa.accept(saluto.get() + \" \" + doppio.apply(4));\n        System.out.println(pari.negate().test(4));\n        System.out.println(doppio.andThen(doppio).apply(3));\n    }\n}",
+  "help": "Function usa apply, Supplier usa get, Consumer usa accept e Predicate usa test. Predicate non ha un metodo apply.",
+  "exercise": {
+   "prompt": "Dichiara le quattro interfacce funzionali base e combinale.",
+   "lines": [
+    "Function<Integer, Integer> doppio = x -> x * 2;",
+    "Predicate<Integer> pari = x -> x % 2 == 0;",
+    "Supplier<String> saluto = () -> \"Ciao\";",
+    "Consumer<String> stampa = System.out::println;",
+    "stampa.accept(saluto.get() + doppio.apply(4));"
+   ],
+   "distractors": [
+    "boolean b = pari.apply(4);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale interfaccia restituisce un boolean?",
+    "options": [
+     "Function",
+     "Consumer",
+     "Supplier",
+     "Predicate"
+    ],
+    "answer": 3,
+    "explain": "Predicate.test restituisce boolean."
+   },
+   {
+    "q": "Quale metodo ha Supplier?",
+    "options": [
+     "get()",
+     "apply()",
+     "accept()",
+     "test()"
+    ],
+    "answer": 0,
+    "explain": "Supplier fornisce un valore con get."
+   },
+   {
+    "q": "Cos'è UnaryOperator<T>?",
+    "options": [
+     "Una Function<T,T>",
+     "Un Predicate<T>",
+     "Un Consumer<T>",
+     "Un Supplier<T>"
+    ],
+    "answer": 0,
+    "explain": "È una Function con input e output dello stesso tipo."
+   }
+  ]
+ },
+ {
+  "id": 64,
+  "category": "Lambda e Stream",
+  "title": "Stream: creazione",
+  "lesson": "Uno Stream è una sequenza di elementi su cui puoi applicare operazioni in stile dichiarativo, senza modificare la sorgente. Non è una struttura dati: non memorizza elementi, li elabora al volo. Uno stream si può consumare una sola volta; riusarlo lancia IllegalStateException.\n\nUna pipeline ha tre parti: una sorgente, zero o più operazioni intermedie (filter, map, sorted), che sono lazy, e una sola operazione terminale (forEach, collect, count, reduce) che avvia davvero l'elaborazione.\n\nModi per creare uno stream: collection.stream() da qualsiasi lista o insieme; Stream.of(a, b, c) da valori; Arrays.stream(array) da un array; Stream.iterate(seme, f) e Stream.generate(supplier) per stream infiniti, da limitare con limit(); stream di righe con Files.lines(path) e stringa.chars() o lines().\n\nPer i tipi primitivi esistono IntStream, LongStream e DoubleStream, che evitano l'autoboxing e offrono sum(), average(), max(), e range(inizio, fine) e rangeClosed(inizio, fine) per generare intervalli. Si passa da uno stream di oggetti a uno primitivo con mapToInt() e viceversa con boxed().",
+  "example": "import java.util.*;\nimport java.util.stream.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Stream<String> s = Stream.of(\"a\", \"b\", \"c\");\n        System.out.println(s.count());\n        IntStream r = IntStream.rangeClosed(1, 5);\n        System.out.println(r.sum());\n        List<Integer> pot = Stream.iterate(1, x -> x * 2)\n            .limit(5).toList();\n        System.out.println(pot);\n    }\n}",
+  "help": "IntStream.rangeClosed(1, 5) include entrambi gli estremi e sum somma i valori. Stream<int> non è valido: i generics non accettano primitivi.",
+  "exercise": {
+   "prompt": "Crea uno Stream di stringhe e un IntStream, poi stampa somma e conteggio.",
+   "lines": [
+    "Stream<String> s = Stream.of(\"a\", \"b\", \"c\");",
+    "IntStream r = IntStream.rangeClosed(1, 5);",
+    "System.out.println(r.sum());",
+    "System.out.println(s.count());"
+   ],
+   "distractors": [
+    "Stream<int> x = Stream.of(1);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quando parte l'elaborazione di uno stream?",
+    "options": [
+     "Alla creazione",
+     "Alla chiamata di filter",
+     "Alla chiamata dell'operazione terminale",
+     "Mai"
+    ],
+    "answer": 2,
+    "explain": "Le operazioni intermedie sono lazy."
+   },
+   {
+    "q": "Cosa succede riusando uno stream già consumato?",
+    "options": [
+     "Funziona",
+     "IllegalStateException",
+     "Restituisce vuoto",
+     "Si riavvia"
+    ],
+    "answer": 1,
+    "explain": "Uno stream si consuma una sola volta."
+   },
+   {
+    "q": "Cosa produce IntStream.rangeClosed(1, 3)?",
+    "options": [
+     "1, 2",
+     "2, 3",
+     "1, 2, 3",
+     "0, 1, 2, 3"
+    ],
+    "answer": 2,
+    "explain": "rangeClosed include l'estremo finale."
+   }
+  ]
+ },
+ {
+  "id": 65,
+  "category": "Lambda e Stream",
+  "title": "map, filter e reduce",
+  "lesson": "Le tre operazioni più importanti delle stream sono filter, map e reduce. filter(Predicate) mantiene solo gli elementi che soddisfano una condizione. map(Function) trasforma ogni elemento in un altro, anche di tipo diverso. reduce combina tutti gli elementi in un unico risultato.\n\nreduce esiste in diverse forme: reduce(identità, operatore) restituisce direttamente un valore, per esempio reduce(0, Integer::sum), mentre reduce(operatore) senza identità restituisce un Optional, perché lo stream potrebbe essere vuoto. L'operatore deve essere associativo, altrimenti con stream paralleli il risultato sarebbe sbagliato.\n\nAltre operazioni intermedie utili: sorted() per ordinare, distinct() per eliminare i duplicati, limit(n) e skip(n) per tagliare, peek() per il debug. Tra le terminali: count(), min(), max(), anyMatch(), allMatch(), noneMatch(), findFirst() e toList(), che dal Java 16 restituisce una lista immutabile.\n\nCon IntStream hai anche sum(), average() e summaryStatistics(). Le operazioni non devono avere effetti collaterali: le lambda dovrebbero essere pure. Una pipeline leggibile si scrive con un'operazione per riga.",
+  "example": "import java.util.*;\nimport java.util.stream.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        int somma = Stream.of(1, 2, 3, 4, 5, 6)\n            .filter(n -> n % 2 == 0)\n            .map(n -> n * n)\n            .reduce(0, Integer::sum);\n        System.out.println(somma);\n\n        Optional<Integer> max = Stream.of(3, 9, 4).reduce(Integer::max);\n        System.out.println(max.get());\n    }\n}",
+  "help": "Prima filter per tenere i pari, poi map per elevarli al quadrato, infine reduce con identità 0 e Integer::sum. collect non accetta quei parametri.",
+  "exercise": {
+   "prompt": "Somma i quadrati dei numeri pari con una pipeline.",
+   "lines": [
+    "int somma = Stream.of(1, 2, 3, 4, 5, 6)",
+    "    .filter(n -> n % 2 == 0)",
+    "    .map(n -> n * n)",
+    "    .reduce(0, Integer::sum);",
+    "System.out.println(somma);"
+   ],
+   "distractors": [
+    "    .collect(0, Integer::sum);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa filter()?",
+    "options": [
+     "Trasforma gli elementi",
+     "Mantiene gli elementi che soddisfano il Predicate",
+     "Somma gli elementi",
+     "Ordina gli elementi"
+    ],
+    "answer": 1,
+    "explain": "filter seleziona in base a una condizione."
+   },
+   {
+    "q": "Cosa restituisce reduce(operatore) senza identità?",
+    "options": [
+     "int",
+     "Optional",
+     "Stream",
+     "null"
+    ],
+    "answer": 1,
+    "explain": "Lo stream potrebbe essere vuoto, quindi Optional."
+   },
+   {
+    "q": "Quale è un'operazione terminale?",
+    "options": [
+     "map",
+     "filter",
+     "sorted",
+     "count"
+    ],
+    "answer": 3,
+    "explain": "count chiude la pipeline."
+   }
+  ]
+ },
+ {
+  "id": 66,
+  "category": "Lambda e Stream",
+  "title": "collect e Collectors",
+  "lesson": "L'operazione terminale collect() raccoglie gli elementi di uno stream in una struttura dati o in un valore riassuntivo, usando un Collector. La classe Collectors ne offre molti già pronti, quindi raramente devi scriverne uno.\n\nPer raccogliere in collezioni: Collectors.toList(), toSet(), toMap(chiave, valore) e toCollection(TreeSet::new) per scegliere l'implementazione. Dal Java 16 per le liste puoi usare direttamente stream.toList(), che è più corto e restituisce una lista immutabile. Attenzione: toMap lancia IllegalStateException se due elementi producono la stessa chiave, a meno che tu fornisca una funzione di fusione come terzo argomento.\n\nPer produrre un testo: Collectors.joining(\", \", \"[\", \"]\") unisce le stringhe con separatore, prefisso e suffisso.\n\nPer calcolare statistiche: counting(), summingInt(), averagingDouble(), minBy(), maxBy() e summarizingInt(), che restituisce conteggio, somma, minimo, massimo e media in un solo oggetto.\n\nI collector si possono comporre: mapping(f, downstream) trasforma gli elementi prima di raccoglierli, filtering() li filtra, e teeing() combina due collector. Sono utilissimi come secondo argomento di groupingBy.",
+  "example": "import java.util.*;\nimport java.util.stream.*;\npublic class Main {\n    public static void main(String[] args) {\n        List<String> nomi = List.of(\"anna\", \"luca\", \"zoe\");\n        String r = nomi.stream()\n            .map(String::toUpperCase)\n            .collect(Collectors.joining(\", \"));\n        System.out.println(r);\n        Map<String, Integer> lun = nomi.stream()\n            .collect(Collectors.toMap(s -> s, String::length));\n        System.out.println(lun.get(\"zoe\"));\n    }\n}",
+  "help": "Dopo map usa collect con Collectors.joining per unire le stringhe con la virgola. toList non accetta un Collector come argomento.",
+  "exercise": {
+   "prompt": "Trasforma in maiuscolo e unisci i nomi in una sola stringa.",
+   "lines": [
+    "List<String> nomi = List.of(\"anna\", \"luca\", \"zoe\");",
+    "String r = nomi.stream()",
+    "    .map(String::toUpperCase)",
+    "    .collect(Collectors.joining(\", \"));",
+    "System.out.println(r);"
+   ],
+   "distractors": [
+    "    .toList(Collectors.joining());"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale Collector unisce stringhe con un separatore?",
+    "options": [
+     "toList",
+     "joining",
+     "counting",
+     "mapping"
+    ],
+    "answer": 1,
+    "explain": "joining concatena con separatore opzionale."
+   },
+   {
+    "q": "Cosa può lanciare toMap con chiavi duplicate?",
+    "options": [
+     "NullPointerException",
+     "ClassCastException",
+     "IllegalStateException",
+     "Nulla"
+    ],
+    "answer": 2,
+    "explain": "Serve una funzione di fusione per i duplicati."
+   },
+   {
+    "q": "Stream.toList() restituisce...",
+    "options": [
+     "Una lista modificabile",
+     "Un array",
+     "Un set",
+     "Una lista immutabile"
+    ],
+    "answer": 3,
+    "explain": "Dal Java 16 restituisce una lista non modificabile."
+   }
+  ]
+ },
+ {
+  "id": 67,
+  "category": "Lambda e Stream",
+  "title": "groupingBy e partitioningBy",
+  "lesson": "Collectors.groupingBy(classificatore) raggruppa gli elementi in una Map in cui la chiave è il risultato della funzione di classificazione e il valore è una lista degli elementi corrispondenti. È l'equivalente del GROUP BY di SQL. Per esempio, raggruppare parole per lunghezza produce una Map<Integer, List<String>>.\n\nCome secondo argomento puoi passare un downstream collector che elabora ogni gruppo: groupingBy(String::length, Collectors.counting()) conta gli elementi di ogni gruppo, mentre Collectors.mapping() o summingInt() trasformano o sommano i valori. Con tre argomenti puoi anche scegliere il tipo di mappa, per esempio TreeMap::new per avere le chiavi ordinate.\n\nCollectors.partitioningBy(predicato) è un caso speciale: divide gli elementi in due gruppi in base a un Predicate, e restituisce una Map<Boolean, List<T>> con sempre entrambe le chiavi, true e false, anche se un gruppo è vuoto.\n\nUsa groupingBy quando le categorie sono molte o non note a priori, e partitioningBy quando devi solo separare chi soddisfa una condizione da chi non la soddisfa. Il risultato di groupingBy per default è una HashMap, quindi l'ordine delle chiavi non è garantito.",
+  "example": "import java.util.*;\nimport java.util.stream.*;\npublic class Main {\n    public static void main(String[] args) {\n        List<String> p = List.of(\"ciao\", \"io\", \"tu\", \"mondo\");\n        Map<Integer, List<String>> g = p.stream()\n            .collect(Collectors.groupingBy(String::length));\n        System.out.println(g);\n        Map<Boolean, Long> m = p.stream().collect(\n            Collectors.partitioningBy(s -> s.length() > 2,\n                Collectors.counting()));\n        System.out.println(m);\n    }\n}",
+  "help": "Dopo stream() chiama collect con Collectors.groupingBy e il classificatore String::length. Il metodo groupBy non esiste in Collectors.",
+  "exercise": {
+   "prompt": "Raggruppa le parole per lunghezza usando groupingBy.",
+   "lines": [
+    "List<String> p = List.of(\"ciao\", \"io\", \"tu\", \"mondo\");",
+    "Map<Integer, List<String>> g = p.stream()",
+    "    .collect(Collectors.groupingBy(String::length));",
+    "System.out.println(g);"
+   ],
+   "distractors": [
+    "    .collect(Collectors.groupBy(String::length));"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Che tipo di chiavi ha il risultato di partitioningBy?",
+    "options": [
+     "String",
+     "Integer",
+     "Boolean",
+     "Object"
+    ],
+    "answer": 2,
+    "explain": "Divide in due gruppi: true e false."
+   },
+   {
+    "q": "A cosa serve il secondo argomento di groupingBy?",
+    "options": [
+     "A ordinare",
+     "A elaborare ogni gruppo (downstream)",
+     "A filtrare le chiavi",
+     "Nulla"
+    ],
+    "answer": 1,
+    "explain": "È il downstream collector applicato a ogni gruppo."
+   },
+   {
+    "q": "Cosa fa groupingBy(f, Collectors.counting())?",
+    "options": [
+     "Conta gli elementi per ogni gruppo",
+     "Conta i gruppi",
+     "Ordina i gruppi",
+     "Elimina i duplicati"
+    ],
+    "answer": 0,
+    "explain": "Restituisce Map<K, Long> con la dimensione di ogni gruppo."
+   }
+  ]
+ },
+ {
+  "id": 68,
+  "category": "Lambda e Stream",
+  "title": "Optional",
+  "lesson": "Optional<T> è un contenitore che può contenere un valore oppure essere vuoto. Serve a rappresentare in modo esplicito l'assenza di risultato, ed è ciò che restituiscono metodi come findFirst(), max() e reduce() senza identità. Evita molti NullPointerException perché obbliga il chiamante a gestire il caso vuoto.\n\nSi crea con Optional.of(valore), che lancia eccezione se il valore è null, con Optional.ofNullable(valore), che accetta null, e Optional.empty().\n\nPer usarlo non chiamare get() alla cieca, perché su un Optional vuoto lancia NoSuchElementException. Preferisci: orElse(default) per un valore alternativo, orElseGet(supplier) per calcolarlo solo se serve, orElseThrow() per lanciare un'eccezione, ifPresent(consumer) per eseguire un'azione, ifPresentOrElse() per gestire entrambi i casi, isPresent() e isEmpty() per i controlli.\n\nCome gli stream, supporta map(), flatMap() e filter(): Optional.of(\"java\").map(String::toUpperCase).orElse(\"\") è molto idiomatico.\n\nBuone pratiche: usalo come tipo di ritorno, non come campo di classe né come parametro, e non usarlo per le collezioni, dove è meglio restituire una collezione vuota.",
+  "example": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Optional<String> o = Optional.empty();\n        String r = o.orElse(\"nessuno\");\n        System.out.println(r);\n\n        Optional<String> j = Optional.of(\"java\");\n        j.map(String::toUpperCase).ifPresent(System.out::println);\n        System.out.println(j.filter(s -> s.length() > 10).isPresent());\n    }\n}",
+  "help": "Per un Optional vuoto si usa orElse con un valore alternativo, e ifPresent per agire solo se il valore c'è. get() sarebbe pericoloso perché lancia eccezione.",
+  "exercise": {
+   "prompt": "Leggi un Optional vuoto con un valore di riserva.",
+   "lines": [
+    "Optional<String> o = Optional.empty();",
+    "String r = o.orElse(\"nessuno\");",
+    "o.ifPresent(System.out::println);",
+    "System.out.println(r);"
+   ],
+   "distractors": [
+    "String x = o.get();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa get() su un Optional vuoto?",
+    "options": [
+     "Restituisce null",
+     "Restituisce stringa vuota",
+     "Lancia NoSuchElementException",
+     "Restituisce false"
+    ],
+    "answer": 2,
+    "explain": "Per questo si preferisce orElse o orElseThrow."
+   },
+   {
+    "q": "Quale metodo accetta un valore null?",
+    "options": [
+     "Optional.of",
+     "Optional.ofNullable",
+     "Optional.get",
+     "Optional.map"
+    ],
+    "answer": 1,
+    "explain": "ofNullable crea un Optional vuoto se il valore è null."
+   },
+   {
+    "q": "Dove è consigliato usare Optional?",
+    "options": [
+     "Come campo di classe",
+     "Come parametro",
+     "Come tipo di ritorno",
+     "In ogni variabile"
+    ],
+    "answer": 2,
+    "explain": "È pensato per i valori di ritorno."
+   }
+  ]
+ },
+ {
+  "id": 69,
+  "category": "Lambda e Stream",
+  "title": "flatMap e stream paralleli",
+  "lesson": "flatMap è l'operazione che appiattisce: trasforma ogni elemento in uno stream e poi unisce tutti questi stream in uno solo. Con map otterresti uno Stream<Stream<T>> o una lista di liste; con flatMap ottieni un unico Stream<T>. Un esempio tipico: da List<List<Integer>> a una sequenza di interi con flatMap(List::stream). Si usa anche per spezzare testi: righe.flatMap(r -> Arrays.stream(r.split(\" \"))). Esistono mapMulti e le varianti flatMapToInt.\n\nGli stream paralleli dividono il lavoro su più thread usando il ForkJoinPool comune. Si ottengono con collection.parallelStream() oppure stream.parallel(); sequential() torna indietro. Il parallelismo conviene solo con molti elementi, operazioni costose e senza stato, e sorgenti facilmente divisibili come ArrayList e array. Con pochi dati il costo di coordinamento supera il guadagno.\n\nRegole d'oro: le lambda devono essere senza effetti collaterali e non modificare variabili condivise; gli operatori di reduce devono essere associativi; forEach non garantisce l'ordine (usa forEachOrdered se serve). Misura sempre le prestazioni prima di decidere di parallelizzare.",
+  "example": "import java.util.*;\nimport java.util.stream.*;\npublic class Main {\n    public static void main(String[] args) {\n        List<List<Integer>> l = List.of(List.of(1, 2), List.of(3));\n        int tot = l.stream()\n            .flatMap(List::stream)\n            .mapToInt(Integer::intValue)\n            .sum();\n        System.out.println(tot);\n        long n = IntStream.rangeClosed(1, 1000).parallel().count();\n        System.out.println(n);\n    }\n}",
+  "help": "flatMap con List::stream appiattisce le liste interne in un unico stream, poi mapToInt e sum calcolano il totale. flatMap(List::size) non restituisce uno stream e non compila.",
+  "exercise": {
+   "prompt": "Appiattisci una lista di liste e somma tutti gli interi.",
+   "lines": [
+    "List<List<Integer>> l = List.of(List.of(1, 2), List.of(3));",
+    "int tot = l.stream()",
+    "    .flatMap(List::stream)",
+    "    .mapToInt(Integer::intValue)",
+    "    .sum();",
+    "System.out.println(tot);"
+   ],
+   "distractors": [
+    "    .flatMap(List::size)"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa flatMap?",
+    "options": [
+     "Filtra gli elementi",
+     "Trasforma ogni elemento in uno stream e li unisce",
+     "Ordina lo stream",
+     "Elimina i null"
+    ],
+    "answer": 1,
+    "explain": "Appiattisce gli stream annidati in uno solo."
+   },
+   {
+    "q": "Come si ottiene uno stream parallelo da una lista?",
+    "options": [
+     "list.async()",
+     "list.parallelStream()",
+     "list.threads()",
+     "list.fork()"
+    ],
+    "answer": 1,
+    "explain": "parallelStream() o stream().parallel()."
+   },
+   {
+    "q": "Quando conviene il parallelismo?",
+    "options": [
+     "Sempre",
+     "Con pochi elementi",
+     "Con molti dati e operazioni costose e senza stato",
+     "Con operazioni che modificano variabili condivise"
+    ],
+    "answer": 2,
+    "explain": "Altrimenti il costo di coordinamento prevale."
+   }
+  ]
+ },
+ {
+  "id": 70,
+  "category": "Lambda e Stream",
+  "title": "Stream Gatherers (Java 24)",
+  "lesson": "I Gatherers, resi definitivi in Java 24 (JEP 485), permettono di definire operazioni intermedie personalizzate sugli stream. Finora potevi solo usare le operazioni intermedie predefinite (map, filter, limit...), mentre con il nuovo metodo gather(Gatherer) puoi aggiungere trasformazioni che hanno stato interno o che combinano più elementi.\n\nUn Gatherer può leggere un elemento alla volta, mantenere uno stato, emettere zero, uno o più elementi e interrompere anticipatamente lo stream. La classe java.util.stream.Gatherers fornisce quelli più comuni: windowFixed(n) raggruppa gli elementi in finestre di dimensione fissa, windowSliding(n) crea finestre scorrevoli che si sovrappongono, fold() è una riduzione che emette il risultato finale, scan() emette i risultati parziali cumulativi e mapConcurrent(n, f) applica una funzione in modo concorrente, con al massimo n operazioni attive, usando thread virtuali.\n\nEsempio: Stream.of(1,2,3,4,5).gather(Gatherers.windowFixed(2)).toList() produce [[1, 2], [3, 4], [5]]. Con windowSliding(2) ottieni [[1, 2], [2, 3], [3, 4], [4, 5]].\n\nSe serve una logica diversa puoi creare il tuo gatherer con Gatherer.of() o Gatherer.ofSequential(), e combinarli con andThen().",
+  "example": "import java.util.*;\nimport java.util.stream.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<List<Integer>> f = Stream.of(1, 2, 3, 4, 5)\n            .gather(Gatherers.windowFixed(2))\n            .toList();\n        System.out.println(f);\n\n        System.out.println(Stream.of(1, 2, 3)\n            .gather(Gatherers.scan(() -> 0, Integer::sum))\n            .toList());\n    }\n}",
+  "help": "Si applica il gatherer con gather() e Gatherers.windowFixed(2) raggruppa gli elementi a coppie. Il metodo Gatherers.window non esiste.",
+  "exercise": {
+   "prompt": "Raggruppa uno stream in finestre di due elementi con un gatherer.",
+   "lines": [
+    "List<List<Integer>> f = Stream.of(1, 2, 3, 4, 5)",
+    "    .gather(Gatherers.windowFixed(2))",
+    "    .toList();",
+    "System.out.println(f);"
+   ],
+   "distractors": [
+    "    .gather(Gatherers.window(2))"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Con quale metodo si applica un Gatherer?",
+    "options": [
+     "map",
+     "gather",
+     "collect",
+     "reduce"
+    ],
+    "answer": 1,
+    "explain": "Stream.gather(Gatherer) è l'operazione intermedia."
+   },
+   {
+    "q": "Cosa produce windowFixed(2) su 1,2,3,4,5?",
+    "options": [
+     "[[1,2],[2,3],[3,4],[4,5]]",
+     "[[1,2],[3,4],[5]]",
+     "[1,2,3]",
+     "[[1],[2]]"
+    ],
+    "answer": 1,
+    "explain": "Finestre non sovrapposte di dimensione 2; l'ultima può essere più corta."
+   },
+   {
+    "q": "In quale versione i Gatherers sono diventati definitivi?",
+    "options": [
+     "Java 17",
+     "Java 21",
+     "Java 22",
+     "Java 24"
+    ],
+    "answer": 3,
+    "explain": "JEP 485, Java 24."
+   }
+  ]
+ },
+ {
+  "id": 71,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "try, catch e finally",
+  "lesson": "Un'eccezione è un evento anomalo che interrompe il flusso normale del programma. Per gestirla si usa il blocco try seguito da uno o più catch. Il codice a rischio va nel try; se viene lanciata un'eccezione, l'esecuzione salta al catch il cui tipo è compatibile, altrimenti l'eccezione risale lo stack dei metodi fino a terminare il programma.\n\nIl blocco finally viene eseguito sempre, sia che l'eccezione si verifichi sia di no, quindi è adatto a rilasciare risorse. Fa eccezione solo System.exit() o un crash della JVM.\n\nCon più catch l'ordine conta: i tipi più specifici vanno prima di quelli generali, altrimenti il compilatore segnala errore perché il catch successivo sarebbe irraggiungibile. Con il multi-catch puoi gestire più tipi insieme: catch (IOException | SQLException e).\n\nDentro il catch hai l'oggetto eccezione: getMessage() restituisce il messaggio, printStackTrace() stampa lo stack trace. Evita i catch vuoti, che nascondono gli errori, e il catch generico di Exception se non serve. Con throw lanci un'eccezione tu stesso, ad esempio throw new IllegalArgumentException(\"età negativa\").",
+  "example": "public class Main {\n    public static void main(String[] args) {\n        try {\n            int x = Integer.parseInt(\"abc\");\n            System.out.println(x);\n        } catch (NumberFormatException e) {\n            System.out.println(\"Errore: \" + e.getMessage());\n        } finally {\n            System.out.println(\"Fine\");\n        }\n    }\n}",
+  "help": "Il try contiene il codice a rischio, poi catch con il tipo specifico NumberFormatException e infine finally. Il blocco finally si scrive dopo il catch.",
+  "exercise": {
+   "prompt": "Gestisci un errore di conversione con try, catch e finally.",
+   "lines": [
+    "try {",
+    "    int x = Integer.parseInt(\"abc\");",
+    "} catch (NumberFormatException e) {",
+    "    System.out.println(\"Errore\");",
+    "} finally {",
+    "    System.out.println(\"Fine\");",
+    "}"
+   ],
+   "distractors": [
+    "    throw new Error();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quando viene eseguito finally?",
+    "options": [
+     "Solo se c'è un'eccezione",
+     "Solo se non ci sono eccezioni",
+     "Quasi sempre, con o senza eccezione",
+     "Mai"
+    ],
+    "answer": 2,
+    "explain": "Viene eseguito in entrambi i casi."
+   },
+   {
+    "q": "Come vanno ordinati più catch?",
+    "options": [
+     "Dal più generico al più specifico",
+     "Dal più specifico al più generico",
+     "Non importa",
+     "Alfabeticamente"
+    ],
+    "answer": 1,
+    "explain": "Un catch generico prima rende irraggiungibili i successivi."
+   },
+   {
+    "q": "Cosa fa Integer.parseInt(\"abc\")?",
+    "options": [
+     "Restituisce 0",
+     "Restituisce null",
+     "Lancia NumberFormatException",
+     "Restituisce -1"
+    ],
+    "answer": 2,
+    "explain": "La stringa non è un numero valido."
+   }
+  ]
+ },
+ {
+  "id": 72,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "Eccezioni checked e unchecked",
+  "lesson": "In Java le eccezioni si dividono in due famiglie, tutte discendenti da Throwable. Le checked exception sono sottoclassi di Exception che non estendono RuntimeException, come IOException e SQLException: il compilatore ti obbliga a gestirle con try/catch oppure a dichiararle con throws nella firma del metodo. Rappresentano situazioni esterne recuperabili, come un file mancante.\n\nLe unchecked exception estendono RuntimeException, come NullPointerException, IllegalArgumentException, ArrayIndexOutOfBoundsException e ArithmeticException: non è obbligatorio gestirle, perché di solito derivano da errori di programmazione che vanno corretti, non catturati.\n\nGli Error, per esempio OutOfMemoryError e StackOverflowError, indicano problemi gravi della JVM e normalmente non si catturano.\n\nLa parola throws nella firma dichiara che il metodo può lanciare un'eccezione: void leggi() throws IOException. Chi chiama deve gestirla o rilanciarla. La parola throw, invece, lancia effettivamente un oggetto eccezione.\n\nUna buona pratica è lanciare eccezioni unchecked per errori di uso (argomenti non validi) e checked per condizioni recuperabili, evitando di catturare Exception in modo generico.",
+  "example": "import java.io.*;\n\npublic class Main {\n    static void leggi() throws IOException {\n        throw new IOException(\"disco\");\n    }\n    public static void main(String[] args) {\n        try {\n            leggi();\n        } catch (IOException e) {\n            System.out.println(e.getMessage());\n        }\n    }\n}",
+  "help": "Un'eccezione checked come IOException va catturata oppure dichiarata. Catturare solo RuntimeException non basta, perché IOException non ne è una sottoclasse.",
+  "exercise": {
+   "prompt": "Cattura una IOException lanciata dal codice.",
+   "lines": [
+    "public static void main(String[] args) {",
+    "    try {",
+    "        throw new IOException(\"disco\");",
+    "    } catch (IOException e) {",
+    "        System.out.println(e.getMessage());",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    } catch (RuntimeException e) {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale eccezione è checked?",
+    "options": [
+     "NullPointerException",
+     "IOException",
+     "ArithmeticException",
+     "IllegalArgumentException"
+    ],
+    "answer": 1,
+    "explain": "IOException va gestita o dichiarata."
+   },
+   {
+    "q": "Cosa indica throws nella firma?",
+    "options": [
+     "Che il metodo lancia sempre",
+     "Che il metodo può lanciare quell'eccezione",
+     "Che il metodo cattura l'eccezione",
+     "Nulla"
+    ],
+    "answer": 1,
+    "explain": "Dichiara le eccezioni che possono uscire dal metodo."
+   },
+   {
+    "q": "RuntimeException è la base delle...",
+    "options": [
+     "Checked",
+     "Error",
+     "Unchecked",
+     "Interfacce"
+    ],
+    "answer": 2,
+    "explain": "Le unchecked non richiedono gestione obbligatoria."
+   }
+  ]
+ },
+ {
+  "id": 73,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "Eccezioni personalizzate",
+  "lesson": "Quando le eccezioni standard non esprimono bene un errore del tuo dominio, puoi crearne di tue. Basta estendere Exception per una checked exception, oppure RuntimeException per una unchecked. Per convenzione il nome termina con Exception, per esempio SaldoInsufficienteException.\n\nUna buona eccezione personalizzata offre costruttori che richiamano il costruttore della superclasse con super(): uno con il messaggio, e uno con messaggio e causa, super(msg, causa). La causa permette di concatenare le eccezioni (exception chaining): catturi un errore di basso livello e ne lanci uno più significativo mantenendo la traccia originale, che poi si legge con getCause().\n\nPuoi aggiungere campi utili al chiamante, come il saldo mancante o un codice errore, con relativi getter. Ricorda che le eccezioni non possono essere generiche.\n\nQuando usarle: scegli checked se il chiamante può ragionevolmente recuperare, unchecked se è un errore di programmazione. Il messaggio deve essere chiaro, con i valori coinvolti. Lanciala con throw new SaldoException(\"Mancano 20 euro\") e dichiarala con throws, se è checked.\n\nDai ai nomi un significato preciso e evita di creare gerarchie inutilmente profonde.",
+  "example": "class SaldoException extends Exception {\n    SaldoException(String msg) {\n        super(msg);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        try {\n            throw new SaldoException(\"Saldo basso\");\n        } catch (SaldoException e) {\n            System.out.println(e.getMessage());\n        }\n    }\n}",
+  "help": "Estendi Exception e nel costruttore richiama super(msg) per passare il messaggio alla superclasse. La sintassi this.super(msg) non esiste.",
+  "exercise": {
+   "prompt": "Definisci una eccezione checked con costruttore che passa il messaggio.",
+   "lines": [
+    "class SaldoException extends Exception {",
+    "    SaldoException(String msg) {",
+    "        super(msg);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        this.super(msg);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale classe si estende per una eccezione checked?",
+    "options": [
+     "RuntimeException",
+     "Error",
+     "Exception",
+     "Throwable soltanto"
+    ],
+    "answer": 2,
+    "explain": "Exception (senza RuntimeException) crea una checked."
+   },
+   {
+    "q": "A cosa serve super(msg) nel costruttore?",
+    "options": [
+     "A creare un nuovo oggetto",
+     "A passare il messaggio alla superclasse",
+     "A lanciare l'eccezione",
+     "A chiudere risorse"
+    ],
+    "answer": 1,
+    "explain": "Imposta il messaggio, poi leggibile con getMessage."
+   },
+   {
+    "q": "Cosa restituisce getCause()?",
+    "options": [
+     "Il messaggio",
+     "Lo stack",
+     "L'eccezione originale concatenata",
+     "Il tipo"
+    ],
+    "answer": 2,
+    "explain": "È l'eccezione che ha provocato quella corrente."
+   }
+  ]
+ },
+ {
+  "id": 74,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "try-with-resources",
+  "lesson": "Le risorse come file, connessioni e stream vanno chiuse dopo l'uso. Farlo a mano in un finally è verboso e soggetto a errori. Il try-with-resources, introdotto in Java 7, le chiude automaticamente: si dichiarano tra parentesi dopo la parola try, e al termine del blocco la JVM chiama close() su ciascuna, anche in caso di eccezione.\n\nUna risorsa deve implementare AutoCloseable (o Closeable, che la estende ed è specifica per l'I/O). Se ne dichiari più di una, separale con il punto e virgola: vengono chiuse in ordine inverso rispetto alla dichiarazione.\n\nSe il corpo lancia un'eccezione e anche close() ne lancia una, l'eccezione principale resta quella del corpo e l'altra viene registrata come suppressed, leggibile con getSuppressed(). In questo modo non si perde l'errore originale, cosa che accadeva con il vecchio finally.\n\nDal Java 9 puoi usare nel try anche una variabile già dichiarata, purché final o effettivamente final: try (reader) { ... }. Il blocco catch è opzionale e viene eseguito dopo la chiusura delle risorse.\n\nPer creare una tua risorsa basta implementare AutoCloseable con il metodo close().",
+  "example": "import java.util.*;\n\npublic class Main {\n    static class Risorsa implements AutoCloseable {\n        public void close() { System.out.println(\"chiusa\"); }\n    }\n\n    public static void main(String[] args) {\n        try (Scanner sc = new Scanner(\"10 20\"); Risorsa r = new Risorsa()) {\n            int a = sc.nextInt();\n            int b = sc.nextInt();\n            System.out.println(a + b);\n        }\n    }\n}",
+  "help": "Dichiara la risorsa tra le parentesi del try: viene chiusa da sola, quindi la chiamata esplicita a close non serve.",
+  "exercise": {
+   "prompt": "Leggi due numeri con uno Scanner chiuso automaticamente.",
+   "lines": [
+    "try (Scanner sc = new Scanner(\"10 20\")) {",
+    "    int a = sc.nextInt();",
+    "    int b = sc.nextInt();",
+    "    System.out.println(a + b);",
+    "}"
+   ],
+   "distractors": [
+    "    sc.close();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale interfaccia deve implementare una risorsa?",
+    "options": [
+     "Runnable",
+     "AutoCloseable",
+     "Comparable",
+     "Serializable"
+    ],
+    "answer": 1,
+    "explain": "Serve il metodo close()."
+   },
+   {
+    "q": "In che ordine vengono chiuse più risorse?",
+    "options": [
+     "Come dichiarate",
+     "Casuale",
+     "Inverso a quello di dichiarazione",
+     "Solo l'ultima"
+    ],
+    "answer": 2,
+    "explain": "Chiusura in ordine inverso."
+   },
+   {
+    "q": "Come si chiamano le eccezioni lanciate da close() quando ce n'è già una?",
+    "options": [
+     "Chained",
+     "Suppressed",
+     "Lost",
+     "Nested"
+    ],
+    "answer": 1,
+    "explain": "Si leggono con getSuppressed()."
+   }
+  ]
+ },
+ {
+  "id": 75,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "File e Path",
+  "lesson": "Per lavorare con il file system Java moderno usa il package java.nio.file. Path rappresenta un percorso, anche inesistente: è solo un oggetto che descrive una posizione, non apre né crea nulla. Si crea con Path.of(\"cartella\", \"file.txt\"), che sostituisce il vecchio Paths.get e gestisce correttamente il separatore del sistema operativo.\n\nI metodi utili di Path sono getFileName() per il nome finale, getParent() per la cartella contenitore, getRoot(), toAbsolutePath() per il percorso assoluto, normalize() per eliminare . e .., resolve(altro) per unire percorsi, relativize() per ottenere un percorso relativo, e startsWith() / endsWith() per i confronti. Path è immutabile: ogni metodo restituisce un nuovo oggetto.\n\nLa classe Files, con metodi statici, interroga il file system: Files.exists(p), isDirectory(p), isRegularFile(p), size(p), createDirectories(p), delete(p), copy() e move().\n\nLa vecchia classe java.io.File è ancora presente, ma Path e Files sono più potenti, gestiscono meglio gli errori con eccezioni chiare e supportano i link simbolici. Si può convertire con file.toPath() e path.toFile(). Molti metodi di Files lanciano IOException, che va gestita.",
+  "example": "import java.io.IOException;\nimport java.nio.file.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        Path p = Path.of(\"dati\", \"nota.txt\");\n        System.out.println(p.getFileName());\n        System.out.println(p.getParent());\n        System.out.println(Files.exists(p));\n        Path altro = p.getParent().resolve(\"extra.txt\");\n        System.out.println(altro);\n    }\n}",
+  "help": "Path.of crea il percorso senza toccare il disco; getFileName, getParent e Files.exists lo interrogano. Path è un'interfaccia, quindi new Path non è valido.",
+  "exercise": {
+   "prompt": "Crea un Path e stampa nome, cartella e se esiste.",
+   "lines": [
+    "Path p = Path.of(\"dati\", \"nota.txt\");",
+    "System.out.println(p.getFileName());",
+    "System.out.println(p.getParent());",
+    "System.out.println(Files.exists(p));"
+   ],
+   "distractors": [
+    "Path q = new Path(\"dati\");"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa Path.of(\"a\", \"b.txt\")?",
+    "options": [
+     "Crea il file sul disco",
+     "Descrive il percorso a/b.txt",
+     "Legge il file",
+     "Cancella il file"
+    ],
+    "answer": 1,
+    "explain": "Path è solo una rappresentazione del percorso."
+   },
+   {
+    "q": "Quale metodo verifica l'esistenza di un file?",
+    "options": [
+     "Path.exists()",
+     "File.has()",
+     "Files.exists()",
+     "Path.isFile()"
+    ],
+    "answer": 2,
+    "explain": "Files.exists(path) controlla il file system."
+   },
+   {
+    "q": "Path è un oggetto...",
+    "options": [
+     "Mutabile",
+     "Immutabile",
+     "Sempre assoluto",
+     "Solo per Windows"
+    ],
+    "answer": 1,
+    "explain": "Ogni operazione restituisce un nuovo Path."
+   }
+  ]
+ }
+]

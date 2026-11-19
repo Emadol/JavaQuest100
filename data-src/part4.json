@@ -1,0 +1,1405 @@
+[
+ {
+  "id": 76,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "Files: leggere e scrivere",
+  "lesson": "La classe java.nio.file.Files offre metodi statici che rendono la lettura e la scrittura dei file molto semplici. Con Files.writeString(path, testo) scrivi una stringa in un file (di default lo crea o lo sovrascrive, usando UTF-8). Con Files.readString(path) leggi l'intero file in una String, mentre Files.readAllLines(path) restituisce una List<String> con una riga per elemento. Per scrivere più righe esiste Files.write(path, righe).\n\nQuesti metodi caricano tutto in memoria: vanno bene per file piccoli. Per file grandi usa Files.lines(path), che restituisce uno Stream<String> letto in modo pigro; poiché mantiene il file aperto, va chiuso con try-with-resources.\n\nPuoi cambiare il comportamento con le StandardOpenOption, per esempio APPEND per aggiungere in coda o CREATE_NEW per fallire se il file esiste già. Altri metodi utili sono Files.exists, Files.delete, Files.copy, Files.move e Files.size. Quasi tutti lanciano IOException, quindi vanno gestiti o dichiarati con throws.",
+  "example": "import java.nio.file.*;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        Path p = Path.of(\"saluti.txt\");\n        Files.writeString(p, \"Ciao\\nJava 25\\n\");\n        List<String> righe = Files.readAllLines(p);\n        System.out.println(righe);\n        try (var s = Files.lines(p)) { System.out.println(s.count()); }\n    }\n}",
+  "help": "Crea il Path, scrivi il testo con Files.writeString, poi rileggi le righe con readAllLines e stampa quante sono. Il metodo di lettura restituisce una List<String>, quindi si usa size().",
+  "exercise": {
+   "prompt": "Scrivi un file e rileggi le righe (nell'ordine logico).",
+   "lines": [
+    "Path p = Path.of(\"note.txt\");",
+    "Files.writeString(p, \"ciao\\nJava\");",
+    "List<String> righe = Files.readAllLines(p);",
+    "System.out.println(righe.size());"
+   ],
+   "distractors": [
+    "String s = Files.read(p);",
+    "Files.writeString(p);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Che tipo restituisce Files.readAllLines?",
+    "options": [
+     "List<String>",
+     "String",
+     "Stream<String>",
+     "String[]"
+    ],
+    "answer": 0,
+    "explain": "Restituisce una List<String>, una riga per elemento."
+   },
+   {
+    "q": "Quale metodo legge un file grande in modo pigro?",
+    "options": [
+     "Files.readString",
+     "Files.readAllBytes",
+     "Files.size",
+     "Files.lines"
+    ],
+    "answer": 3,
+    "explain": "Files.lines restituisce uno Stream<String> da chiudere con try-with-resources."
+   },
+   {
+    "q": "Quale opzione aggiunge testo in coda senza sovrascrivere?",
+    "options": [
+     "StandardOpenOption.DELETE_ON_CLOSE",
+     "StandardOpenOption.SYNC",
+     "StandardOpenOption.APPEND",
+     "StandardOpenOption.READ"
+    ],
+    "answer": 2,
+    "explain": "APPEND scrive alla fine del file esistente."
+   }
+  ]
+ },
+ {
+  "id": 77,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "BufferedReader e BufferedWriter",
+  "lesson": "BufferedReader e BufferedWriter avvolgono uno stream di caratteri aggiungendo un buffer in memoria: riducono gli accessi al disco e offrono comodi metodi riga per riga. BufferedReader.readLine() restituisce la riga successiva senza il terminatore, oppure null quando il file è finito. BufferedWriter ha write(String) e newLine(), che scrive il separatore di riga adatto al sistema operativo.\n\nIl modo moderno di crearli è Files.newBufferedReader(path) e Files.newBufferedWriter(path), che usano UTF-8 di default. Si possono anche costruire con new BufferedReader(new FileReader(...)), ma conviene indicare esplicitamente la codifica.\n\nUsali sempre con try-with-resources: alla chiusura il writer esegue il flush del buffer e rilascia il file. Se dimentichi la chiusura puoi perdere gli ultimi dati scritti. Con BufferedReader puoi anche chiamare lines() per ottenere uno Stream<String>, oppure leggere in ciclo con while ((riga = r.readLine()) != null). Sono la scelta giusta per elaborare file grandi con poca memoria.",
+  "example": "import java.io.*;\nimport java.nio.file.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        Path p = Path.of(\"dati.txt\");\n        try (BufferedWriter w = Files.newBufferedWriter(p)) {\n            w.write(\"riga uno\"); w.newLine();\n            w.write(\"riga due\");\n        }\n        try (BufferedReader r = Files.newBufferedReader(p)) {\n            String riga;\n            while ((riga = r.readLine()) != null) System.out.println(riga);\n        }\n    }\n}",
+  "help": "Apri il writer in un try-with-resources, scrivi la riga e vai a capo; dopo la chiusura del blocco rileggi tutto il file e stampalo.",
+  "exercise": {
+   "prompt": "Scrivi con un BufferedWriter e rileggi il file.",
+   "lines": [
+    "Path p = Path.of(\"dati.txt\");",
+    "try (BufferedWriter w = Files.newBufferedWriter(p)) {",
+    "    w.write(\"riga uno\");",
+    "    w.newLine();",
+    "}",
+    "System.out.println(Files.readString(p));"
+   ],
+   "distractors": [
+    "w.close;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce readLine() a fine file?",
+    "options": [
+     "Stringa vuota",
+     "null",
+     "Eccezione EOFException",
+     "-1"
+    ],
+    "answer": 1,
+    "explain": "readLine restituisce null quando non ci sono più righe."
+   },
+   {
+    "q": "Perché usare try-with-resources con un BufferedWriter?",
+    "options": [
+     "Per velocizzare la scrittura",
+     "Per fare flush e chiudere il file",
+     "Per cifrare i dati",
+     "Per convertire in UTF-16"
+    ],
+    "answer": 1,
+    "explain": "La chiusura svuota il buffer e rilascia la risorsa."
+   },
+   {
+    "q": "Quale metodo scrive il separatore di riga del sistema?",
+    "options": [
+     "newLine()",
+     "flush()",
+     "append()",
+     "println()"
+    ],
+    "answer": 0,
+    "explain": "BufferedWriter.newLine() scrive il separatore adatto alla piattaforma."
+   }
+  ]
+ },
+ {
+  "id": 78,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "Serializzazione e JSON a mano",
+  "lesson": "La serializzazione Java trasforma un oggetto in una sequenza di byte. Una classe diventa serializzabile implementando l'interfaccia marker java.io.Serializable; si scrive con ObjectOutputStream.writeObject e si legge con ObjectInputStream.readObject. I campi marcati transient vengono ignorati, e serialVersionUID identifica la versione della classe. Attenzione: deserializzare dati non fidati è un noto rischio di sicurezza, quindi oggi è preferibile usare formati testuali come JSON.\n\nLa libreria standard non ha un parser JSON, ma per casi semplici puoi costruire il testo a mano con String.format o con formatted(), meglio se combinati con i text block. Ricorda di fare l'escape delle virgolette interne con \\\" e di non inserire testo utente non controllato senza escape.\n\nPer scambiare dati reali si usano librerie come Jackson o Gson. Con i record il codice è molto compatto: un record Utente(String nome, int eta) fornisce già accessor come nome() ed eta() da usare per comporre il JSON.",
+  "example": "import java.io.*;\n\npublic class Main {\n    record Utente(String nome, int eta) implements Serializable {}\n\n    public static void main(String[] args) throws Exception {\n        Utente u = new Utente(\"Ada\", 36);\n        String json = \"{\\\"nome\\\":\\\"%s\\\",\\\"eta\\\":%d}\".formatted(u.nome(), u.eta());\n        System.out.println(json);\n        var out = new ByteArrayOutputStream();\n        try (var oos = new ObjectOutputStream(out)) { oos.writeObject(u); }\n        System.out.println(out.size() + \" byte serializzati\");\n    }\n}",
+  "help": "Dichiara il record locale, crea l'istanza e costruisci la stringa JSON con formatted() usando gli accessor del record.",
+  "exercise": {
+   "prompt": "Definisci il record, crea l'oggetto e comporre il JSON con formatted.",
+   "lines": [
+    "record Utente(String nome, int eta) {}",
+    "var u = new Utente(\"Ada\", 36);",
+    "String j = \"{\\\"n\\\":\\\"%s\\\",\\\"e\\\":%d}\".formatted(u.nome(), u.eta());",
+    "System.out.println(j);"
+   ],
+   "distractors": [
+    "u.toJson();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale interfaccia rende serializzabile una classe?",
+    "options": [
+     "Cloneable",
+     "Comparable",
+     "AutoCloseable",
+     "Serializable"
+    ],
+    "answer": 3,
+    "explain": "Serializable è un'interfaccia marker senza metodi."
+   },
+   {
+    "q": "Cosa fa la parola chiave transient su un campo?",
+    "options": [
+     "Lo rende costante",
+     "Lo rende thread-safe",
+     "Lo esclude dalla serializzazione",
+     "Lo cifra"
+    ],
+    "answer": 2,
+    "explain": "I campi transient non vengono scritti nello stream."
+   },
+   {
+    "q": "Come si inserisce una virgoletta dentro una stringa Java?",
+    "options": [
+     "''",
+     "<q>",
+     "\\\"",
+     "%q"
+    ],
+    "answer": 2,
+    "explain": "Si usa l'escape \\\" dentro una stringa normale."
+   }
+  ]
+ },
+ {
+  "id": 79,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "HttpClient",
+  "lesson": "Dal Java 11 il modulo java.net.http offre HttpClient, un client HTTP moderno che supporta HTTP/1.1, HTTP/2 e WebSocket. Si crea con HttpClient.newHttpClient() (o con newBuilder() per configurare timeout, redirect e versione) ed è immutabile e riutilizzabile: conviene crearne uno solo.\n\nUna richiesta si costruisce con HttpRequest.newBuilder(URI.create(url)), a cui puoi aggiungere header, timeout e il metodo (GET è il predefinito; per POST si usa .POST(BodyPublishers.ofString(testo))). Poi si chiama client.send(richiesta, BodyHandlers.ofString()), che blocca finché la risposta è arrivata e restituisce un HttpResponse<String> con statusCode(), headers() e body().\n\nPer non bloccare il thread esiste sendAsync, che restituisce un CompletableFuture<HttpResponse<T>>. Con i virtual thread anche la versione bloccante è molto efficiente. send può lanciare IOException e InterruptedException, da gestire o dichiarare. Controlla sempre il codice di stato prima di usare il corpo della risposta.",
+  "example": "import java.net.URI;\nimport java.net.http.*;\nimport java.net.http.HttpResponse.BodyHandlers;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        HttpClient client = HttpClient.newHttpClient();\n        HttpRequest req = HttpRequest.newBuilder(URI.create(\"https://example.com\")).build();\n        HttpResponse<String> res = client.send(req, BodyHandlers.ofString());\n        System.out.println(res.statusCode());\n        System.out.println(res.body().length() + \" caratteri\");\n    }\n}",
+  "help": "Crea prima il client, poi la richiesta, invia la richiesta con un handler di tipo String e stampa il codice di stato.",
+  "exercise": {
+   "prompt": "Client, richiesta, send con BodyHandlers.ofString, poi statusCode().",
+   "lines": [
+    "var client = HttpClient.newHttpClient();",
+    "var req = HttpRequest.newBuilder(URI.create(\"https://a.it\")).build();",
+    "var res = client.send(req, BodyHandlers.ofString());",
+    "System.out.println(res.statusCode());"
+   ],
+   "distractors": [
+    "var res = client.get(req);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce sendAsync?",
+    "options": [
+     "HttpResponse<T>",
+     "CompletableFuture<HttpResponse<T>>",
+     "void",
+     "Future<String>"
+    ],
+    "answer": 1,
+    "explain": "sendAsync non blocca e restituisce un CompletableFuture."
+   },
+   {
+    "q": "Quale handler converte il corpo in String?",
+    "options": [
+     "BodyHandlers.ofString()",
+     "BodyHandlers.toText()",
+     "BodyPublishers.ofString()",
+     "BodyHandlers.string"
+    ],
+    "answer": 0,
+    "explain": "BodyHandlers.ofString() legge il corpo come String."
+   },
+   {
+    "q": "In quale modulo si trova HttpClient?",
+    "options": [
+     "java.base",
+     "java.desktop",
+     "java.sql",
+     "java.net.http"
+    ],
+    "answer": 3,
+    "explain": "HttpClient fa parte del modulo java.net.http."
+   }
+  ]
+ },
+ {
+  "id": 80,
+  "category": "Eccezioni, I/O, NIO",
+  "title": "Logging con System.Logger",
+  "lesson": "Da Java 9 la piattaforma include System.Logger, un'API minimale di logging inclusa nel JDK, senza dipendenze esterne. Si ottiene un logger con System.getLogger(\"nome\") e si scrive con log(livello, messaggio). I livelli, dal più dettagliato al più grave, sono ALL, TRACE, DEBUG, INFO, WARNING, ERROR e OFF (System.Logger.Level).\n\nIl messaggio può contenere segnaposto in stile MessageFormat, come {0} e {1}, riempiti dai parametri successivi: log(Level.WARNING, \"Tentativi: {0}\", n). Esiste anche l'overload con Supplier<String>, che costruisce il messaggio solo se il livello è abilitato, evitando lavoro inutile. Per i log degli errori puoi passare un Throwable.\n\nPer impostazione predefinita il backend è java.util.logging, che stampa su stderr i messaggi da INFO in su. Framework come SLF4J, Log4j o Logback possono sostituirsi collegandosi a System.Logger. Non usare System.out.println per i log applicativi: i logger permettono di filtrare per livello e di indirizzare l'output.",
+  "example": "public class Main {\n    private static final System.Logger LOG = System.getLogger(\"miaApp\");\n\n    public static void main(String[] args) {\n        int tentativi = 3;\n        LOG.log(System.Logger.Level.INFO, \"Avvio applicazione\");\n        LOG.log(System.Logger.Level.WARNING, \"Tentativi: {0}\", tentativi);\n        if (LOG.isLoggable(System.Logger.Level.DEBUG)) {\n            LOG.log(System.Logger.Level.DEBUG, \"Dettaglio\");\n        }\n        LOG.log(System.Logger.Level.ERROR, \"Errore\", new RuntimeException(\"prova\"));\n    }\n}",
+  "help": "Ottieni il logger, definisci il contatore e scrivi un messaggio INFO e uno WARNING con il segnaposto {0} (prima il logger e il contatore).",
+  "exercise": {
+   "prompt": "Usa System.getLogger e log(Level, messaggio, parametri) con {0}.",
+   "lines": [
+    "System.Logger log = System.getLogger(\"miaApp\");",
+    "int n = 3;",
+    "log.log(System.Logger.Level.INFO, \"Avvio\");",
+    "log.log(System.Logger.Level.WARNING, \"Tentativi: {0}\", n);"
+   ],
+   "distractors": [
+    "log.info(\"Avvio\");"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Come si ottiene un System.Logger?",
+    "options": [
+     "new System.Logger()",
+     "Logger.create()",
+     "System.logger()",
+     "System.getLogger(\"nome\")"
+    ],
+    "answer": 3,
+    "explain": "Si usa il metodo statico System.getLogger."
+   },
+   {
+    "q": "Qual è il livello più grave tra questi?",
+    "options": [
+     "INFO",
+     "WARNING",
+     "ERROR",
+     "DEBUG"
+    ],
+    "answer": 2,
+    "explain": "ERROR è più grave di WARNING, INFO e DEBUG."
+   },
+   {
+    "q": "A cosa serve l'overload con Supplier<String>?",
+    "options": [
+     "A cifrare il messaggio",
+     "A costruire il messaggio solo se il livello è attivo",
+     "A scrivere su file",
+     "A cambiare il livello"
+    ],
+    "answer": 1,
+    "explain": "Il Supplier viene valutato solo se il livello è abilitato."
+   }
+  ]
+ },
+ {
+  "id": 81,
+  "category": "Concorrenza",
+  "title": "Thread e Runnable",
+  "lesson": "Un thread è un flusso di esecuzione indipendente all'interno di un programma. Il modo più semplice per crearne uno è passare un Runnable al costruttore di Thread: Runnable è un'interfaccia funzionale con il solo metodo run(), quindi si scrive con una lambda. Il thread parte solo quando chiami start(); chiamare run() direttamente esegue il codice nel thread corrente, senza concorrenza, ed è un errore tipico.\n\nIl metodo join() fa attendere il thread chiamante finché quello indicato non termina, e può lanciare InterruptedException. Thread.sleep(ms) mette in pausa il thread corrente. Un thread può essere avviato una sola volta: un secondo start() lancia IllegalThreadStateException.\n\nDal Java 21 esistono anche i builder Thread.ofPlatform() e Thread.ofVirtual(). Il thread main è quello che esegue il metodo main. I thread condividono la memoria dell'heap, e questo è la fonte dei problemi di concorrenza trattati nelle prossime fasi. Dai sempre un nome ai thread: aiuta moltissimo nel debug.",
+  "example": "public class Main {\n    public static void main(String[] args) throws InterruptedException {\n        Runnable task = () -> {\n            String nome = Thread.currentThread().getName();\n            System.out.println(\"Ciao dal thread \" + nome);\n        };\n        Thread t = new Thread(task, \"lavoratore\");\n        t.start();\n        t.join();\n        System.out.println(\"Fine di main\");\n    }\n}",
+  "help": "Definisci il Runnable con una lambda, crea il Thread, avvialo con start, attendi con join e stampa il messaggio finale.",
+  "exercise": {
+   "prompt": "Runnable come lambda, new Thread(task), start(), join().",
+   "lines": [
+    "Runnable task = () -> System.out.println(\"dal thread\");",
+    "Thread t = new Thread(task);",
+    "t.start();",
+    "t.join();",
+    "System.out.println(\"fine\");"
+   ],
+   "distractors": [
+    "t.run();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale metodo avvia davvero un nuovo thread?",
+    "options": [
+     "start()",
+     "run()",
+     "execute()",
+     "begin()"
+    ],
+    "answer": 0,
+    "explain": "start() crea il thread; run() eseguirebbe nel thread corrente."
+   },
+   {
+    "q": "Cosa fa join()?",
+    "options": [
+     "Attende la terminazione del thread",
+     "Unisce due thread",
+     "Interrompe il thread",
+     "Cambia la priorità"
+    ],
+    "answer": 0,
+    "explain": "join blocca il chiamante finché il thread finisce."
+   },
+   {
+    "q": "Cosa succede chiamando start() due volte?",
+    "options": [
+     "Parte un secondo thread",
+     "Niente",
+     "Il thread si riavvia",
+     "IllegalThreadStateException"
+    ],
+    "answer": 3,
+    "explain": "Un thread può essere avviato una sola volta."
+   }
+  ]
+ },
+ {
+  "id": 82,
+  "category": "Concorrenza",
+  "title": "synchronized e volatile",
+  "lesson": "Quando più thread modificano lo stesso dato, si verifica una race condition: operazioni come count++ non sono atomiche (leggi, somma, scrivi) e gli aggiornamenti si possono perdere. La parola chiave synchronized risolve il problema garantendo la mutua esclusione: solo un thread alla volta può eseguire un metodo synchronized sullo stesso oggetto, oppure un blocco synchronized (oggetto) { ... } che usa quell'oggetto come monitor. Garantisce anche la visibilità delle modifiche tra thread.\n\nvolatile, applicato a un campo, garantisce solo la visibilità: ogni lettura vede l'ultima scrittura. Non rende atomiche le operazioni composte, quindi volatile int n; n++ resta insicuro. È adatto a flag come volatile boolean running, scritti da un thread e letti da altri.\n\nTieni le sezioni synchronized brevi, per ridurre la contesa, e usa sempre lo stesso lock per proteggere lo stesso dato. Attenzione ai deadlock: due thread che acquisiscono due lock in ordine opposto restano bloccati per sempre.",
+  "example": "public class Main {\n    private int count = 0;\n\n    synchronized void inc() { count++; }\n\n    public static void main(String[] args) throws Exception {\n        Main m = new Main();\n        Runnable r = () -> { for (int i = 0; i < 1000; i++) m.inc(); };\n        Thread a = new Thread(r), b = new Thread(r);\n        a.start(); b.start();\n        a.join(); b.join();\n        System.out.println(m.count);\n    }\n}",
+  "help": "Crea l'oggetto lock e il contatore, incrementa dentro un blocco synchronized sul lock e poi stampa il valore.",
+  "exercise": {
+   "prompt": "Dichiara lock e array contatore, poi usa synchronized (lock) { ... }.",
+   "lines": [
+    "Object lock = new Object();",
+    "int[] c = {0};",
+    "synchronized (lock) { c[0]++; }",
+    "System.out.println(c[0]);"
+   ],
+   "distractors": [
+    "synchronized c[0]++;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa garantisce volatile?",
+    "options": [
+     "Atomicità di count++",
+     "Mutua esclusione",
+     "Visibilità delle scritture",
+     "Assenza di deadlock"
+    ],
+    "answer": 2,
+    "explain": "volatile garantisce visibilità, non atomicità."
+   },
+   {
+    "q": "Perché count++ non è thread-safe?",
+    "options": [
+     "È lento",
+     "Non è atomico: leggi, somma, scrivi",
+     "Usa troppa memoria",
+     "Richiede un long"
+    ],
+    "answer": 1,
+    "explain": "Tre passi separati possono intrecciarsi tra thread."
+   },
+   {
+    "q": "Cosa fa un metodo synchronized?",
+    "options": [
+     "Esegue in un nuovo thread",
+     "Impedisce l'accesso concorrente sullo stesso oggetto",
+     "Rende il metodo statico",
+     "Disabilita il garbage collector"
+    ],
+    "answer": 1,
+    "explain": "Acquisisce il monitor dell'oggetto (this)."
+   }
+  ]
+ },
+ {
+  "id": 83,
+  "category": "Concorrenza",
+  "title": "ExecutorService",
+  "lesson": "Creare thread a mano è scomodo e costoso. ExecutorService separa la sottomissione dei compiti dalla loro esecuzione: si crea con i metodi della classe Executors, per esempio newFixedThreadPool(n) (n thread riutilizzati), newSingleThreadExecutor() o newVirtualThreadPerTaskExecutor() (un virtual thread per compito). I compiti si inviano con submit(Runnable) o submit(Callable).\n\nAl termine bisogna fermare il servizio: shutdown() smette di accettare nuovi compiti ma completa quelli in coda, shutdownNow() tenta di interromperli, awaitTermination(tempo, unità) attende la fine. Dal Java 19 ExecutorService è AutoCloseable: puoi usare try-with-resources e close() fa shutdown e attende il completamento.\n\nSe dimentichi di fermare un pool a thread di piattaforma, la JVM potrebbe non terminare mai. Scegli la dimensione del pool in base al tipo di lavoro: circa il numero di CPU per calcoli intensivi, di più per compiti che attendono I/O. Gli executor mettono in coda i compiti in eccesso.",
+  "example": "import java.util.concurrent.*;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        try (ExecutorService ex = Executors.newFixedThreadPool(2)) {\n            for (int i = 1; i <= 3; i++) {\n                int n = i;\n                ex.submit(() -> System.out.println(\"Compito \" + n));\n            }\n        }\n        System.out.println(\"Tutti terminati\");\n    }\n}",
+  "help": "Crea il pool con due thread, sottometti un compito, chiama shutdown, attendi la terminazione e stampa l'esito.",
+  "exercise": {
+   "prompt": "newFixedThreadPool, submit, shutdown e poi awaitTermination (che restituisce boolean).",
+   "lines": [
+    "ExecutorService ex = Executors.newFixedThreadPool(2);",
+    "ex.submit(() -> System.out.println(\"job\"));",
+    "ex.shutdown();",
+    "boolean ok = ex.awaitTermination(1, TimeUnit.SECONDS);",
+    "System.out.println(ok);"
+   ],
+   "distractors": [
+    "ex.stop();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa shutdown()?",
+    "options": [
+     "Non accetta nuovi compiti e completa quelli in coda",
+     "Interrompe subito tutto",
+     "Riavvia il pool",
+     "Elimina la coda"
+    ],
+    "answer": 0,
+    "explain": "shutdown è un arresto ordinato."
+   },
+   {
+    "q": "Quale factory crea un pool di dimensione fissa?",
+    "options": [
+     "newCachedThreadPool",
+     "newScheduledThreadPool",
+     "newWorkStealingPool",
+     "newFixedThreadPool"
+    ],
+    "answer": 3,
+    "explain": "newFixedThreadPool(n) usa n thread."
+   },
+   {
+    "q": "Da Java 19 ExecutorService è...",
+    "options": [
+     "Serializable",
+     "Cloneable",
+     "AutoCloseable",
+     "Iterable"
+    ],
+    "answer": 2,
+    "explain": "Si può usare con try-with-resources."
+   }
+  ]
+ },
+ {
+  "id": 84,
+  "category": "Concorrenza",
+  "title": "Callable e Future",
+  "lesson": "Runnable non restituisce nulla e non può lanciare eccezioni checked. Callable<V> invece ha il metodo V call() throws Exception: restituisce un risultato e può fallire. Quando lo passi a submit(), l'ExecutorService ti restituisce subito un Future<V>, che rappresenta un risultato disponibile in futuro.\n\nCon future.get() ottieni il valore, bloccando il thread finché il calcolo non finisce; esiste anche get(tempo, unità) che lancia TimeoutException allo scadere. Se il compito ha lanciato un'eccezione, get() la restituisce incapsulata in ExecutionException (la causa reale è in getCause()). Altri metodi sono isDone(), cancel(true) e isCancelled().\n\nPer molti compiti insieme, invokeAll(lista) attende tutti e restituisce una lista di Future, mentre invokeAny restituisce il risultato del primo che termina con successo. Ricorda che get() è bloccante: se vuoi comporre i risultati senza attese, passa a CompletableFuture, tema della prossima fase.",
+  "example": "import java.util.concurrent.*;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        ExecutorService ex = Executors.newSingleThreadExecutor();\n        Callable<Integer> calcolo = () -> {\n            Thread.sleep(100);\n            return 6 * 7;\n        };\n        Future<Integer> f = ex.submit(calcolo);\n        System.out.println(\"Risultato: \" + f.get());\n        ex.shutdown();\n    }\n}",
+  "help": "Crea l'executor, definisci il Callable, sottomettilo ottenendo un Future, stampa il risultato con get e chiudi l'executor per ultimo.",
+  "exercise": {
+   "prompt": "submit(callable) restituisce un Future<Integer>; get() ne ottiene il valore.",
+   "lines": [
+    "ExecutorService ex = Executors.newSingleThreadExecutor();",
+    "Callable<Integer> c = () -> 6 * 7;",
+    "Future<Integer> f = ex.submit(c);",
+    "System.out.println(f.get());",
+    "ex.shutdown();"
+   ],
+   "distractors": [
+    "int r = ex.submit(c);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale differenza ha Callable rispetto a Runnable?",
+    "options": [
+     "È più lento",
+     "Non usa thread",
+     "Restituisce un valore e può lanciare eccezioni checked",
+     "È deprecato"
+    ],
+    "answer": 2,
+    "explain": "call() restituisce V e dichiara throws Exception."
+   },
+   {
+    "q": "Come arriva un'eccezione del compito tramite get()?",
+    "options": [
+     "Come RuntimeException generica",
+     "Come ExecutionException",
+     "Non arriva",
+     "Come Error"
+    ],
+    "answer": 1,
+    "explain": "get() la incapsula in ExecutionException."
+   },
+   {
+    "q": "Cosa fa future.get()?",
+    "options": [
+     "Attende il risultato",
+     "Restituisce subito null",
+     "Annulla il compito",
+     "Crea un thread"
+    ],
+    "answer": 0,
+    "explain": "get() è bloccante finché il risultato è pronto."
+   }
+  ]
+ },
+ {
+  "id": 85,
+  "category": "Concorrenza",
+  "title": "CompletableFuture",
+  "lesson": "CompletableFuture<T> è un Future componibile: permette di descrivere una catena di passi asincroni senza bloccare. Si avvia con supplyAsync(() -> valore) (restituisce un risultato) o runAsync(() -> ...) (nessun risultato); per impostazione predefinita usa il ForkJoinPool comune, ma puoi passare un tuo Executor.\n\nSi trasforma il risultato con thenApply(f), lo si consuma con thenAccept(c) e si concatena un altro calcolo asincrono con thenCompose(f), che evita i CompletableFuture annidati. Per unire due risultati indipendenti c'è thenCombine(altro, funzione), mentre allOf e anyOf attendono più futuri.\n\nGli errori si gestiscono con exceptionally(f) o handle((valore, errore) -> ...). Per ottenere il valore finale si usa join(), che lancia l'eccezione unchecked CompletionException, oppure get(), che dichiara le eccezioni checked. Le versioni con suffisso Async eseguono il passo in un altro thread. È il mattone di base per pipeline asincrone leggibili.",
+  "example": "import java.util.concurrent.CompletableFuture;\n\npublic class Main {\n    public static void main(String[] args) {\n        CompletableFuture<String> nome = CompletableFuture.supplyAsync(() -> \"java\");\n        CompletableFuture<Integer> lung = nome.thenApply(String::length);\n        CompletableFuture<Integer> due = CompletableFuture.supplyAsync(() -> 2);\n        CompletableFuture<Integer> tot = lung.thenCombine(due, Integer::sum);\n        System.out.println(tot.join());\n    }\n}",
+  "help": "Crea i due futuri asincroni, trasforma il primo con thenApply, combina i risultati con thenCombine e stampa il valore con join.",
+  "exercise": {
+   "prompt": "supplyAsync, thenApply, thenCombine(altro, Integer::sum) e infine join().",
+   "lines": [
+    "var cf = CompletableFuture.supplyAsync(() -> \"java\");",
+    "var len = cf.thenApply(String::length);",
+    "var due = CompletableFuture.supplyAsync(() -> 2);",
+    "var somma = len.thenCombine(due, Integer::sum);",
+    "System.out.println(somma.join());"
+   ],
+   "distractors": [
+    "somma.join().start();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale metodo concatena un altro passo asincrono evitando l'annidamento?",
+    "options": [
+     "thenApply",
+     "thenAccept",
+     "thenRun",
+     "thenCompose"
+    ],
+    "answer": 3,
+    "explain": "thenCompose appiattisce un CompletableFuture di CompletableFuture."
+   },
+   {
+    "q": "Quale metodo gestisce un errore fornendo un valore alternativo?",
+    "options": [
+     "finally",
+     "onError",
+     "catchAll",
+     "exceptionally"
+    ],
+    "answer": 3,
+    "explain": "exceptionally(f) trasforma l'eccezione in un valore."
+   },
+   {
+    "q": "In cosa differisce join() da get()?",
+    "options": [
+     "join è più lento",
+     "get non attende",
+     "join lancia eccezioni unchecked",
+     "Sono identici"
+    ],
+    "answer": 2,
+    "explain": "join lancia CompletionException (unchecked), get le eccezioni checked."
+   }
+  ]
+ },
+ {
+  "id": 86,
+  "category": "Concorrenza",
+  "title": "Lock, Atomic e ConcurrentHashMap",
+  "lesson": "Il pacchetto java.util.concurrent offre strumenti più flessibili di synchronized. ReentrantLock permette lock() e unlock() espliciti, tryLock() con timeout e lock equi; si deve sempre chiamare unlock() in un blocco finally. ReadWriteLock consente molti lettori o un solo scrittore.\n\nLe classi java.util.concurrent.atomic, come AtomicInteger, AtomicLong e AtomicReference, eseguono operazioni atomiche senza lock grazie all'istruzione hardware compare-and-set: incrementAndGet(), addAndGet(), compareAndSet(attesa, nuovo). Sono veloci e perfette per contatori. LongAdder è ancora migliore con alta contesa.\n\nConcurrentHashMap è una mappa thread-safe ad alte prestazioni: non ammette chiavi né valori null e offre operazioni atomiche come putIfAbsent, compute e merge(chiave, valore, funzione). Per esempio map.merge(parola, 1, Integer::sum) conta le occorrenze in modo sicuro. Le sue operazioni singole sono atomiche, ma le sequenze di più operazioni no: per quelle usa i metodi composti.",
+  "example": "import java.util.concurrent.ConcurrentHashMap;\nimport java.util.concurrent.atomic.AtomicInteger;\nimport java.util.concurrent.locks.ReentrantLock;\n\npublic class Main {\n    public static void main(String[] args) {\n        AtomicInteger c = new AtomicInteger();\n        ConcurrentHashMap<String, Integer> m = new ConcurrentHashMap<>();\n        m.merge(\"a\", 1, Integer::sum);\n        m.merge(\"a\", 1, Integer::sum);\n        ReentrantLock lock = new ReentrantLock();\n        lock.lock();\n        try { c.incrementAndGet(); } finally { lock.unlock(); }\n        System.out.println(c.get() + \" \" + m);\n    }\n}",
+  "help": "Crea il contatore atomico, ricava il valore incrementato, usalo per creare la mappa concorrente, fai un merge e stampa.",
+  "exercise": {
+   "prompt": "Catena: AtomicInteger, incrementAndGet, ConcurrentHashMap(Map.of(...)), merge, println.",
+   "lines": [
+    "var c = new AtomicInteger(5);",
+    "int v = c.incrementAndGet();",
+    "var m = new ConcurrentHashMap<String, Integer>(Map.of(\"n\", v));",
+    "m.merge(\"n\", 10, Integer::sum);",
+    "System.out.println(m);"
+   ],
+   "distractors": [
+    "c++;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Dove va chiamato unlock() di un ReentrantLock?",
+    "options": [
+     "Nel costruttore",
+     "In un blocco finally",
+     "Prima di lock()",
+     "Mai"
+    ],
+    "answer": 1,
+    "explain": "Va in finally per rilasciare il lock anche in caso di eccezione."
+   },
+   {
+    "q": "ConcurrentHashMap ammette valori null?",
+    "options": [
+     "No",
+     "Sì",
+     "Solo le chiavi",
+     "Solo con merge"
+    ],
+    "answer": 0,
+    "explain": "Né chiavi né valori null."
+   },
+   {
+    "q": "Quale metodo di AtomicInteger incrementa atomicamente?",
+    "options": [
+     "incrementAndGet()",
+     "plus()",
+     "add()",
+     "next()"
+    ],
+    "answer": 0,
+    "explain": "incrementAndGet è atomico e restituisce il nuovo valore."
+   }
+  ]
+ },
+ {
+  "id": 87,
+  "category": "Concorrenza",
+  "title": "Virtual Threads",
+  "lesson": "I virtual thread, definitivi da Java 21, sono thread leggeri gestiti dalla JVM e non dal sistema operativo. Se ne possono creare milioni: ogni virtual thread viene montato su un piccolo numero di thread di piattaforma (carrier) e, quando si blocca in attesa di I/O, viene smontato liberando il carrier. Il codice resta semplice e sincrono, senza callback.\n\nSi creano con Thread.ofVirtual().start(runnable), con Thread.startVirtualThread(r) oppure con Executors.newVirtualThreadPerTaskExecutor(), che avvia un nuovo virtual thread per ogni compito. Non vanno mai messi in un pool: sono economici, si crea un thread per compito.\n\nSono ideali per carichi con molta attesa I/O (richieste HTTP, database), non per calcoli intensivi sulla CPU. Con Java 24 (JEP 491) synchronized non fissa più il carrier, riducendo il problema del pinning. Evita di usare ThreadLocal pesanti e ricorda che isVirtual() indica il tipo di thread. Usano meno memoria dei thread classici.",
+  "example": "import java.util.concurrent.*;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        Thread vt = Thread.ofVirtual().name(\"v1\").start(\n            () -> System.out.println(\"Sono virtuale? \" + Thread.currentThread().isVirtual()));\n        vt.join();\n        try (ExecutorService ex = Executors.newVirtualThreadPerTaskExecutor()) {\n            for (int i = 0; i < 3; i++) {\n                int n = i;\n                ex.submit(() -> System.out.println(\"Task \" + n));\n            }\n        }\n    }\n}",
+  "help": "Crea il Runnable, avvia un virtual thread con Thread.ofVirtual().start, attendi con join e stampa se il thread è virtuale.",
+  "exercise": {
+   "prompt": "Thread.ofVirtual().start(r), poi join() e vt.isVirtual().",
+   "lines": [
+    "Runnable r = () -> System.out.println(\"ciao\");",
+    "Thread vt = Thread.ofVirtual().start(r);",
+    "vt.join();",
+    "System.out.println(vt.isVirtual());"
+   ],
+   "distractors": [
+    "Thread vt = new VirtualThread(r);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quando sono più utili i virtual thread?",
+    "options": [
+     "Calcoli intensivi sulla CPU",
+     "Programmi a un solo thread",
+     "Solo su Windows",
+     "Compiti con molta attesa di I/O"
+    ],
+    "answer": 3,
+    "explain": "Si liberano durante le attese di I/O."
+   },
+   {
+    "q": "I virtual thread vanno messi in un pool?",
+    "options": [
+     "Sì, sempre",
+     "Solo da 100",
+     "No, se ne crea uno per compito",
+     "Solo con ForkJoinPool"
+    ],
+    "answer": 2,
+    "explain": "Sono economici: un thread per compito."
+   },
+   {
+    "q": "Quale executor usa un virtual thread per ogni compito?",
+    "options": [
+     "newFixedThreadPool",
+     "newVirtualThreadPerTaskExecutor",
+     "newCachedThreadPool",
+     "newSingleThreadExecutor"
+    ],
+    "answer": 1,
+    "explain": "Executors.newVirtualThreadPerTaskExecutor()."
+   }
+  ]
+ },
+ {
+  "id": 88,
+  "category": "Concorrenza",
+  "title": "Structured Concurrency",
+  "lesson": "La Structured Concurrency tratta più compiti concorrenti come un'unica unità di lavoro: se un compito fallisce, gli altri vengono annullati e nessun thread sfugge al blocco che lo ha creato. In Java 25 StructuredTaskScope è ancora una funzionalità in anteprima (JEP 505), quindi richiede --enable-preview in compilazione ed esecuzione, e l'API può ancora cambiare.\n\nSi apre uno scope in un try-with-resources con StructuredTaskScope.open(); con scope.fork(callable) si avviano sottocompiti (ciascuno su un virtual thread) che restituiscono un Subtask. Poi scope.join() attende il completamento, e solo dopo si legge il risultato con subtask.get(). Con open() senza argomenti, se un sottocompito fallisce, join() lancia un'eccezione e gli altri sono cancellati; si possono scegliere altre politiche con i Joiner (per esempio anySuccessfulResultOrThrow).\n\nIl vantaggio è un codice che somiglia a quello sequenziale, con gestione degli errori, cancellazione e osservabilità molto più semplici rispetto a Future e executor manuali.",
+  "example": "import java.util.concurrent.StructuredTaskScope;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        try (var scope = StructuredTaskScope.open()) {\n            var utente = scope.fork(() -> \"Ada\");\n            var ordini = scope.fork(() -> 3);\n            scope.join();\n            System.out.println(utente.get() + \" ha \" + ordini.get() + \" ordini\");\n        }\n    }\n}\n// java --enable-preview --source 25 Main.java",
+  "help": "Apri lo scope nel try-with-resources, avvia due sottocompiti con fork, attendi con join e solo dopo leggi i risultati con get.",
+  "exercise": {
+   "prompt": "open(), fork() per ogni compito, join() e poi get() dei sottocompiti, dentro il try.",
+   "lines": [
+    "try (var scope = StructuredTaskScope.open()) {",
+    "    var a = scope.fork(() -> \"A\");",
+    "    var b = scope.fork(() -> 42);",
+    "    scope.join();",
+    "    System.out.println(a.get() + b.get());",
+    "}"
+   ],
+   "distractors": [
+    "    scope.shutdown();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa serve in Java 25 per usare StructuredTaskScope?",
+    "options": [
+     "Nulla",
+     "--enable-preview",
+     "Un modulo esterno",
+     "Java 17"
+    ],
+    "answer": 1,
+    "explain": "È ancora una preview API."
+   },
+   {
+    "q": "Quando si può chiamare get() su un Subtask?",
+    "options": [
+     "Dopo join()",
+     "Subito dopo fork",
+     "Mai",
+     "Prima di open()"
+    ],
+    "answer": 0,
+    "explain": "Solo dopo che join() ha atteso i sottocompiti."
+   },
+   {
+    "q": "Cosa accade se un sottocompito fallisce (politica predefinita)?",
+    "options": [
+     "Il programma si ferma",
+     "Viene ignorato",
+     "Si riavvia",
+     "Gli altri vengono cancellati e join lancia eccezione"
+    ],
+    "answer": 3,
+    "explain": "Con la politica predefinita gli altri vengono annullati."
+   }
+  ]
+ },
+ {
+  "id": 89,
+  "category": "Concorrenza",
+  "title": "Scoped Values",
+  "lesson": "Gli Scoped Values, definitivi in Java 25 (JEP 506), permettono di condividere dati immutabili tra metodi e thread figli senza passarli come parametri. Sono pensati come alternativa moderna a ThreadLocal, più sicura ed efficiente, soprattutto con i virtual thread.\n\nSi dichiara un ScopedValue<T> con ScopedValue.newInstance(), di solito in un campo static final. Il valore viene legato solo per la durata di un'esecuzione: ScopedValue.where(UTENTE, \"Ada\").run(() -> ...) (oppure .call(...) se serve un risultato). Dentro quel blocco, e in tutti i metodi chiamati da esso, UTENTE.get() restituisce \"Ada\". Fuori dal blocco il valore non è legato: get() lancia NoSuchElementException, mentre isBound() restituisce false e orElse(x) dà un valore di riserva.\n\nSono immutabili: non esiste set(). Per cambiare valore si annida un nuovo where. Con la Structured Concurrency i valori vengono ereditati automaticamente dai sottocompiti creati con fork, evitando i problemi di perdita di contesto tipici di ThreadLocal.",
+  "example": "public class Main {\n    static final ScopedValue<String> UTENTE = ScopedValue.newInstance();\n\n    static void saluta() {\n        System.out.println(\"Ciao \" + UTENTE.get());\n    }\n\n    public static void main(String[] args) {\n        ScopedValue.where(UTENTE, \"Ada\").run(Main::saluta);\n        System.out.println(\"Legato fuori? \" + UTENTE.isBound());\n    }\n}",
+  "help": "Crea lo ScopedValue, definisci un Runnable che lo legge, eseguilo con where(...).run(...) e poi stampa isBound.",
+  "exercise": {
+   "prompt": "newInstance(), poi ScopedValue.where(valore, \"ada\").run(r); fuori dal blocco isBound() è false.",
+   "lines": [
+    "ScopedValue<String> utente = ScopedValue.newInstance();",
+    "Runnable r = () -> System.out.println(utente.get());",
+    "ScopedValue.where(utente, \"ada\").run(r);",
+    "System.out.println(utente.isBound());"
+   ],
+   "distractors": [
+    "utente.set(\"ada\");"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Uno ScopedValue è...",
+    "options": [
+     "Modificabile con set",
+     "Sempre globale",
+     "Immutabile",
+     "Solo per String"
+    ],
+    "answer": 2,
+    "explain": "Non esiste set(): si annida un nuovo where."
+   },
+   {
+    "q": "Cosa restituisce isBound() fuori dal blocco where?",
+    "options": [
+     "true",
+     "null",
+     "false",
+     "Eccezione"
+    ],
+    "answer": 2,
+    "explain": "Fuori dal blocco il valore non è legato."
+   },
+   {
+    "q": "A cosa è alternativo ScopedValue?",
+    "options": [
+     "synchronized",
+     "ThreadLocal",
+     "volatile",
+     "Atomic"
+    ],
+    "answer": 1,
+    "explain": "È un'alternativa più sicura a ThreadLocal."
+   }
+  ]
+ },
+ {
+  "id": 90,
+  "category": "Concorrenza",
+  "title": "Fork/Join e parallelismo",
+  "lesson": "Il framework Fork/Join serve a dividere un problema in parti più piccole (fork), risolverle in parallelo e combinare i risultati (join). Il cuore è ForkJoinPool, che usa l'algoritmo di work stealing: i thread inattivi rubano compiti dalle code degli altri, bilanciando il carico.\n\nSi estende RecursiveTask<V> (con risultato) o RecursiveAction (senza) implementando compute(): se il problema è piccolo (sotto una soglia) lo si risolve direttamente, altrimenti lo si divide in due sottocompiti, si chiama fork() su uno, compute() sull'altro e join() per ottenere il risultato. La soglia è cruciale: compiti troppo piccoli costano più della somma che calcolano.\n\nEsiste un pool comune, ForkJoinPool.commonPool(), usato dagli stream paralleli e da CompletableFuture. Si può creare anche un pool dedicato con new ForkJoinPool(n) e inviargli lavoro con invoke o submit. Il parallelismo conviene solo per grandi quantità di dati e calcoli indipendenti, senza stato condiviso modificabile.",
+  "example": "import java.util.concurrent.*;\n\npublic class Main {\n    static class Somma extends RecursiveTask<Long> {\n        final int da, a;\n        Somma(int da, int a) { this.da = da; this.a = a; }\n        protected Long compute() {\n            if (a - da <= 1000) {\n                long s = 0;\n                for (int i = da; i < a; i++) s += i;\n                return s;\n            }\n            int m = (da + a) / 2;\n            Somma sx = new Somma(da, m);\n            sx.fork();\n            return new Somma(m, a).compute() + sx.join();\n        }\n    }\n    public static void main(String[] args) {\n        System.out.println(new ForkJoinPool().invoke(new Somma(0, 100_000)));\n    }\n}",
+  "help": "Crea il pool, sottometti un calcolo parallelo con submit, stampa il risultato con get e chiudi il pool.",
+  "exercise": {
+   "prompt": "ForkJoinPool(4), submit di una lambda con parallel().sum(), get() e shutdown().",
+   "lines": [
+    "ForkJoinPool pool = new ForkJoinPool(4);",
+    "var f = pool.submit(() -> IntStream.range(0, 100).parallel().sum());",
+    "System.out.println(f.get());",
+    "pool.shutdown();"
+   ],
+   "distractors": [
+    "pool.compute(f);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale algoritmo usa ForkJoinPool per bilanciare il carico?",
+    "options": [
+     "Work stealing",
+     "Round robin",
+     "FIFO globale",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "I thread inattivi rubano compiti dagli altri."
+   },
+   {
+    "q": "Quale metodo di RecursiveTask contiene la logica?",
+    "options": [
+     "run()",
+     "call()",
+     "execute()",
+     "compute()"
+    ],
+    "answer": 3,
+    "explain": "Si implementa compute()."
+   },
+   {
+    "q": "Quale pool usano gli stream paralleli?",
+    "options": [
+     "Un pool per stream",
+     "Il pool main",
+     "Nessuno",
+     "Il common pool"
+    ],
+    "answer": 3,
+    "explain": "Usano ForkJoinPool.commonPool()."
+   }
+  ]
+ },
+ {
+  "id": 91,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Moduli JPMS",
+  "lesson": "Il Java Platform Module System (Java 9) permette di raggruppare i pacchetti in moduli con dipendenze e visibilità esplicite. Un modulo è descritto dal file module-info.java nella radice dei sorgenti, con la forma module nome { direttive }.\n\nLe direttive principali: requires altro.modulo dichiara una dipendenza (requires transitive la propaga a chi dipende da te); exports pacchetto rende pubblico un pacchetto agli altri moduli (solo i pacchetti esportati sono accessibili); opens pacchetto consente la riflessione profonda, necessaria a framework come Jackson o Hibernate; uses e provides gestiscono i servizi con ServiceLoader. Il modulo java.base è sempre richiesto implicitamente.\n\nI vantaggi sono un incapsulamento forte (le classi non esportate sono davvero private al modulo), la verifica delle dipendenze all'avvio e runtime più piccoli con jlink. Il JDK stesso è modulare: java.sql, java.net.http, java.logging. Per elencarli si usa java --list-modules. Nei progetti piccoli puoi ignorare i moduli: il codice senza module-info finisce nel modulo senza nome.",
+  "example": "// File: module-info.java\nmodule com.esempio.app {\n    requires java.net.http;\n    requires java.logging;\n    exports com.esempio.api;\n    opens com.esempio.model;\n}\n\n// File: com/esempio/api/Servizio.java\n// package com.esempio.api;\n// public class Servizio { }",
+  "help": "Scrivi un module-info.java: dichiarazione, requires java.sql, exports del pacchetto api, opens del pacchetto model e parentesi finale (in quest'ordine).",
+  "exercise": {
+   "prompt": "Il corpo del modulo contiene direttive terminate da punto e virgola; opens serve alla riflessione.",
+   "lines": [
+    "module com.esempio.app {",
+    "    requires java.sql;",
+    "    exports com.esempio.api;",
+    "    opens com.esempio.model;",
+    "}"
+   ],
+   "distractors": [
+    "    import java.sql;",
+    "    export com.esempio.api;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale file descrive un modulo?",
+    "options": [
+     "module.xml",
+     "pom.xml",
+     "module-info.java",
+     "manifest.mf"
+    ],
+    "answer": 2,
+    "explain": "Il descrittore è module-info.java."
+   },
+   {
+    "q": "A cosa serve opens?",
+    "options": [
+     "A importare classi",
+     "A consentire la riflessione profonda su un pacchetto",
+     "A creare thread",
+     "A esportare librerie native"
+    ],
+    "answer": 1,
+    "explain": "opens permette la riflessione anche sui membri privati."
+   },
+   {
+    "q": "Quale modulo è richiesto implicitamente da ogni modulo?",
+    "options": [
+     "java.base",
+     "java.sql",
+     "java.desktop",
+     "java.logging"
+    ],
+    "answer": 0,
+    "explain": "java.base è sempre implicito."
+   }
+  ]
+ },
+ {
+  "id": 92,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Variabili e pattern senza nome (_)",
+  "lesson": "Dal Java 22 (JEP 456) il carattere underscore _ è una variabile non nominata: serve quando devi dichiarare una variabile ma non ti interessa il suo valore. Rende evidente che il valore non viene usato e riduce gli avvisi dei compilatori e degli strumenti di analisi.\n\nPuoi usarlo in molti punti: nei cicli for-each (for (var _ : lista) conteggio++), nel parametro di un catch (catch (NumberFormatException _)), in una lambda ((_, valore) -> ...), nelle variabili locali e nei try-with-resources. Si possono usare più _ nello stesso scope perché non introducono un nome.\n\nNei pattern, _ ignora un componente: con un record Punto(int x, int y), il pattern Punto(var x, _) estrae solo x; il pattern senza nome può anche sostituire un tipo intero (case Punto(_, _)) e vale per i pattern annidati nei record. Non puoi leggere il valore di _: provare a usarlo in un'espressione è un errore di compilazione. Prima di Java 9 era un identificatore valido, ora non più.",
+  "example": "import java.util.List;\n\npublic class Main {\n    record Punto(int x, int y) {}\n\n    public static void main(String[] args) {\n        int conta = 0;\n        for (var _ : List.of(\"a\", \"b\", \"c\")) conta++;\n        try {\n            Integer.parseInt(\"xyz\");\n        } catch (NumberFormatException _) {\n            conta = -conta;\n        }\n        Object o = new Punto(3, 4);\n        if (o instanceof Punto(var x, _)) System.out.println(\"x = \" + x);\n        System.out.println(conta);\n    }\n}",
+  "help": "Conta gli elementi con un for-each che ignora la variabile, gestisci l'errore con catch senza nome e stampa il contatore.",
+  "exercise": {
+   "prompt": "Usa _ nel for-each (var _) e nel parametro del catch; il resto assegna n = -1.",
+   "lines": [
+    "var voci = List.of(\"a\", \"b\", \"c\");",
+    "int n = 0;",
+    "for (var _ : voci) n++;",
+    "try { Integer.parseInt(\"x\"); } catch (Exception _) { n = -1; }",
+    "System.out.println(n);"
+   ],
+   "distractors": [
+    "for (var : voci) n++;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa rappresenta _ in Java 22+?",
+    "options": [
+     "Una variabile non nominata",
+     "Una costante",
+     "Un operatore",
+     "Un tipo generico"
+    ],
+    "answer": 0,
+    "explain": "È una variabile o pattern non nominato."
+   },
+   {
+    "q": "Si può leggere il valore di _?",
+    "options": [
+     "Sì",
+     "Solo nei cicli",
+     "Solo nei catch",
+     "No"
+    ],
+    "answer": 3,
+    "explain": "Non ha nome, quindi non può essere letto."
+   },
+   {
+    "q": "In quale pattern è valido ignorare un componente?",
+    "options": [
+     "Punto(x; y)",
+     "Punto(void, y)",
+     "Punto(var x, _)",
+     "Punto(*, y)"
+    ],
+    "answer": 2,
+    "explain": "Il pattern Punto(var x, _) ignora y."
+   }
+  ]
+ },
+ {
+  "id": 93,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Flexible constructor bodies (Java 25)",
+  "lesson": "Fino a Java 24 la prima istruzione di un costruttore doveva essere la chiamata a super(...) o this(...): non potevi nemmeno validare un argomento prima. Per aggirare il limite si scrivevano metodi statici di supporto. Con Java 25 (JEP 513, definitivo) il corpo del costruttore si divide in due fasi: un prologo prima della chiamata a super(...) o this(...) e un epilogo dopo.\n\nNel prologo puoi controllare e calcolare gli argomenti, lanciare eccezioni e inizializzare i campi della classe corrente, ma non puoi usare this per leggere campi, chiamare metodi d'istanza o riferirti a campi della superclasse, perché l'oggetto non è ancora completo. Questo evita il classico bug in cui il costruttore della superclasse chiama un metodo sovrascritto che vede campi non ancora inizializzati.\n\nResta la regola: ogni costruttore invoca esattamente un altro costruttore, e se omesso viene inserito super() implicito. Il risultato è codice più chiaro, con la validazione vicina a dove serve e senza helper statici.",
+  "example": "public class Main {\n    static class Base {\n        Base(int v) { System.out.println(\"Base \" + v); }\n    }\n\n    static class Positivo extends Base {\n        Positivo(int v) {\n            if (v <= 0) throw new IllegalArgumentException(\"v > 0\");\n            super(v * 2);\n        }\n    }\n\n    public static void main(String[] args) { new Positivo(4); }\n}",
+  "help": "Definisci la superclasse, poi la sottoclasse con un costruttore che valida l'argomento prima di chiamare super(...).",
+  "exercise": {
+   "prompt": "La validazione (if con throw) sta nel prologo, prima di super(r * 2).",
+   "lines": [
+    "class Forma { Forma(double d) {} }",
+    "class Cerchio extends Forma {",
+    "    Cerchio(double r) {",
+    "        if (r <= 0) throw new IllegalArgumentException(\"r\");",
+    "        super(r * 2);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        System.out.println(this);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Da quale versione è definitivo il prologo prima di super()?",
+    "options": [
+     "Java 17",
+     "Java 25",
+     "Java 21",
+     "Java 8"
+    ],
+    "answer": 1,
+    "explain": "JEP 513 è definitivo in Java 25."
+   },
+   {
+    "q": "Cosa non puoi fare nel prologo?",
+    "options": [
+     "Validare argomenti",
+     "Leggere campi tramite this",
+     "Lanciare eccezioni",
+     "Calcolare valori"
+    ],
+    "answer": 1,
+    "explain": "this non è ancora utilizzabile per leggere campi o metodi."
+   },
+   {
+    "q": "Quante invocazioni di super(...) o this(...) ha un costruttore?",
+    "options": [
+     "Esattamente una",
+     "Zero",
+     "Due",
+     "Quante vuole"
+    ],
+    "answer": 0,
+    "explain": "Un costruttore invoca esattamente un altro costruttore."
+   }
+  ]
+ },
+ {
+  "id": 94,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Compact source files e instance main (Java 25)",
+  "lesson": "Java 25 (JEP 512, definitivo) semplifica i primi passi e gli script: un file sorgente compatto contiene metodi e campi direttamente al livello superiore, senza dichiarare una classe. Il compilatore genera una classe implicita. Il metodo main può essere un metodo d'istanza, non statico, senza parametri: void main() { ... } basta per un programma completo. Per i casi con argomenti resta valido void main(String[] args).\n\nIl lancio avviene con java Ciao.java (modalità sorgente) oppure compilando come al solito. Il launcher sceglie il metodo di avvio con questa priorità: static void main(String[]), static void main(), poi le versioni d'istanza, che richiedono un costruttore non privato senza argomenti.\n\nLa nuova classe java.io.IO offre IO.println, IO.print e IO.readln(prompt) per stampare e leggere da console senza System.out e Scanner; nei file compatti è importata automaticamente. Inoltre tutti i pacchetti esportati dal modulo java.base sono importati implicitamente. Oltre i piccoli programmi conviene usare classi normali.",
+  "example": "// File: Ciao.java  (esegui con: java Ciao.java)\nString saluto = \"Ciao\";\n\nvoid main() {\n    IO.println(saluto + \" mondo\");\n    String nome = IO.readln(\"Come ti chiami? \");\n    IO.println(\"Piacere, \" + nome);\n}",
+  "help": "Scrivi un file compatto: un campo, il metodo main d'istanza e, dentro, tre istruzioni che usano IO.",
+  "exercise": {
+   "prompt": "Niente classe: campo, void main() e tre chiamate a IO.println/IO.readln.",
+   "lines": [
+    "String saluto = \"Ciao\";",
+    "void main() {",
+    "    IO.println(saluto + \" mondo\");",
+    "    String n = IO.readln(\"Nome? \");",
+    "    IO.println(\"Ok \" + n);",
+    "}"
+   ],
+   "distractors": [
+    "class Main {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa permette un compact source file?",
+    "options": [
+     "Niente variabili",
+     "Solo classi final",
+     "Solo record",
+     "Metodi senza classe esplicita"
+    ],
+    "answer": 3,
+    "explain": "Metodi e campi al livello superiore."
+   },
+   {
+    "q": "Quale classe offre IO.readln?",
+    "options": [
+     "java.lang.System",
+     "java.util.Scanner",
+     "java.io.IO",
+     "java.nio.IO"
+    ],
+    "answer": 2,
+    "explain": "java.io.IO fornisce println, print e readln."
+   },
+   {
+    "q": "Come si lancia un file Ciao.java direttamente?",
+    "options": [
+     "javac Ciao.java",
+     "run Ciao",
+     "java Ciao.java",
+     "jar Ciao.java"
+    ],
+    "answer": 2,
+    "explain": "Il launcher compila ed esegue in memoria."
+   }
+  ]
+ },
+ {
+  "id": 95,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Module import declarations (Java 25)",
+  "lesson": "Con le module import declarations (JEP 511, definitive in Java 25) puoi importare in un colpo solo tutti i pacchetti esportati da un modulo: import module java.base; rende disponibili direttamente List, Map, ArrayList, Path, Files, Stream e le altre classi di java.base, senza decine di import singoli. Il modulo può essere anche uno qualunque, per esempio import module java.sql;.\n\nSono comode soprattutto nei file compatti e nei programmi didattici, per esperimenti rapidi. L'import comprende anche i moduli esportati in modo transitivo: java.se, per esempio, importa quasi tutta la piattaforma.\n\nAttenzione alle ambiguità: se due pacchetti importati contengono lo stesso nome di classe (come List in java.util e in java.awt) il compilatore segnala un errore all'uso; si risolve con un import singolo esplicito, che ha la precedenza, per esempio import java.util.List;. Nei file compatti il modulo java.base è già importato implicitamente. Nel codice di produzione molti team preferiscono gli import mirati per chiarezza.",
+  "example": "import module java.base;\n\nvoid main() {\n    List<String> nomi = new ArrayList<>(List.of(\"Zoe\", \"Ada\", \"Bob\"));\n    Collections.sort(nomi);\n    Path p = Path.of(\"nomi.txt\");\n    IO.println(nomi + \" -> \" + p);\n    IO.println(Stream.of(1, 2, 3).map(n -> n * n).toList());\n}",
+  "help": "Importa il modulo, poi nel main crea una mappa con Map.of, copia le chiavi in una ArrayList e stampala.",
+  "exercise": {
+   "prompt": "La prima riga è import module java.base; dopo non servono altri import.",
+   "lines": [
+    "import module java.base;",
+    "void main() {",
+    "    var m = Map.of(\"a\", 1);",
+    "    List<String> k = new ArrayList<>(m.keySet());",
+    "    IO.println(k);",
+    "}"
+   ],
+   "distractors": [
+    "import java.base.*;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa importa import module java.base;?",
+    "options": [
+     "Una sola classe",
+     "Tutti i pacchetti esportati dal modulo",
+     "Solo java.lang",
+     "I jar della cartella lib"
+    ],
+    "answer": 1,
+    "explain": "Importa tutti i pacchetti esportati dal modulo."
+   },
+   {
+    "q": "Come si risolve un'ambiguità tra due classi List?",
+    "options": [
+     "Con un import singolo esplicito",
+     "Non si può",
+     "Rinominando il modulo",
+     "Con volatile"
+    ],
+    "answer": 0,
+    "explain": "L'import singolo ha la precedenza."
+   },
+   {
+    "q": "Da quale versione è definitiva la funzionalità?",
+    "options": [
+     "Java 21",
+     "Java 23",
+     "Java 11",
+     "Java 25"
+    ],
+    "answer": 3,
+    "explain": "JEP 511 è definitivo in Java 25."
+   }
+  ]
+ },
+ {
+  "id": 96,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Foreign Function & Memory API",
+  "lesson": "La Foreign Function & Memory API (definitiva da Java 22, pacchetto java.lang.foreign) sostituisce JNI: permette di chiamare funzioni native (per esempio della libreria C) e di gestire memoria fuori dall'heap, in modo sicuro e con meno codice.\n\nGli elementi principali: Arena controlla il ciclo di vita della memoria (Arena.ofConfined() per un solo thread, ofShared() per più thread) e libera tutto alla chiusura, quindi si usa in try-with-resources. MemorySegment è una regione di memoria con limiti controllati; ValueLayout (JAVA_INT, JAVA_LONG, ADDRESS) descrive i tipi; Linker.nativeLinker() crea un MethodHandle verso una funzione nativa tramite downcallHandle, cercando i simboli con defaultLookup().\n\nGli accessi fuori dai limiti o dopo la chiusura dell'Arena lanciano eccezioni invece di corrompere la memoria. Le operazioni native sono considerate restricted: Java 25 mostra un avviso se non abiliti l'accesso con --enable-native-access=ALL-UNNAMED. Lo strumento jextract genera i binding da header C. È una funzionalità avanzata, utile per integrare librerie esistenti.",
+  "example": "import java.lang.foreign.*;\nimport java.lang.invoke.MethodHandle;\n\npublic class Main {\n    public static void main(String[] args) throws Throwable {\n        Linker linker = Linker.nativeLinker();\n        MemorySegment addr = linker.defaultLookup().find(\"strlen\").orElseThrow();\n        MethodHandle strlen = linker.downcallHandle(addr,\n            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS));\n        try (Arena arena = Arena.ofConfined()) {\n            MemorySegment s = arena.allocateFrom(\"Ciao Java\");\n            long n = (long) strlen.invokeExact(s);\n            System.out.println(n);\n        }\n    }\n}",
+  "help": "Apri un Arena confinata in try-with-resources, alloca un intero nel segmento, scrivi 42 e rileggilo.",
+  "exercise": {
+   "prompt": "arena.allocate(ValueLayout.JAVA_INT), poi seg.set e seg.get con offset 0.",
+   "lines": [
+    "try (Arena arena = Arena.ofConfined()) {",
+    "    MemorySegment seg = arena.allocate(ValueLayout.JAVA_INT);",
+    "    seg.set(ValueLayout.JAVA_INT, 0, 42);",
+    "    System.out.println(seg.get(ValueLayout.JAVA_INT, 0));",
+    "}"
+   ],
+   "distractors": [
+    "    seg.free();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa sostituisce la FFM API?",
+    "options": [
+     "JDBC",
+     "RMI",
+     "JMX",
+     "JNI"
+    ],
+    "answer": 3,
+    "explain": "Rimpiazza JNI per codice nativo e memoria off-heap."
+   },
+   {
+    "q": "Quando viene liberata la memoria di un Arena?",
+    "options": [
+     "Dal garbage collector sempre",
+     "Mai",
+     "Alla chiusura dell'Arena",
+     "Alla fine del metodo main"
+    ],
+    "answer": 2,
+    "explain": "close() dell'Arena libera i segmenti."
+   },
+   {
+    "q": "Quale classe cerca e collega funzioni native?",
+    "options": [
+     "Loader",
+     "Linker",
+     "Binder",
+     "Resolver"
+    ],
+    "answer": 1,
+    "explain": "Linker.nativeLinker() crea i downcall handle."
+   }
+  ]
+ },
+ {
+  "id": 97,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Test con JUnit 5",
+  "lesson": "JUnit 5 (JUnit Jupiter) è il framework standard per i test unitari in Java. Un test è un metodo annotato con @Test, in una classe di test (di solito in src/test/java). Il metodo verifica il comportamento con le asserzioni statiche di org.junit.jupiter.api.Assertions: assertEquals(atteso, effettivo), assertTrue, assertNotNull, assertThrows(Eccezione.class, () -> codice) e assertAll per raggruppare più controlli.\n\nLe annotazioni principali: @BeforeEach e @AfterEach eseguono codice prima e dopo ogni test, @BeforeAll e @AfterAll una sola volta per classe, @DisplayName dà un nome leggibile, @Disabled salta un test, @ParameterizedTest con @ValueSource o @CsvSource ripete il test con più dati. Ogni test deve essere indipendente dagli altri e non dipendere dall'ordine.\n\nSi eseguono con Maven (mvn test) o Gradle (gradle test). Una buona abitudine è la struttura Arrange-Act-Assert: prepara i dati, esegui l'azione, verifica il risultato. Ricorda che nell'assertEquals il valore atteso va per primo.",
+  "example": "import org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\n\nclass CalcTest {\n    int somma(int a, int b) { return a + b; }\n\n    @Test\n    void sommaBase() { assertEquals(5, somma(2, 3)); }\n\n    @Test\n    void divisionePerZero() {\n        assertThrows(ArithmeticException.class, () -> Math.floorDiv(1, somma(0, 0)));\n    }\n}",
+  "help": "Scrivi una classe di test con un metodo annotato @Test che verifica con assertEquals che 2 + 2 sia 4.",
+  "exercise": {
+   "prompt": "La classe contiene un metodo con @Test; assertEquals(atteso, effettivo).",
+   "lines": [
+    "class CalcTest {",
+    "    @Test",
+    "    void somma() {",
+    "        assertEquals(4, 2 + 2);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    @Before"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale annotazione marca un metodo di test in JUnit 5?",
+    "options": [
+     "@Test",
+     "@Check",
+     "@Run",
+     "@Spec"
+    ],
+    "answer": 0,
+    "explain": "Si usa @Test di org.junit.jupiter.api."
+   },
+   {
+    "q": "Quale annotazione esegue codice prima di ogni test?",
+    "options": [
+     "@BeforeEach",
+     "@BeforeAll",
+     "@Setup",
+     "@Init"
+    ],
+    "answer": 0,
+    "explain": "@BeforeEach si ripete prima di ogni test."
+   },
+   {
+    "q": "Come si verifica che venga lanciata un'eccezione?",
+    "options": [
+     "assertError",
+     "assertFail",
+     "expect",
+     "assertThrows"
+    ],
+    "answer": 3,
+    "explain": "assertThrows(Classe.class, () -> codice)."
+   }
+  ]
+ },
+ {
+  "id": 98,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Maven, Gradle e jar",
+  "lesson": "Maven e Gradle sono i due strumenti di build più usati. Gestiscono la struttura del progetto, le dipendenze, la compilazione, i test e il packaging. Maven usa il file pom.xml, dichiarativo, con coordinate groupId, artifactId e version; le dipendenze sono elencate in <dependency>, con scope come compile e test, e vengono scaricate da Maven Central. I comandi tipici sono mvn compile, mvn test e mvn package.\n\nGradle usa un file build.gradle (Groovy) o build.gradle.kts (Kotlin) con un DSL più flessibile; plugin e dipendenze si dichiarano ad esempio con implementation e testImplementation, e si lancia con ./gradlew build.\n\nIl risultato del build è di norma un file JAR, un archivio ZIP con classi e un manifest. Con jar --create --file app.jar --main-class Main -C out . lo crei a mano, e lo avvii con java -jar app.jar. Nel pom puoi impostare la versione di Java con maven.compiler.release, ad esempio 25. Il wrapper (mvnw o gradlew) fissa la versione dello strumento per tutto il team.",
+  "example": "// Struttura tipica Maven:\n//   pom.xml\n//   src/main/java/Main.java\n//   src/test/java/MainTest.java\n// Comandi:\n//   mvn package          -> crea target/app-1.0.jar\n//   java -jar target/app-1.0.jar\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Versione Java: \" + Runtime.version().feature());\n        System.out.println(\"Avviato da un jar eseguibile!\");\n    }\n}",
+  "help": "Scrivi la dipendenza JUnit nel pom.xml: apertura, groupId, artifactId, versione, scope test e chiusura.",
+  "exercise": {
+   "prompt": "Ogni elemento XML sta su una riga; la dipendenza di test ha <scope>test</scope>.",
+   "lines": [
+    "<dependency>",
+    "    <groupId>org.junit.jupiter</groupId>",
+    "    <artifactId>junit-jupiter</artifactId>",
+    "    <version>5.11.4</version>",
+    "    <scope>test</scope>",
+    "</dependency>"
+   ],
+   "distractors": [
+    "    <type>war</type>"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale file descrive un progetto Maven?",
+    "options": [
+     "build.xml",
+     "maven.json",
+     "pom.xml",
+     "project.gradle"
+    ],
+    "answer": 2,
+    "explain": "Maven usa pom.xml."
+   },
+   {
+    "q": "Come si avvia un jar eseguibile?",
+    "options": [
+     "javac app.jar",
+     "java -jar app.jar",
+     "jar run app.jar",
+     "mvn app.jar"
+    ],
+    "answer": 1,
+    "explain": "Si usa java -jar."
+   },
+   {
+    "q": "Cosa significa scope test per una dipendenza?",
+    "options": [
+     "Solo in produzione",
+     "Disponibile solo nei test",
+     "Opzionale",
+     "Esclusa dal jar e dal test"
+    ],
+    "answer": 1,
+    "explain": "Disponibile solo in compilazione ed esecuzione dei test."
+   }
+  ]
+ },
+ {
+  "id": 99,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "jlink, jpackage e Performance/GC",
+  "lesson": "Per distribuire un'applicazione puoi costruire un runtime su misura con jlink, che assembla solo i moduli necessari (jlink --add-modules java.base --output runtime): il risultato è una cartella con un JRE minimale, spesso di poche decine di MB. Con jpackage crei invece un installer nativo (.msi, .exe, .dmg, .deb, .rpm) che include il runtime e il tuo jar, per esempio jpackage --input lib --main-jar app.jar --name MiaApp.\n\nPer le prestazioni, la JVM sceglie un garbage collector: G1 è il predefinito, bilanciato; ZGC (generazionale, l'unica modalità da Java 23) e Shenandoah puntano a pause molto brevi; Parallel massimizza il throughput; Serial è per programmi minuscoli. Si scelgono con opzioni come -XX:+UseZGC, e la memoria con -Xms e -Xmx.\n\nPer misurare usa JDK Flight Recorder (-XX:StartFlightRecording) e JDK Mission Control, jcmd e jstat. Java 25 rende utilizzabile -XX:+UseCompactObjectHeaders, che riduce l'impronta degli oggetti, e migliora l'avvio con le AOT cache. Misura sempre prima di ottimizzare.",
+  "example": "public class Main {\n    public static void main(String[] args) {\n        Runtime rt = Runtime.getRuntime();\n        long mb = 1024 * 1024;\n        System.out.println(\"Java \" + Runtime.version().feature());\n        System.out.println(\"CPU: \" + rt.availableProcessors());\n        System.out.println(\"Memoria massima MB: \" + rt.maxMemory() / mb);\n        System.out.println(\"Memoria usata MB: \" + (rt.totalMemory() - rt.freeMemory()) / mb);\n    }\n}\n// java -XX:+UseZGC -Xmx512m Main.java",
+  "help": "Ordina i comandi shell: compila, crea il jar, costruisci il runtime con jlink, avvialo e infine lancia con G1 e 512 MB.",
+  "exercise": {
+   "prompt": "Sequenza: javac, jar, jlink, runtime/bin/java, poi java con -XX:+UseG1GC e -Xmx512m.",
+   "lines": [
+    "javac -d out Main.java",
+    "jar --create --file app.jar --main-class Main -C out .",
+    "jlink --add-modules java.base --output runtime",
+    "runtime/bin/java -jar app.jar",
+    "java -XX:+UseG1GC -Xmx512m -jar app.jar"
+   ],
+   "distractors": [
+    "jpackage --type deb"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale strumento crea un runtime Java minimale?",
+    "options": [
+     "jlink",
+     "jar",
+     "javadoc",
+     "jdeps"
+    ],
+    "answer": 0,
+    "explain": "jlink assembla solo i moduli necessari."
+   },
+   {
+    "q": "Quale GC è il predefinito di Java 25?",
+    "options": [
+     "Serial",
+     "Parallel",
+     "ZGC",
+     "G1"
+    ],
+    "answer": 3,
+    "explain": "G1 è il predefinito."
+   },
+   {
+    "q": "Quale opzione imposta la memoria heap massima?",
+    "options": [
+     "-Xmn",
+     "-XX:Max",
+     "-Xmx",
+     "-Xss"
+    ],
+    "answer": 2,
+    "explain": "-Xmx imposta la dimensione massima dell'heap."
+   }
+  ]
+ },
+ {
+  "id": 100,
+  "category": "Java moderno 21-25 e strumenti",
+  "title": "Progetto finale: mini applicazione",
+  "lesson": "Eccoci all'ultima fase: mettiamo insieme gran parte di ciò che hai imparato. Una buona mini applicazione usa un record per modellare i dati, una collezione per conservarli, gli stream per elaborarli e un output chiaro per presentarli. Ogni pezzo ha un ruolo: il record Voce(String nome, int qta) è immutabile e fornisce già costruttore, accessor, equals, hashCode e toString; List.of crea una lista immutabile; TreeMap mantiene le chiavi ordinate; le espressioni lambda e i method reference rendono compatto il calcolo dei totali.\n\nPuoi arricchire il progetto con un enum per le categorie, un'interfaccia sealed per i tipi di operazione, un pattern matching switch per elaborarle, la gestione delle eccezioni, la lettura e scrittura su file con Files, il logging con System.Logger, test JUnit e un build Maven. In Java 25 puoi anche scriverlo come file compatto con void main().\n\nIl consiglio finale: scrivi codice semplice e leggibile, testalo, e continua a sperimentare. Hai completato il percorso: complimenti!",
+  "example": "import java.util.*;\n\npublic class Main {\n    record Voce(String nome, int qta) {}\n\n    public static void main(String[] args) {\n        List<Voce> voci = List.of(new Voce(\"pane\", 2), new Voce(\"latte\", 3));\n        Map<String, Integer> m = new TreeMap<>();\n        voci.forEach(v -> m.put(v.nome(), v.qta()));\n        int tot = m.values().stream().mapToInt(Integer::intValue).sum();\n        System.out.println(m + \" totale=\" + tot);\n    }\n}",
+  "help": "Definisci il record, crea la lista, riempi la TreeMap con forEach, calcola il totale con uno stream e stampa il risultato.",
+  "exercise": {
+   "prompt": "Ordine: record, lista, mappa, forEach che riempie la mappa, somma con mapToInt, println.",
+   "lines": [
+    "record Voce(String nome, int qta) {}",
+    "var v = List.of(new Voce(\"pane\", 2), new Voce(\"latte\", 3));",
+    "Map<String, Integer> m = new TreeMap<>();",
+    "v.forEach(x -> m.put(x.nome(), x.qta()));",
+    "int tot = m.values().stream().mapToInt(Integer::intValue).sum();",
+    "System.out.println(m + \" tot=\" + tot);"
+   ],
+   "distractors": [
+    "v.sort(m);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale struttura mantiene le chiavi ordinate?",
+    "options": [
+     "HashMap",
+     "ArrayList",
+     "TreeMap",
+     "HashSet"
+    ],
+    "answer": 2,
+    "explain": "TreeMap ordina le chiavi."
+   },
+   {
+    "q": "Cosa genera automaticamente un record?",
+    "options": [
+     "Solo i campi",
+     "Costruttore, accessor, equals, hashCode e toString",
+     "Solo toString",
+     "Nulla"
+    ],
+    "answer": 1,
+    "explain": "Il compilatore genera tutti questi membri."
+   },
+   {
+    "q": "Quale metodo di IntStream somma gli elementi?",
+    "options": [
+     "sum()",
+     "total()",
+     "add()",
+     "plus()"
+    ],
+    "answer": 0,
+    "explain": "IntStream.sum() restituisce la somma."
+   }
+  ]
+ }
+]

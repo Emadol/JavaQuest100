@@ -1,0 +1,299 @@
+/*
+ * Java Quest 100 - tema base nero (#0a0a0a) e verde (#00ff66).
+ * Tutto l'aspetto è qui: le classi Java sono semantiche e stabili.
+ *
+ * Classi principali:
+ *   root-bg, top-bar, brand, top-level, top-score, progress, btn-top
+ *   screen, screen-scroll, screen-header, title, subtitle, help-box, help-title, help-text, btn-help
+ *   card, card-title, body, accent, hint, status, lesson-flow, lesson-text, inline-code
+ *   btn, btn-primary, btn-big, btn-danger, btn-icon, btn-remove, option, list-item, done
+ *   code-area, code-flow, code-line, line-number, fragment, fragment-list, answer-list, disabled
+ *   feedback, explain, ok, ko, big-score, stats, stat-name, stat-value
+ *   category-accordion, category-pane, category-items
+ *   palette-0 .. palette-9 (colori del codice per categoria) + tok, tok-keyword, tok-literal,
+ *   tok-type, tok-method, tok-string, tok-number, tok-comment, tok-annotation, tok-operator,
+ *   tok-punct, tok-plain
+ */
+
+.root {
+    -jq-bg: #0a0a0a;
+    -jq-surface: #0d120e;
+    -jq-surface-2: #121a14;
+    -jq-border: #0f7a3a;
+    -jq-border-dim: #124d2a;
+    -jq-green: #00ff66;
+    -jq-green-dim: #00c24f;
+    -jq-text: #7dffb0;
+    -jq-muted: #4fbf80;
+    -jq-red: #ff4d5e;
+    -fx-font-family: "Consolas", "Cascadia Mono", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-base: #0a0a0a;
+    -fx-background: #0a0a0a;
+    -fx-control-inner-background: #0d120e;
+    -fx-accent: #00ff66;
+    -fx-focus-color: #00ff66;
+    -fx-faint-focus-color: #00ff6622;
+    -fx-text-fill: #7dffb0;
+    -fx-text-background-color: #7dffb0;
+    -fx-text-base-color: #7dffb0;
+}
+.label, .text { -fx-font-family: "Consolas", "Cascadia Mono", "Courier New", monospace; }
+.root-bg { -fx-background-color: -jq-bg; }
+
+/* ---------- barra superiore ---------- */
+.top-bar {
+    -fx-background-color: #050505;
+    -fx-padding: 10 20;
+    -fx-spacing: 14;
+    -fx-border-color: transparent transparent -jq-border transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.25), 14, 0.0, 0, 2);
+}
+.brand {
+    -fx-text-fill: -jq-green;
+    -fx-font-weight: bold;
+    -fx-font-size: 17px;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.7), 8, 0.2, 0, 0);
+}
+.top-level, .top-score { -fx-text-fill: -jq-text; -fx-font-weight: bold; }
+.top-score { -fx-text-fill: -jq-green; }
+.progress-bar { -fx-accent: -jq-green; }
+.progress-bar > .track {
+    -fx-background-color: #0d1a11;
+    -fx-background-radius: 2;
+    -fx-border-color: -jq-border-dim;
+    -fx-border-radius: 2;
+    -fx-background-insets: 0;
+}
+.progress-bar > .bar {
+    -fx-background-color: linear-gradient(to right, #00b347, #00ff66);
+    -fx-background-radius: 2;
+    -fx-background-insets: 1;
+    -fx-padding: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.8), 8, 0.2, 0, 0);
+}
+
+/* ---------- schermate ---------- */
+.screen-scroll, .screen-scroll > .viewport { -fx-background-color: -jq-bg; -fx-background: -jq-bg; }
+.screen-scroll { -fx-padding: 0; -fx-border-color: transparent; }
+.screen { -fx-padding: 26 34 34 34; -fx-spacing: 14; -fx-background-color: -jq-bg; }
+.screen-header { -fx-spacing: 4; }
+.label.title {
+    -fx-text-fill: -jq-green;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.55), 10, 0.1, 0, 0);
+}
+.home .label.title { -fx-font-size: 44px; -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.8), 16, 0.2, 0, 0); }
+.subtitle { -fx-text-fill: -jq-muted; -fx-font-size: 15px; }
+.card {
+    -fx-background-color: -jq-surface;
+    -fx-background-radius: 4;
+    -fx-border-color: -jq-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-padding: 16 18;
+    -fx-spacing: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.22), 14, 0.05, 0, 0);
+}
+.card-title { -fx-text-fill: -jq-green; -fx-font-weight: bold; -fx-font-size: 16px; }
+.body { -fx-text-fill: -jq-text; }
+.accent { -fx-text-fill: -jq-green; }
+.hint { -fx-text-fill: -jq-muted; -fx-font-style: italic; }
+.status { -fx-text-fill: -jq-muted; }
+.lesson-text { -fx-fill: -jq-text; -fx-font-size: 15px; -fx-font-family: "Consolas", monospace; }
+.inline-code { -fx-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-font-family: "Consolas", monospace; }
+.lesson-flow { -fx-line-spacing: 5; }
+
+/* ---------- aiuto ---------- */
+.help-box {
+    -fx-background-color: #08170d;
+    -fx-border-color: -jq-green;
+    -fx-border-width: 0 0 0 3;
+    -fx-padding: 12 16;
+    -fx-background-radius: 3;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.25), 10, 0.0, 0, 0);
+}
+.help-title { -fx-text-fill: -jq-green; -fx-font-weight: bold; }
+.help-text { -fx-text-fill: -jq-text; }
+
+/* ---------- pulsanti ---------- */
+.btn {
+    -fx-background-color: #07110a;
+    -fx-border-color: -jq-green-dim;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-text-fill: -jq-green;
+    -fx-font-weight: bold;
+    -fx-padding: 7 14;
+    -fx-cursor: hand;
+}
+.btn:hover {
+    -fx-background-color: #0a2a14;
+    -fx-border-color: -jq-green;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.65), 10, 0.15, 0, 0);
+}
+.btn:pressed { -fx-background-color: #00ff6640; -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.9), 4, 0.2, 0, 0); }
+.btn:focused { -fx-border-color: #ffffff; }
+.btn:disabled { -fx-opacity: 0.35; }
+.btn-primary { -fx-background-color: -jq-green; -fx-text-fill: #00140a; -fx-border-color: -jq-green; -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.45), 10, 0.1, 0, 0); }
+.btn-primary:hover { -fx-background-color: #6dffa6; -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.9), 14, 0.25, 0, 0); }
+.btn-primary:pressed { -fx-background-color: #00cc52; }
+.btn-big { -fx-font-size: 15px; -fx-padding: 10 24; }
+.btn-danger { -fx-border-color: #a3313d; -fx-text-fill: -jq-red; }
+.btn-danger:hover { -fx-background-color: #2a0d11; -fx-border-color: -jq-red; -fx-effect: dropshadow(gaussian, rgba(255,77,94,0.6), 10, 0.1, 0, 0); }
+.btn-help { -fx-font-weight: bold; }
+.btn-top { -fx-padding: 5 12; }
+.btn-icon { -fx-padding: 2 8; -fx-font-size: 12px; -fx-min-width: 30; }
+.btn-remove { -fx-text-fill: -jq-red; -fx-border-color: #6a232b; }
+.btn-remove:hover { -fx-background-color: #2a0d11; -fx-border-color: -jq-red; }
+
+/* ---------- codice ---------- */
+.code-area {
+    -fx-background-color: #060a07;
+    -fx-background-radius: 3;
+    -fx-border-color: #1c5a35;
+    -fx-border-radius: 3;
+    -fx-padding: 12 14;
+    -fx-spacing: 2;
+}
+.code-flow { -fx-line-spacing: 3; }
+.code-flow .tok { -fx-font-family: "Consolas", "Cascadia Mono", "Courier New", monospace; -fx-font-size: 14px; }
+.code-line { -fx-padding: 3 6; -fx-background-color: transparent; -fx-background-radius: 3; }
+.code-line:hover { -fx-background-color: #0e1d13; }
+.line-number { -fx-text-fill: #4a8a64; -fx-font-family: "Consolas", monospace; }
+.fragment { -fx-padding: 6 10; -fx-cursor: hand; }
+.fragment:hover { -fx-border-color: -jq-green; -fx-background-color: #0c1f13; -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.45), 8, 0.1, 0, 0); }
+.fragment.disabled { -fx-opacity: 0.4; }
+.fragment-list { -fx-spacing: 6; }
+.answer-list { -fx-min-height: 120; }
+
+/* ---------- feedback / quiz ---------- */
+.feedback { -fx-font-size: 15px; -fx-font-weight: bold; }
+.ok { -fx-text-fill: -jq-green; }
+.ko { -fx-text-fill: #ff6b7a; }
+.feedback.ok { -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.7), 8, 0.1, 0, 0); }
+.feedback.ko { -fx-effect: dropshadow(gaussian, rgba(255,77,94,0.7), 8, 0.1, 0, 0); }
+.explain { -fx-padding: 10 0 0 0; }
+.option {
+    -fx-text-fill: -jq-text;
+    -fx-border-color: -jq-border-dim;
+    -fx-padding: 10 14;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+}
+.option:hover { -fx-border-color: -jq-green; -fx-text-fill: -jq-green; }
+.option.ok, .option.ok:disabled {
+    -fx-background-color: #00ff6624;
+    -fx-border-color: -jq-green;
+    -fx-text-fill: -jq-green;
+    -fx-opacity: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.55), 10, 0.1, 0, 0);
+}
+.option.ko, .option.ko:disabled {
+    -fx-background-color: #ff4d5e22;
+    -fx-border-color: -jq-red;
+    -fx-text-fill: #ff7a87;
+    -fx-opacity: 1;
+    -fx-effect: dropshadow(gaussian, rgba(255,77,94,0.5), 10, 0.1, 0, 0);
+}
+
+/* ---------- elenco ---------- */
+.category-accordion { -fx-spacing: 8; }
+.category-accordion .titled-pane > .title {
+    -fx-background-color: -jq-surface-2;
+    -fx-border-color: -jq-border;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 10 14;
+}
+.category-accordion .titled-pane:focused > .title { -fx-border-color: -jq-green; }
+.category-accordion .titled-pane > .title > .text { -fx-fill: -jq-green; -fx-font-weight: bold; -fx-font-size: 15px; }
+.category-accordion .titled-pane > .title > .arrow-button > .arrow { -fx-background-color: -jq-green; }
+.category-accordion .titled-pane > .content {
+    -fx-background-color: -jq-surface;
+    -fx-border-color: -jq-border-dim;
+    -fx-padding: 10;
+}
+.category-items { -fx-spacing: 6; }
+.list-item { -fx-text-fill: -jq-text; -fx-alignment: center-left; -fx-border-color: -jq-border-dim; }
+.list-item:hover { -fx-border-color: -jq-green; -fx-text-fill: -jq-green; }
+.list-item.done { -fx-text-fill: #ffffff; -fx-border-color: -jq-green-dim; -fx-background-color: #0a2a14; }
+
+/* ---------- risultati ---------- */
+.big-score { -fx-text-fill: -jq-green; -fx-font-size: 68px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(0,255,102,0.85), 20, 0.25, 0, 0); }
+.stats { -fx-hgap: 18; -fx-vgap: 6; }
+.stat-name { -fx-text-fill: -jq-muted; }
+.stat-value { -fx-text-fill: #ffffff; -fx-font-weight: bold; }
+
+/* ---------- dialoghi, scrollbar, tooltip ---------- */
+.dialog-pane { -fx-background-color: -jq-surface; -fx-border-color: -jq-border; }
+.dialog-pane > .header-panel { -fx-background-color: -jq-surface-2; }
+.dialog-pane .label { -fx-text-fill: -jq-text; }
+.tooltip { -fx-background-color: #0a1f10; -fx-text-fill: -jq-green; -fx-border-color: -jq-border; }
+.scroll-bar { -fx-background-color: -jq-bg; }
+.scroll-bar .thumb { -fx-background-color: #14653a; -fx-background-radius: 2; }
+.scroll-bar .thumb:hover { -fx-background-color: -jq-green-dim; }
+.scroll-bar .track { -fx-background-color: #070d09; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-padding: 0; -fx-background-color: transparent; }
+
+/* ---------- palette del codice per categoria ---------- */
+/* default (vale anche per palette-0: Fondamenti) - verde terminale */
+.tok-plain      { -fx-fill: #d8f5e1; }
+.tok-keyword    { -fx-fill: #00ff66; -fx-font-weight: bold; }
+.tok-literal    { -fx-fill: #ffb86c; }
+.tok-type       { -fx-fill: #8be9fd; }
+.tok-method     { -fx-fill: #f1fa8c; }
+.tok-string     { -fx-fill: #ffd479; }
+.tok-number     { -fx-fill: #bd93f9; }
+.tok-comment    { -fx-fill: #6fa583; -fx-font-style: italic; }
+.tok-annotation { -fx-fill: #ff79c6; }
+.tok-operator   { -fx-fill: #9ad7ab; }
+.tok-punct      { -fx-fill: #a8d9bb; }
+
+/* 1 controllo del flusso - ciano */
+.palette-1 .tok-keyword { -fx-fill: #00e5ff; }
+.palette-1 .tok-type    { -fx-fill: #7cffcb; }
+.palette-1 .tok-method  { -fx-fill: #ffe066; }
+.palette-1 .tok-string  { -fx-fill: #ff9e64; }
+/* 2 metodi, array, stringhe - ambra */
+.palette-2 .tok-keyword { -fx-fill: #ffb000; }
+.palette-2 .tok-type    { -fx-fill: #00ff9c; }
+.palette-2 .tok-method  { -fx-fill: #79c0ff; }
+.palette-2 .tok-string  { -fx-fill: #ff7b72; }
+/* 3 OOP - viola */
+.palette-3 .tok-keyword { -fx-fill: #c792ea; }
+.palette-3 .tok-type    { -fx-fill: #82ffaa; }
+.palette-3 .tok-method  { -fx-fill: #82aaff; }
+.palette-3 .tok-string  { -fx-fill: #c3e88d; }
+/* 4 interfacce, record, enum, sealed - rosa */
+.palette-4 .tok-keyword { -fx-fill: #ff6ac1; }
+.palette-4 .tok-type    { -fx-fill: #5af78e; }
+.palette-4 .tok-method  { -fx-fill: #9aedfe; }
+.palette-4 .tok-string  { -fx-fill: #f3f99d; }
+/* 5 generics e collections - blu */
+.palette-5 .tok-keyword { -fx-fill: #4fc1ff; }
+.palette-5 .tok-type    { -fx-fill: #4ec9b0; }
+.palette-5 .tok-method  { -fx-fill: #dcdcaa; }
+.palette-5 .tok-string  { -fx-fill: #ce9178; }
+/* 6 lambda e stream - lime */
+.palette-6 .tok-keyword { -fx-fill: #b8ff00; }
+.palette-6 .tok-type    { -fx-fill: #00d7ff; }
+.palette-6 .tok-method  { -fx-fill: #ffcc66; }
+.palette-6 .tok-operator { -fx-fill: #ff8f40; }
+/* 7 eccezioni, I/O - rosso/arancio */
+.palette-7 .tok-keyword { -fx-fill: #ff5f56; }
+.palette-7 .tok-type    { -fx-fill: #ffbd2e; }
+.palette-7 .tok-method  { -fx-fill: #27c93f; }
+.palette-7 .tok-string  { -fx-fill: #a5d6ff; }
+/* 8 concorrenza - turchese */
+.palette-8 .tok-keyword { -fx-fill: #1de9b6; }
+.palette-8 .tok-type    { -fx-fill: #ffd740; }
+.palette-8 .tok-method  { -fx-fill: #ff80ab; }
+.palette-8 .tok-string  { -fx-fill: #b388ff; }
+/* 9 Java moderno - oro */
+.palette-9 .tok-keyword { -fx-fill: #ffd700; }
+.palette-9 .tok-type    { -fx-fill: #00ff66; }
+.palette-9 .tok-method  { -fx-fill: #87cefa; }
+.palette-9 .tok-string  { -fx-fill: #ffa07a; }

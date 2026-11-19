@@ -1,0 +1,1440 @@
+[
+ {
+  "id": 1,
+  "category": "Fondamenti",
+  "title": "Cos'è Java, JDK/JVM, primo Hello World",
+  "lesson": "Java è un linguaggio di programmazione general purpose, fortemente tipizzato e orientato agli oggetti. Il suo punto di forza è la portabilità: il codice sorgente (.java) viene compilato in bytecode (.class), un formato intermedio che gira su qualsiasi sistema dotato di una JVM (Java Virtual Machine). Per questo si dice «scrivi una volta, esegui ovunque».\n\nTre sigle da conoscere. La JVM esegue il bytecode e gestisce la memoria con il garbage collector. La JRE è la JVM più le librerie standard. Il JDK (Java Development Kit) contiene tutto il necessario per sviluppare: il compilatore javac, il launcher java, strumenti come jar e jshell. Java 25 è una versione LTS (Long Term Support), quindi riceve aggiornamenti per molti anni.\n\nIl programma più semplice è Hello World: una classe pubblica con il metodo main, punto di ingresso del programma. System.out.println stampa una riga sullo schermo. Il nome della classe pubblica deve coincidere con quello del file. Ogni istruzione termina con il punto e virgola e i blocchi sono racchiusi da graffe.",
+  "example": "public class Hello {\n    public static void main(String[] args) {\n        String nome = \"Java\";\n        int versione = 25;\n        System.out.println(\"Ciao \" + nome + \" \" + versione);\n    }\n}",
+  "help": "Il programma ha bisogno di una classe che contiene il metodo main. Dentro main va la chiamata a System.out.println. Chiudi prima il metodo e poi la classe.",
+  "exercise": {
+   "prompt": "Ricomponi il programma Hello World.",
+   "lines": [
+    "public class Hello {",
+    "    public static void main(String[] args) {",
+    "        System.out.println(\"Ciao Java!\");",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        System.out.printn(\"Ciao Java!\");"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale componente esegue il bytecode?",
+    "options": [
+     "Il compilatore javac",
+     "Il debugger",
+     "Il file .java",
+     "La JVM"
+    ],
+    "answer": 3,
+    "explain": "La JVM interpreta e compila just-in-time il bytecode."
+   },
+   {
+    "q": "Che cosa contiene il JDK in più rispetto alla JRE?",
+    "options": [
+     "Solo la JVM",
+     "Gli strumenti di sviluppo come javac",
+     "Un browser",
+     "Nulla"
+    ],
+    "answer": 1,
+    "explain": "Il JDK include compilatore e tool di sviluppo."
+   },
+   {
+    "q": "Come deve chiamarsi il file che contiene la classe pubblica Hello?",
+    "options": [
+     "hello.txt",
+     "Main.java",
+     "Hello.class",
+     "Hello.java"
+    ],
+    "answer": 3,
+    "explain": "Il nome del file coincide con la classe pubblica."
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "category": "Fondamenti",
+  "title": "Compilare ed eseguire (javac, java, file singolo)",
+  "lesson": "Per trasformare un sorgente in un programma eseguibile si usano due comandi. Il primo è javac: «javac Saluto.java» produce il file Saluto.class contenente il bytecode. Il secondo è java: «java Saluto» avvia la JVM, carica la classe e chiama il suo metodo main. Notare che al comando java si passa il nome della classe, senza estensione.\n\nDalla versione 11 esiste anche la modalità source launcher: con «java Saluto.java» il file viene compilato in memoria ed eseguito in un solo passaggio, senza generare file .class. È comodissima per script e prove veloci, purché il programma sia in un unico file.\n\nGli argomenti scritti dopo il nome vengono passati al programma nell'array args del metodo main: «java Saluto.java Mario» imposta args[0] a «Mario». L'array è vuoto se non si passa nulla, quindi conviene controllare args.length prima di leggerlo, altrimenti si ottiene un'ArrayIndexOutOfBoundsException. Gli errori di compilazione, come un punto e virgola mancante, vengono segnalati da javac con file e numero di riga.",
+  "example": "public class Saluto {\n    public static void main(String[] args) {\n        String chi = args.length > 0 ? args[0] : \"mondo\";\n        System.out.println(\"Ciao, \" + chi + \"!\");\n    }\n}",
+  "help": "Salva in una variabile int la lunghezza dell'array args, poi stampala concatenata a un testo. Ricorda di chiudere metodo e classe.",
+  "exercise": {
+   "prompt": "Stampa quanti argomenti ha ricevuto il programma.",
+   "lines": [
+    "public class Args {",
+    "    public static void main(String[] a) {",
+    "        int n = a.length;",
+    "        System.out.println(\"Argomenti: \" + n);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        int n = a.length();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale comando produce il file .class?",
+    "options": [
+     "java",
+     "jar",
+     "javac",
+     "jshell"
+    ],
+    "answer": 2,
+    "explain": "javac è il compilatore."
+   },
+   {
+    "q": "Cosa fa «java Saluto.java»?",
+    "options": [
+     "Compila in memoria ed esegue",
+     "Solo compila",
+     "Cancella il file",
+     "Crea un jar"
+    ],
+    "answer": 0,
+    "explain": "È il source launcher a file singolo."
+   },
+   {
+    "q": "Dove finisce il primo argomento da riga di comando?",
+    "options": [
+     "args[1]",
+     "args.first",
+     "args[0]",
+     "main[0]"
+    ],
+    "answer": 2,
+    "explain": "Gli array partono dall'indice 0."
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "category": "Fondamenti",
+  "title": "Variabili e tipi primitivi",
+  "lesson": "Una variabile è un contenitore con nome che memorizza un valore di un tipo preciso. In Java il tipo va dichiarato: «int eta = 30;». Esistono otto tipi primitivi. Per i numeri interi: byte (8 bit), short (16), int (32) e long (64, con suffisso L, per esempio 5L). Per i decimali: float (32 bit, suffisso f) e double (64 bit, il predefinito). Poi boolean (true o false) e char (un carattere Unicode a 16 bit, tra apici singoli come 'A').\n\nI primitivi non sono oggetti: contengono direttamente il valore. Il tipo String, invece, è una classe e si scrive con le virgolette doppie.\n\nI nomi delle variabili iniziano con una lettera, sono case-sensitive e per convenzione usano il camelCase, per esempio numeroStudenti. Una variabile locale deve essere inizializzata prima dell'uso. Con la parola chiave final si dichiara una costante, il cui valore non può più cambiare. Per leggibilità nei numeri grandi si possono usare i trattini bassi: 1_000_000.\n\nAttenzione agli overflow: un int che supera il proprio massimo ricomincia dal minimo, senza errori.",
+  "example": "public class Tipi {\n    public static void main(String[] args) {\n        int eta = 30;\n        long grande = 3_000_000_000L;\n        double prezzo = 9.99;\n        char iniziale = 'J';\n        boolean attivo = true;\n        final int GIORNI = 7;\n        System.out.println(eta + \" \" + prezzo + \" \" + attivo);\n    }\n}",
+  "help": "Dichiara le variabili con il tipo corretto: un intero per l'età e un double per il prezzo con il punto decimale. Poi stampale.",
+  "exercise": {
+   "prompt": "Dichiara due variabili di tipi diversi e stampale.",
+   "lines": [
+    "public class Tipi {",
+    "    public static void main(String[] args) {",
+    "        int eta = 30;",
+    "        double prezzo = 9.99;",
+    "        System.out.println(eta + \" \" + prezzo);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        int eta = 30.5;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale tipo ha il valore 3.14 senza suffissi?",
+    "options": [
+     "float",
+     "double",
+     "decimal",
+     "long"
+    ],
+    "answer": 1,
+    "explain": "I letterali decimali sono double per default."
+   },
+   {
+    "q": "Quale suffisso serve per un letterale long?",
+    "options": [
+     "f",
+     "d",
+     "l non esiste",
+     "L"
+    ],
+    "answer": 3,
+    "explain": "Si scrive 5L."
+   },
+   {
+    "q": "Cosa significa final davanti a una variabile?",
+    "options": [
+     "È privata",
+     "Non può essere riassegnata",
+     "È statica",
+     "È nulla"
+    ],
+    "answer": 1,
+    "explain": "final rende la variabile una costante."
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "category": "Fondamenti",
+  "title": "var e inferenza di tipo",
+  "lesson": "Dalla versione 10 Java permette di usare la parola riservata var per le variabili locali: il compilatore deduce il tipo dall'espressione di inizializzazione. Scrivere «var nome = \"Ada\";» equivale a «String nome = \"Ada\";». Il tipo resta statico e fortemente controllato: non si tratta di tipizzazione dinamica come in JavaScript. Dopo la dichiarazione, «nome = 5;» provoca un errore di compilazione.\n\nCi sono dei limiti. var funziona solo per variabili locali (anche nei for e nei try-with-resources), non per campi, parametri di metodo o tipi di ritorno. Serve sempre un inizializzatore: «var x;» non compila, e nemmeno «var x = null;» perché il tipo non è deducibile. Anche gli array con graffe, come «var v = {1, 2};», non sono ammessi.\n\nQuando usarlo? Quando il tipo è evidente dal lato destro, ad esempio «var lista = new ArrayList<String>();», riduce la ripetizione. Quando il tipo non è chiaro dalla lettura, meglio dichiararlo esplicitamente. Un buon nome di variabile compensa spesso l'assenza del tipo.",
+  "example": "public class UsoVar {\n    public static void main(String[] args) {\n        var nome = \"Ada\";\n        var n = 3;\n        var prezzo = 2.5;\n        var attivo = true;\n        System.out.println(nome.length() + n);\n        System.out.println(prezzo + \" \" + attivo);\n    }\n}",
+  "help": "Dichiara le due variabili con var e un valore iniziale, poi stampa la somma della lunghezza della stringa e del numero.",
+  "exercise": {
+   "prompt": "Usa var per dichiarare una stringa e un intero.",
+   "lines": [
+    "public class V {",
+    "    public static void main(String[] args) {",
+    "        var nome = \"Ada\";",
+    "        var n = 3;",
+    "        System.out.println(nome.length() + n);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        var x;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale riga NON compila?",
+    "options": [
+     "var c;",
+     "var b = \"ok\";",
+     "var a = 5;",
+     "var d = 2.5;"
+    ],
+    "answer": 0,
+    "explain": "var richiede un inizializzatore."
+   },
+   {
+    "q": "var rende Java dinamicamente tipizzato?",
+    "options": [
+     "Sì",
+     "Solo per gli int",
+     "No, il tipo è dedotto a compile time",
+     "Solo nei metodi"
+    ],
+    "answer": 2,
+    "explain": "Il tipo è fisso dopo l'inferenza."
+   },
+   {
+    "q": "Dove si può usare var?",
+    "options": [
+     "Nelle variabili locali",
+     "Nei parametri",
+     "Nei campi di classe",
+     "Nei tipi di ritorno"
+    ],
+    "answer": 0,
+    "explain": "Solo variabili locali."
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "category": "Fondamenti",
+  "title": "Operatori aritmetici e di assegnamento",
+  "lesson": "Gli operatori aritmetici sono +, -, *, / e % (resto). Con due interi la divisione scarta la parte decimale: 7 / 2 vale 3, mentre 7 / 2.0 vale 3.5, perché basta un operando decimale. Il resto serve per verificare la parità («n % 2 == 0») o per cicli circolari. La divisione intera per zero lancia un'ArithmeticException, mentre con i double dà Infinity.\n\nL'operatore di assegnamento = copia il valore a destra nella variabile a sinistra. Gli operatori composti combinano operazione e assegnamento: x += 5 equivale a x = x + 5, e analogamente -=, *=, /=, %=. Gli operatori ++ e -- incrementano o decrementano di uno. In forma prefissa (++x) l'incremento avviene prima dell'uso del valore, in forma postfissa (x++) dopo.\n\nLa precedenza segue la matematica: prima * / %, poi + -. Le parentesi la modificano. Attenzione alla concatenazione: «\"Somma: \" + 2 + 3» produce «Somma: 23», perché + con una stringa concatena da sinistra a destra; con parentesi «\"Somma: \" + (2 + 3)» si ottiene 5.",
+  "example": "public class Operatori {\n    public static void main(String[] args) {\n        int a = 17, b = 5;\n        System.out.println(a / b);\n        System.out.println(a % b);\n        System.out.println(a / 5.0);\n        int x = 10;\n        x += 5;\n        x++;\n        System.out.println(x);\n    }\n}",
+  "help": "Parti da x uguale a 10, usa l'operatore composto += per aggiungere 5 e stampa il risultato.",
+  "exercise": {
+   "prompt": "Incrementa una variabile con un operatore composto.",
+   "lines": [
+    "public class Op {",
+    "    public static void main(String[] args) {",
+    "        int x = 10;",
+    "        x += 5;",
+    "        System.out.println(x);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        x ++= 5;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quanto vale 7 / 2 con interi?",
+    "options": [
+     "3.5",
+     "2",
+     "4",
+     "3"
+    ],
+    "answer": 3,
+    "explain": "La divisione intera tronca."
+   },
+   {
+    "q": "Cosa calcola l'operatore %?",
+    "options": [
+     "La percentuale",
+     "Il resto",
+     "Il quoziente",
+     "La potenza"
+    ],
+    "answer": 1,
+    "explain": "% è il resto della divisione."
+   },
+   {
+    "q": "Che stampa «\"A\" + 1 + 2»?",
+    "options": [
+     "A3",
+     "Errore",
+     "3A",
+     "A12"
+    ],
+    "answer": 3,
+    "explain": "La concatenazione procede da sinistra: A1 poi A12."
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "category": "Fondamenti",
+  "title": "Operatori logici e di confronto",
+  "lesson": "Gli operatori di confronto producono un boolean: == (uguale), != (diverso), <, >, <=, >=. Attenzione a non confondere = (assegnamento) con == (confronto). Per le stringhe e gli oggetti in generale == confronta i riferimenti, non il contenuto: per il testo si usa il metodo equals, come in «a.equals(b)».\n\nGli operatori logici combinano condizioni booleane. && è l'AND: vero solo se entrambe le parti sono vere. || è l'OR: vero se almeno una è vera. ! è il NOT, che inverte il valore. Gli operatori && e || sono a corto circuito (short-circuit): se il risultato è già noto dalla parte sinistra, la destra non viene valutata. Questo permette di scrivere «s != null && s.length() > 0» senza rischiare un NullPointerException.\n\nEsistono anche & e | non a corto circuito, che valutano sempre entrambi i lati, e ^ (XOR). La precedenza è: ! prima, poi confronti, poi &&, infine ||. Nel dubbio, usate le parentesi per rendere chiara l'intenzione e migliorare la leggibilità.",
+  "example": "public class Logica {\n    public static void main(String[] args) {\n        int eta = 20;\n        boolean maggiorenne = eta >= 18;\n        boolean lavoratore = eta >= 18 && eta < 65;\n        boolean fuori = eta < 6 || eta > 99;\n        System.out.println(maggiorenne + \" \" + lavoratore);\n        System.out.println(!fuori);\n        System.out.println(\"a\".equals(\"a\"));\n    }\n}",
+  "help": "Salva in una variabile boolean il risultato di due confronti uniti da && e poi stampala.",
+  "exercise": {
+   "prompt": "Verifica se l'età è compresa tra 18 e 64.",
+   "lines": [
+    "public class Lg {",
+    "    public static void main(String[] args) {",
+    "        int eta = 20;",
+    "        boolean ok = eta >= 18 && eta < 65;",
+    "        System.out.println(ok);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        boolean ok = eta >= 18 & < 65;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa significa short-circuit in &&?",
+    "options": [
+     "Valuta sempre tutto",
+     "Genera errore",
+     "Salta la destra se la sinistra è falsa",
+     "Inverte il risultato"
+    ],
+    "answer": 2,
+    "explain": "Se la sinistra è false, il risultato è già false."
+   },
+   {
+    "q": "Come si confronta il contenuto di due String?",
+    "options": [
+     "a.equals(b)",
+     "a == b",
+     "a = b",
+     "a.same(b)"
+    ],
+    "answer": 0,
+    "explain": "equals confronta il contenuto."
+   },
+   {
+    "q": "Quanto vale !(true || false)?",
+    "options": [
+     "true",
+     "null",
+     "false",
+     "Errore"
+    ],
+    "answer": 2,
+    "explain": "true || false è true, negato è false."
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "category": "Fondamenti",
+  "title": "Conversioni e casting",
+  "lesson": "Java converte automaticamente un valore verso un tipo più «largo», senza perdita di informazione: byte, short, int, long, float, double (widening). Così «long l = 5;» e «double d = 7;» sono legali. L'operazione inversa (narrowing) può perdere dati, quindi va richiesta esplicitamente con il cast: «int i = (int) 9.7;» assegna 9, perché la parte decimale viene troncata, non arrotondata. Senza cast il compilatore segnala errore.\n\nIl cast può anche causare risultati sorprendenti: «(byte) 200» vale -56 per via dell'overflow. Nelle espressioni miste i tipi vengono promossi al più largo presente: int con double dà double. Un classico errore è «double m = 5 / 2;», che vale 2.0, perché la divisione avviene tra interi prima dell'assegnamento. La forma corretta è «5 / 2.0» oppure «(double) 5 / 2».\n\nPer convertire testo e numeri non si usa il cast ma i metodi: Integer.parseInt(\"42\") trasforma una stringa in int (lanciando NumberFormatException se non è valida), mentre String.valueOf(42) o la concatenazione producono una stringa.",
+  "example": "public class Cast {\n    public static void main(String[] args) {\n        int i = 10;\n        long l = i;\n        double d = 9.7;\n        int tronca = (int) d;\n        double media = (double) 7 / 2;\n        int n = Integer.parseInt(\"42\");\n        System.out.println(l + \" \" + tronca + \" \" + media + \" \" + n);\n    }\n}",
+  "help": "Per assegnare un double a un int serve il cast esplicito (int) davanti alla variabile, che tronca i decimali.",
+  "exercise": {
+   "prompt": "Converti un double in int con il cast.",
+   "lines": [
+    "public class Ct {",
+    "    public static void main(String[] args) {",
+    "        double d = 9.7;",
+    "        int i = (int) d;",
+    "        System.out.println(i);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        int i = d;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quanto vale (int) 9.7?",
+    "options": [
+     "10",
+     "9",
+     "9.7",
+     "Errore"
+    ],
+    "answer": 1,
+    "explain": "Il cast tronca."
+   },
+   {
+    "q": "Quanto vale double m = 5 / 2?",
+    "options": [
+     "2.5",
+     "2",
+     "3.0",
+     "2.0"
+    ],
+    "answer": 3,
+    "explain": "La divisione intera avviene prima."
+   },
+   {
+    "q": "Come si converte la stringa \"42\" in int?",
+    "options": [
+     "(int) \"42\"",
+     "Integer.parseInt(\"42\")",
+     "int(\"42\")",
+     "\"42\".toInt()"
+    ],
+    "answer": 1,
+    "explain": "Si usa parseInt."
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "category": "Fondamenti",
+  "title": "Input da console (Scanner)",
+  "lesson": "La classe java.util.Scanner permette di leggere dati digitati dall'utente. Si crea con «Scanner in = new Scanner(System.in);», dove System.in è il flusso di input standard. Occorre importarla con «import java.util.Scanner;» all'inizio del file.\n\nI metodi principali sono: nextLine() che legge un'intera riga, next() che legge una parola fino al prossimo spazio, nextInt(), nextDouble() e nextBoolean() che leggono un valore del tipo corrispondente. Se l'utente scrive un testo non valido, nextInt() lancia InputMismatchException. Esistono anche hasNext(), hasNextInt() e hasNextLine() per verificare se c'è altro da leggere.\n\nTrabocchetto classico: dopo nextInt() resta nel buffer il carattere di fine riga, quindi una nextLine() successiva restituisce una stringa vuota. Per evitarlo si chiama una nextLine() «a vuoto» oppure si legge sempre con nextLine() e poi si converte con Integer.parseInt.\n\nLo Scanner è una risorsa da chiudere con close() o, meglio, con try-with-resources (lo vedremo più avanti). Nei programmi semplici su System.in si può lasciare aperto.",
+  "example": "import java.util.Scanner;\n\npublic class Eta {\n    public static void main(String[] args) {\n        Scanner in = new Scanner(System.in);\n        System.out.print(\"Nome: \");\n        String nome = in.nextLine();\n        System.out.print(\"Età: \");\n        int eta = in.nextInt();\n        System.out.println(nome + \" ha \" + eta + \" anni\");\n    }\n}",
+  "help": "Crea lo Scanner direttamente su System.in e leggi una riga intera con nextLine, poi stampala.",
+  "exercise": {
+   "prompt": "Leggi una riga di testo e ristampala.",
+   "lines": [
+    "import java.util.Scanner;",
+    "public class Eco {",
+    "    public static void main(String[] a) {",
+    "        String s = new Scanner(System.in).nextLine();",
+    "        System.out.println(s);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        String s = new Scanner(System.in).next;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale import serve per Scanner?",
+    "options": [
+     "java.util.Scanner",
+     "java.io.Scanner",
+     "java.lang.Scanner",
+     "javax.Scanner"
+    ],
+    "answer": 0,
+    "explain": "Scanner sta in java.util."
+   },
+   {
+    "q": "Quale metodo legge un'intera riga?",
+    "options": [
+     "next()",
+     "nextInt()",
+     "nextLine()",
+     "readAll()"
+    ],
+    "answer": 2,
+    "explain": "nextLine legge fino a capo."
+   },
+   {
+    "q": "Cosa lancia nextInt() con input «abc»?",
+    "options": [
+     "InputMismatchException",
+     "NullPointerException",
+     "IOException",
+     "Niente"
+    ],
+    "answer": 0,
+    "explain": "Input non numerico: InputMismatchException."
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "category": "Fondamenti",
+  "title": "Text block e formattazione (printf, formatted)",
+  "lesson": "Per stampare testo formattato si usa System.out.printf (o String.format): il primo argomento è la stringa di formato con segnaposto che iniziano con %, seguita dai valori. I più usati sono %s (stringa), %d (intero), %f (decimale), %n (a capo indipendente dalla piattaforma) e %b (booleano). Si può controllare la larghezza e la precisione: «%.2f» mostra due decimali, «%5d» occupa cinque caratteri, «%-10s» allinea a sinistra.\n\nDalla versione 15 esiste anche il metodo di istanza formatted: «\"%s ha %d anni\".formatted(nome, eta)» è equivalente a String.format ma più compatto.\n\nI text block, introdotti in Java 15, sono stringhe multiriga delimitate da tre virgolette doppie (\"\"\"). Iniziano su una nuova riga dopo l'apertura, conservano gli a capo e non richiedono di fare l'escape delle virgolette. L'indentazione comune viene rimossa automaticamente in base alla posizione della chiusura. Sono perfetti per JSON, SQL e HTML scritti nel codice. Si possono combinare con formatted per inserire valori.",
+  "example": "public class Formato {\n    public static void main(String[] args) {\n        String nome = \"Ada\";\n        int eta = 36;\n        System.out.printf(\"%s ha %d anni%n\", nome, eta);\n        System.out.printf(\"Pi greco: %.2f%n\", Math.PI);\n        String json = \"\"\"\n            {\"nome\": \"%s\", \"eta\": %d}\n            \"\"\".formatted(nome, eta);\n        System.out.println(json);\n    }\n}",
+  "help": "Usa printf con %s per la stringa e %d per l'intero, rispettando l'ordine degli argomenti. Non dimenticare %n per andare a capo.",
+  "exercise": {
+   "prompt": "Stampa nome ed età con printf.",
+   "lines": [
+    "public class Pf {",
+    "    public static void main(String[] args) {",
+    "        String n = \"Ada\";",
+    "        int e = 30;",
+    "        System.out.printf(\"%s ha %d anni%n\", n, e);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        System.out.printf(\"%d ha %s anni%n\", n, e);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale segnaposto è per un intero?",
+    "options": [
+     "%s",
+     "%n",
+     "%f",
+     "%d"
+    ],
+    "answer": 3,
+    "explain": "%d formatta gli interi."
+   },
+   {
+    "q": "Cosa delimita un text block?",
+    "options": [
+     "Tre apici singoli",
+     "Tre virgolette doppie",
+     "Backtick",
+     "Parentesi graffe"
+    ],
+    "answer": 1,
+    "explain": "Si apre e chiude con tre virgolette doppie."
+   },
+   {
+    "q": "Cosa produce %.2f con 3.14159?",
+    "options": [
+     "3",
+     "3.1",
+     "3.141",
+     "3.14"
+    ],
+    "answer": 3,
+    "explain": "Due cifre decimali, arrotondate."
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "category": "Fondamenti",
+  "title": "Commenti, Javadoc e convenzioni",
+  "lesson": "I commenti documentano il codice e vengono ignorati dal compilatore. Ne esistono tre forme: // commento su una riga, /* ... */ commento su più righe, e /** ... */ commento Javadoc. Quest'ultimo, posto prima di classi, metodi e campi, viene letto dallo strumento javadoc che genera la documentazione HTML. Contiene una descrizione e tag come @param (parametro), @return (valore restituito), @throws (eccezioni) e @see (riferimenti). Dalla versione 23 i commenti Javadoc possono anche essere scritti in Markdown usando /// su ogni riga.\n\nUn buon commento spiega il perché, non il cosa: se serve spiegare cosa fa il codice, forse conviene rinominare variabili e metodi.\n\nLe convenzioni di stile rendono il codice uniforme. Le classi usano PascalCase (CarrelloSpesa), metodi e variabili camelCase (calcolaTotale), le costanti MAIUSCOLO_CON_UNDERSCORE (MAX_TENTATIVI), i package solo minuscole (it.esempio.app). L'indentazione standard è di quattro spazi, con la graffa di apertura sulla stessa riga della dichiarazione. Un file contiene al massimo una classe pubblica, con lo stesso nome del file.",
+  "example": "/**\n * Calcolatrice minima.\n */\npublic class Calc {\n    /**\n     * Somma due interi.\n     * @param a primo addendo\n     * @param b secondo addendo\n     * @return la somma\n     */\n    static int somma(int a, int b) {\n        return a + b; // commento su riga\n    }\n}",
+  "help": "Il commento Javadoc va prima della classe e prima del metodo. Poi la firma, il return e le graffe di chiusura.",
+  "exercise": {
+   "prompt": "Ricomponi una classe con Javadoc.",
+   "lines": [
+    "/** Somma due interi. */",
+    "public class Calc {",
+    "    /** Restituisce a + b. */",
+    "    static int somma(int a, int b) {",
+    "        return a + b;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    /* Restituisce a + b. */"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale sintassi apre un commento Javadoc?",
+    "options": [
+     "//",
+     "/*",
+     "/**",
+     "#"
+    ],
+    "answer": 2,
+    "explain": "Javadoc inizia con /**."
+   },
+   {
+    "q": "Quale convenzione si usa per i nomi delle classi?",
+    "options": [
+     "PascalCase",
+     "camelCase",
+     "snake_case",
+     "MAIUSCOLO"
+    ],
+    "answer": 0,
+    "explain": "Le classi usano PascalCase."
+   },
+   {
+    "q": "Quale tag descrive il valore restituito?",
+    "options": [
+     "@param",
+     "@see",
+     "@return",
+     "@value"
+    ],
+    "answer": 2,
+    "explain": "@return documenta il risultato."
+   }
+  ]
+ },
+ {
+  "id": 11,
+  "category": "Controllo del flusso",
+  "title": "if/else",
+  "lesson": "L'istruzione if esegue un blocco solo se la condizione, che deve essere un boolean, è vera. La sintassi è «if (condizione) { ... }». Con else si specifica l'alternativa, e con else if si concatenano più condizioni, valutate nell'ordine: appena una è vera, le altre vengono saltate.\n\nLe graffe sono opzionali se il corpo è una sola istruzione, ma è buona pratica usarle sempre: evitano errori quando si aggiunge una seconda riga e rendono il codice più chiaro. Un errore classico è scrivere «if (x = 5)»: in Java non compila per un int (un'assegnazione non è un boolean), ma con i boolean può passare inosservato.\n\nLe condizioni si compongono con &&, || e !. Per ridurre l'annidamento conviene usare i cosiddetti return anticipati (guard clause): si gestiscono subito i casi particolari e si lascia il flusso principale in chiaro. Fate attenzione al dangling else: un else si associa sempre all'if più vicino, indipendentemente dall'indentazione. Con le graffe questo problema scompare.",
+  "example": "public class Voto {\n    static String esito(int v) {\n        if (v >= 28) {\n            return \"Ottimo\";\n        } else if (v >= 18) {\n            return \"Promosso\";\n        } else {\n            return \"Bocciato\";\n        }\n    }\n\n    public static void main(String[] args) {\n        System.out.println(esito(24));\n    }\n}",
+  "help": "Metti prima il controllo if con la soglia e il return di successo, poi la riga else con l'alternativa. Chiudi metodo e classe.",
+  "exercise": {
+   "prompt": "Restituisci Promosso se il voto è almeno 18, altrimenti Bocciato.",
+   "lines": [
+    "public class Voto {",
+    "    static String esito(int v) {",
+    "        if (v >= 18) return \"Promosso\";",
+    "        else return \"Bocciato\";",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        else if return \"Bocciato\";"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale tipo deve avere la condizione di un if?",
+    "options": [
+     "int",
+     "boolean",
+     "String",
+     "qualsiasi"
+    ],
+    "answer": 1,
+    "explain": "Solo boolean."
+   },
+   {
+    "q": "A quale if si associa un else?",
+    "options": [
+     "Al primo del metodo",
+     "A nessuno",
+     "Al più indentato",
+     "A quello più vicino"
+    ],
+    "answer": 3,
+    "explain": "L'else si associa all'if precedente più vicino."
+   },
+   {
+    "q": "Quando viene eseguito il blocco else if?",
+    "options": [
+     "Sempre",
+     "Se l'if precedente è falso e la sua condizione è vera",
+     "Mai",
+     "Solo se l'if è vero"
+    ],
+    "answer": 1,
+    "explain": "Serve che le precedenti siano false."
+   }
+  ]
+ },
+ {
+  "id": 12,
+  "category": "Controllo del flusso",
+  "title": "Operatore ternario",
+  "lesson": "L'operatore ternario ?: è l'unico operatore di Java con tre operandi. La forma è «condizione ? valoreSeVera : valoreSeFalsa» e, a differenza dell'if, è un'espressione: produce un valore che si può assegnare, passare a un metodo o restituire. Per esempio «int max = a > b ? a : b;» sostituisce quattro righe di if/else.\n\nI due rami devono avere tipi compatibili: il tipo del risultato segue le regole di promozione numerica, quindi «cond ? 1 : 2.0» è un double. Attenzione anche all'unboxing: «cond ? 1 : null» assegnato a un int può generare un NullPointerException.\n\nÈ possibile annidare più ternari, ma oltre il primo livello la leggibilità cala rapidamente: «x < 0 ? \"neg\" : x == 0 ? \"zero\" : \"pos\"» è accettabile, di più no. In quei casi meglio un if/else o uno switch expression.\n\nIl ternario è ideale per scelte semplici, per esempio per costruire messaggi («n == 1 ? \"elemento\" : \"elementi\"») o per valori predefiniti. Non va usato per eseguire azioni con effetti collaterali, per le quali serve l'if.",
+  "example": "public class Ternario {\n    static int max(int a, int b) {\n        return a > b ? a : b;\n    }\n\n    public static void main(String[] args) {\n        int n = 3;\n        String msg = n == 1 ? \"elemento\" : \"elementi\";\n        System.out.println(n + \" \" + msg);\n        System.out.println(max(4, 9));\n    }\n}",
+  "help": "Il return restituisce il risultato del ternario: condizione, punto interrogativo, valore se vera, due punti, valore se falsa.",
+  "exercise": {
+   "prompt": "Restituisci il maggiore tra due numeri.",
+   "lines": [
+    "public class Mx {",
+    "    static int max(int a, int b) {",
+    "        return a > b ? a : b;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        return a > b ? a;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quanti operandi ha l'operatore ternario?",
+    "options": [
+     "Tre",
+     "Due",
+     "Uno",
+     "Quattro"
+    ],
+    "answer": 0,
+    "explain": "Condizione e due valori."
+   },
+   {
+    "q": "Il ternario è…",
+    "options": [
+     "Un'istruzione",
+     "Un commento",
+     "Un'espressione",
+     "Un ciclo"
+    ],
+    "answer": 2,
+    "explain": "Produce un valore."
+   },
+   {
+    "q": "Quanto vale 5 > 3 ? \"si\" : \"no\"?",
+    "options": [
+     "si",
+     "no",
+     "true",
+     "Errore"
+    ],
+    "answer": 0,
+    "explain": "La condizione è vera."
+   }
+  ]
+ },
+ {
+  "id": 13,
+  "category": "Controllo del flusso",
+  "title": "switch classico",
+  "lesson": "L'istruzione switch seleziona un ramo in base al valore di un'espressione. Si scrive «switch (valore) { case X: ... break; default: ... }». Sono ammessi i tipi int, char, byte, short, i loro wrapper, String ed enum (e dalla versione 21 anche i pattern). Ogni case confronta il valore con una costante.\n\nIl comportamento centrale della forma classica è il fall-through: una volta entrati in un case, l'esecuzione continua anche nei case successivi finché non incontra un break. Dimenticare il break è una fonte di bug molto comune. A volte è voluto, per esempio per raggruppare più valori: «case 1: case 2: ... break;».\n\nIl ramo default è opzionale e gestisce tutti gli altri valori; per convenzione si scrive per ultimo. Le costanti dei case devono essere uniche e note a compile time. Con le String il confronto è sensibile alle maiuscole.\n\nLo switch classico è un'istruzione, non produce un valore; per scrivere versioni più sicure e concise si preferisce oggi la switch expression con le frecce, che vedremo nella prossima fase. Conoscere la forma tradizionale resta utile per leggere codice esistente.",
+  "example": "public class Giorno {\n    static void descrivi(int g) {\n        switch (g) {\n            case 1: System.out.println(\"Lunedì\"); break;\n            case 6:\n            case 7: System.out.println(\"Weekend\"); break;\n            default: System.out.println(\"Feriale\");\n        }\n    }\n}",
+  "help": "Il corpo dello switch è un blocco con graffe. Il case si scrive con i due punti, seguito dall'istruzione. Chiudi switch, metodo e classe.",
+  "exercise": {
+   "prompt": "Stampa Uno quando il valore è 1.",
+   "lines": [
+    "public class G {",
+    "    static void f(int g) {",
+    "        switch (g) {",
+    "            case 1: System.out.println(\"Uno\");",
+    "        }",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "            case 1 -> System.out.println(\"Uno\");"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa succede senza break in un case?",
+    "options": [
+     "Errore",
+     "Riavvia lo switch",
+     "Esce subito",
+     "Fall-through nel case successivo"
+    ],
+    "answer": 3,
+    "explain": "L'esecuzione continua nei case seguenti."
+   },
+   {
+    "q": "Quale tipo NON è ammesso nello switch classico?",
+    "options": [
+     "String",
+     "double",
+     "int",
+     "char"
+    ],
+    "answer": 1,
+    "explain": "double non è ammesso."
+   },
+   {
+    "q": "A cosa serve default?",
+    "options": [
+     "A dichiarare costanti",
+     "A uscire",
+     "Al ciclo",
+     "Ai valori non elencati"
+    ],
+    "answer": 3,
+    "explain": "Gestisce gli altri valori."
+   }
+  ]
+ },
+ {
+  "id": 14,
+  "category": "Controllo del flusso",
+  "title": "switch expression e yield",
+  "lesson": "Dalla versione 14 lo switch può essere usato come espressione, cioè produrre un valore: «String s = switch (g) { case 1 -> \"Lun\"; case 2 -> \"Mar\"; default -> \"?\"; };». La sintassi con la freccia (->) elimina il fall-through: viene eseguito solo il ramo corrispondente, quindi il break non serve più. Si possono raggruppare più costanti separandole con la virgola: «case 6, 7 -> \"Weekend\"».\n\nUna switch expression deve essere esaustiva: ogni valore possibile deve essere coperto, con un default oppure, per enum e sealed, elencando tutti i casi. Altrimenti il compilatore segnala errore.\n\nSe un ramo richiede più istruzioni si usa un blocco con graffe, e il valore si restituisce con la parola chiave yield: «case 3 -> { int x = g * 2; yield x; }». Si può usare yield anche nella forma con i due punti. A destra della freccia può comparire anche un'espressione, un blocco o un throw.\n\nIl risultato è codice più corto, più sicuro e più facile da leggere rispetto allo switch tradizionale. È oggi la forma consigliata ogni volta che serve scegliere un valore in base a un altro.",
+  "example": "public class Mesi {\n    static int giorni(int mese) {\n        return switch (mese) {\n            case 2 -> 28;\n            case 4, 6, 9, 11 -> 30;\n            default -> {\n                int base = 31;\n                yield base;\n            }\n        };\n    }\n}",
+  "help": "Assegna il risultato dello switch a una variabile String: ogni ramo usa la freccia e il blocco termina con punto e virgola dopo la graffa.",
+  "exercise": {
+   "prompt": "Scegli la stringa in base a g con una switch expression.",
+   "lines": [
+    "public class S {",
+    "    static int g = 2;",
+    "    static String s = switch (g) {",
+    "        case 1 -> \"Uno\";",
+    "        default -> \"Altro\";",
+    "    };",
+    "}"
+   ],
+   "distractors": [
+    "        break;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa yield?",
+    "options": [
+     "Esce dal ciclo",
+     "Dichiara una variabile",
+     "Restituisce il valore di un ramo a blocco",
+     "Sospende il thread"
+    ],
+    "answer": 2,
+    "explain": "yield produce il risultato dello switch."
+   },
+   {
+    "q": "Una switch expression deve essere…",
+    "options": [
+     "Esaustiva",
+     "Vuota",
+     "Annidata",
+     "Statica"
+    ],
+    "answer": 0,
+    "explain": "Tutti i casi vanno coperti."
+   },
+   {
+    "q": "Serve break con la freccia?",
+    "options": [
+     "Sempre",
+     "Solo nel default",
+     "No",
+     "Solo con String"
+    ],
+    "answer": 2,
+    "explain": "La freccia non ha fall-through."
+   }
+  ]
+ },
+ {
+  "id": 15,
+  "category": "Controllo del flusso",
+  "title": "for",
+  "lesson": "Il ciclo for ripete un blocco un numero noto di volte. La sintassi è «for (inizializzazione; condizione; aggiornamento) corpo». L'inizializzazione viene eseguita una volta sola, per esempio «int i = 0». La condizione viene controllata prima di ogni iterazione: se è falsa il ciclo termina. L'aggiornamento, come «i++», avviene dopo ogni esecuzione del corpo.\n\nLa variabile dichiarata nell'intestazione è visibile solo dentro il ciclo. Le tre parti sono opzionali: «for (;;)» è un ciclo infinito, da interrompere con break o return. Si possono usare più variabili separate da virgole: «for (int i = 0, j = 10; i < j; i++, j--)».\n\nGli errori tipici sono l'off-by-one, cioè sbagliare tra < e <= (un array di lunghezza n ha indici da 0 a n - 1), e modificare la variabile di controllo dentro il corpo, rendendo il flusso difficile da seguire. Un ciclo con aggiornamento sbagliato, come i-- al posto di i++, non termina mai o termina in modo imprevisto.\n\nI cicli for si possono annidare, per esempio per percorrere tabelle: il ciclo interno viene eseguito completamente a ogni passo di quello esterno.",
+  "example": "public class Somma {\n    static int somma(int n) {\n        int s = 0;\n        for (int i = 1; i <= n; i++) {\n            s += i;\n        }\n        return s;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(somma(10));\n    }\n}",
+  "help": "Inizializza s a zero, usa il for da 1 a n con i++ per sommare, e restituisci s alla fine.",
+  "exercise": {
+   "prompt": "Calcola la somma dei numeri da 1 a n.",
+   "lines": [
+    "public class Somma {",
+    "    static int somma(int n) {",
+    "        int s = 0;",
+    "        for (int i = 1; i <= n; i++) s += i;",
+    "        return s;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        for (int i = 1; i <= n; i--) s += i;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quante volte viene eseguita l'inizializzazione?",
+    "options": [
+     "A ogni giro",
+     "Una",
+     "Mai",
+     "n volte"
+    ],
+    "answer": 1,
+    "explain": "Solo all'inizio."
+   },
+   {
+    "q": "Quanto stampa for (int i=0;i<3;i++) con println(i)?",
+    "options": [
+     "1 2 3",
+     "0 1",
+     "0 1 2 3",
+     "0 1 2"
+    ],
+    "answer": 3,
+    "explain": "i va da 0 a 2."
+   },
+   {
+    "q": "Cos'è «for (;;)»?",
+    "options": [
+     "Errore",
+     "Ciclo infinito",
+     "Ciclo vuoto che termina",
+     "Ciclo di una iterazione"
+    ],
+    "answer": 1,
+    "explain": "Senza condizione, è infinito."
+   }
+  ]
+ },
+ {
+  "id": 16,
+  "category": "Controllo del flusso",
+  "title": "while e do-while",
+  "lesson": "Il ciclo while ripete il blocco finché la condizione è vera: «while (condizione) { ... }». La condizione viene controllata prima di ogni iterazione, quindi il corpo può non essere eseguito nemmeno una volta. È la scelta giusta quando non si sa in anticipo quante ripetizioni serviranno, per esempio leggere input finché l'utente non digita «fine».\n\nIl ciclo do-while, «do { ... } while (condizione);», controlla invece la condizione dopo il corpo, quindi il blocco viene eseguito almeno una volta. Notare il punto e virgola obbligatorio dopo la parentesi. È utile per menu e validazioni: si chiede un dato e si ripete finché non è valido.\n\nIn ogni ciclo bisogna garantire che qualcosa cambi la condizione, altrimenti si crea un ciclo infinito. Un trucco frequente è «while (true)» con un break interno quando si raggiunge la condizione di uscita, utile quando il test si trova nel mezzo del corpo.\n\nIl for è preferibile quando c'è un contatore; il while quando conta la condizione; il for-each quando si scorre una collezione. Scegliere il ciclo giusto rende il codice più espressivo e meno soggetto a errori.",
+  "example": "public class Ripeti {\n    public static void main(String[] args) {\n        int n = 3;\n        while (n > 0) {\n            System.out.println(\"Conto alla rovescia: \" + n);\n            n--;\n        }\n        int k = 10;\n        do {\n            System.out.println(\"Eseguito una volta, k = \" + k);\n            k++;\n        } while (k < 5);\n    }\n}",
+  "help": "Il while controlla n > 0; nel corpo stampa e decrementa n con n-- nella stessa println. Chiudi ogni blocco.",
+  "exercise": {
+   "prompt": "Fai un conto alla rovescia con while.",
+   "lines": [
+    "public class W {",
+    "    static void conto(int n) {",
+    "        while (n > 0) {",
+    "            System.out.println(n--);",
+    "        }",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "            System.out.println(n++);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quante volte esegue il corpo un do-while con condizione subito falsa?",
+    "options": [
+     "Una",
+     "Zero",
+     "Due",
+     "Infinite"
+    ],
+    "answer": 0,
+    "explain": "Il controllo è dopo il corpo."
+   },
+   {
+    "q": "Cosa serve dopo la condizione del do-while?",
+    "options": [
+     "Niente",
+     "Due punti",
+     "Punto e virgola",
+     "Graffa"
+    ],
+    "answer": 2,
+    "explain": "do { } while (cond);"
+   },
+   {
+    "q": "Quando conviene while (true)?",
+    "options": [
+     "Con uscita da break nel corpo",
+     "Mai",
+     "Solo nei for",
+     "Per gli array"
+    ],
+    "answer": 0,
+    "explain": "Con una uscita esplicita al centro."
+   }
+  ]
+ },
+ {
+  "id": 17,
+  "category": "Controllo del flusso",
+  "title": "for-each",
+  "lesson": "Il for-each, o enhanced for, scorre tutti gli elementi di un array o di una collezione senza gestire indici: «for (int x : numeri) { ... }». Si legge «per ogni x in numeri». A ogni iterazione la variabile contiene una copia del valore dell'elemento corrente (per gli oggetti, il riferimento).\n\nI vantaggi sono semplicità e sicurezza: niente errori off-by-one, niente accessi fuori dai limiti. Funziona con qualsiasi tipo che implementi Iterable, come List e Set, oltre che con gli array. Dal for-each si può usare var come tipo: «for (var s : nomi)».\n\nCi sono limiti. Non si conosce l'indice dell'elemento (se serve, si usa un for classico). Assegnare un nuovo valore alla variabile del ciclo non modifica l'array di primitivi, perché lavora su una copia. Infine, modificare la struttura di una collezione (aggiungere o rimuovere elementi) mentre la si scorre con il for-each causa una ConcurrentModificationException: per rimuovere elementi si usa un Iterator o il metodo removeIf.\n\nÈ la scelta predefinita quando si vuole semplicemente elaborare ogni elemento. Combinato con break e continue permette controlli di flusso semplici.",
+  "example": "import java.util.List;\n\npublic class Scorri {\n    public static void main(String[] args) {\n        int[] v = {4, 8, 15, 16};\n        int somma = 0;\n        for (int x : v) {\n            somma += x;\n        }\n        System.out.println(somma);\n        for (var nome : List.of(\"Ada\", \"Linus\")) {\n            System.out.println(nome);\n        }\n    }\n}",
+  "help": "Dichiara la somma a zero, scorri l'array con il for-each usando i due punti, poi restituisci il totale.",
+  "exercise": {
+   "prompt": "Somma gli elementi di un array con il for-each.",
+   "lines": [
+    "public class Fe {",
+    "    static int somma(int[] v) {",
+    "        int s = 0;",
+    "        for (int x : v) s += x;",
+    "        return s;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        for (int x in v) s += x;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale simbolo separa variabile e array nel for-each?",
+    "options": [
+     "in",
+     "->",
+     "=",
+     ":"
+    ],
+    "answer": 3,
+    "explain": "for (T x : coll)."
+   },
+   {
+    "q": "Cosa accade rimuovendo elementi di una List durante for-each?",
+    "options": [
+     "Funziona sempre",
+     "ConcurrentModificationException",
+     "Nulla",
+     "Errore di compilazione"
+    ],
+    "answer": 1,
+    "explain": "Modifica concorrente della struttura."
+   },
+   {
+    "q": "Il for-each fornisce l'indice?",
+    "options": [
+     "Sì",
+     "Solo per List",
+     "Solo per array",
+     "No"
+    ],
+    "answer": 3,
+    "explain": "Non è disponibile."
+   }
+  ]
+ },
+ {
+  "id": 18,
+  "category": "Controllo del flusso",
+  "title": "break/continue/label",
+  "lesson": "L'istruzione break interrompe immediatamente il ciclo (o lo switch) più interno in cui si trova, e l'esecuzione continua dopo il blocco. L'istruzione continue, invece, salta il resto dell'iterazione corrente e passa alla successiva: nel for esegue l'aggiornamento e ricontrolla la condizione.\n\nEntrambe agiscono solo sul ciclo più interno. Quando i cicli sono annidati si possono usare le etichette (label): si scrive «esterno: for (...) { for (...) { if (...) break esterno; } }». Con «break esterno» si esce dal ciclo etichettato, mentre con «continue esterno» si passa all'iterazione successiva di quello esterno. Una label è un identificativo seguito da due punti, posto davanti al ciclo.\n\nUsati con parsimonia, questi comandi semplificano il codice, per esempio per fermare una ricerca appena si trova l'elemento o per ignorare valori non validi. Usati troppo, rendono il flusso difficile da seguire (il «codice a spaghetti»). Spesso un ciclo con una condizione ben scritta, oppure un return anticipato in un metodo, è più chiaro.\n\nRicordate che break in uno switch classico termina il case: nei cicli dentro uno switch è facile fare confusione.",
+  "example": "public class Salti {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 5; i++) {\n            if (i == 2) continue;\n            if (i == 5) break;\n            System.out.println(\"i = \" + i);\n        }\n        esterno:\n        for (int r = 0; r < 3; r++)\n            for (int c = 0; c < 3; c++)\n                if (c == 2) continue esterno;\n    }\n}",
+  "help": "Inizia con il contatore a zero, scorri l'array con il for-each, esci con break se il valore è negativo, altrimenti incrementa il contatore.",
+  "exercise": {
+   "prompt": "Conta gli elementi prima del primo negativo.",
+   "lines": [
+    "public class Br {",
+    "    static int conta(int[] v) {",
+    "        int c = 0;",
+    "        for (int x : v) if (x < 0) break; else c++;",
+    "        return c;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        for (int x : v) if (x < 0) continue; else c++;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa continue?",
+    "options": [
+     "Esce dal programma",
+     "Esce dal metodo",
+     "Salta all'iterazione successiva",
+     "Riavvia il ciclo"
+    ],
+    "answer": 2,
+    "explain": "Salta il resto del corpo."
+   },
+   {
+    "q": "Come si esce da un ciclo esterno etichettato?",
+    "options": [
+     "break esterno;",
+     "exit esterno;",
+     "break;",
+     "goto esterno;"
+    ],
+    "answer": 0,
+    "explain": "break seguito dalla label."
+   },
+   {
+    "q": "Su quale ciclo agisce break senza label?",
+    "options": [
+     "Sul più esterno",
+     "Su tutti",
+     "Sul più interno",
+     "Su nessuno"
+    ],
+    "answer": 2,
+    "explain": "Sul più interno."
+   }
+  ]
+ },
+ {
+  "id": 19,
+  "category": "Controllo del flusso",
+  "title": "Pattern matching instanceof",
+  "lesson": "L'operatore instanceof verifica se un oggetto è di un certo tipo. Fino alla versione 15 si scriveva prima il controllo e poi un cast esplicito: «if (o instanceof String) { String s = (String) o; ... }». Dalla versione 16 il pattern matching unisce le due operazioni: «if (o instanceof String s) { ... s.length() ... }». Se il test riesce, la variabile s (la binding variable) è già del tipo corretto e utilizzabile.\n\nL'ambito della variabile segue il flusso: è visibile dove il compilatore può dimostrare che il test è riuscito. Quindi «if (!(o instanceof String s)) return; ... s ...» è valido, perché dopo il return s è certamente definita. Si possono anche aggiungere condizioni: «o instanceof String s && s.length() > 3».\n\nSe l'oggetto è null, instanceof restituisce sempre false, quindi non serve un controllo null separato. Il pattern matching rende il codice più corto e sicuro, perché elimina il rischio di un cast sbagliato (ClassCastException).\n\nQuesto meccanismo è la base di quanto vedremo più avanti con switch su pattern, sealed class e record pattern, che lo estendono a molte altre situazioni.",
+  "example": "public class Pattern {\n    static String descrivi(Object o) {\n        if (o instanceof String s && s.length() > 3) {\n            return \"Testo lungo: \" + s.toUpperCase();\n        }\n        if (o instanceof Integer n) {\n            return \"Intero: \" + (n + 1);\n        }\n        return \"Altro\";\n    }\n}",
+  "help": "Scrivi instanceof con il nome della variabile subito dopo il tipo, e usala nel return. Poi restituisci il valore di default.",
+  "exercise": {
+   "prompt": "Restituisci la lunghezza se l'oggetto è una String, altrimenti -1.",
+   "lines": [
+    "public class Pm {",
+    "    static int len(Object o) {",
+    "        if (o instanceof String s) return s.length();",
+    "        return -1;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        if (o instanceof String) return s.length();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce null instanceof String?",
+    "options": [
+     "true",
+     "false",
+     "NullPointerException",
+     "Errore"
+    ],
+    "answer": 1,
+    "explain": "instanceof con null è false."
+   },
+   {
+    "q": "Cosa evita il pattern matching?",
+    "options": [
+     "Le variabili",
+     "Le classi",
+     "I metodi",
+     "Il cast manuale"
+    ],
+    "answer": 3,
+    "explain": "Elimina il cast separato."
+   },
+   {
+    "q": "Come si chiama la variabile in «instanceof String s»?",
+    "options": [
+     "Costante",
+     "Binding variable",
+     "Parametro",
+     "Campo"
+    ],
+    "answer": 1,
+    "explain": "È la binding variable del pattern."
+   }
+  ]
+ },
+ {
+  "id": 20,
+  "category": "Controllo del flusso",
+  "title": "Ricorsione di base",
+  "lesson": "Un metodo ricorsivo è un metodo che chiama se stesso. Ogni soluzione ricorsiva ha due ingredienti: il caso base, che risolve direttamente il problema più piccolo e ferma la ricorsione, e il passo ricorsivo, che riduce il problema e richiama il metodo su un input più semplice. L'esempio classico è il fattoriale: fat(n) = n * fat(n - 1), con caso base fat(1) = 1.\n\nSenza un caso base raggiungibile, le chiamate si accumulano nello stack fino a provocare uno StackOverflowError. Anche una ricorsione molto profonda, per esempio con n = 100000, può esaurire lo stack: Java non ottimizza la ricorsione di coda.\n\nQuando usarla? Per problemi che hanno una struttura naturalmente ricorsiva: alberi, directory, divide et impera, permutazioni. Per problemi lineari un ciclo è spesso più semplice ed efficiente. Alcune definizioni ricorsive, come la successione di Fibonacci scritta come fib(n-1) + fib(n-2), ripetono moltissimi calcoli e diventano lente: si risolve memorizzando i risultati (memoization) o passando a un ciclo.\n\nPer ragionare in modo corretto, si assume che la chiamata ricorsiva funzioni sui casi più piccoli e si verifica che il passo costruisca la risposta giusta.",
+  "example": "public class Fattoriale {\n    static long fat(int n) {\n        if (n <= 1) {\n            return 1;\n        }\n        return n * fat(n - 1);\n    }\n\n    public static void main(String[] args) {\n        System.out.println(fat(5));\n    }\n}",
+  "help": "Prima il caso base con return 1, poi il passo ricorsivo che moltiplica n per fat di n meno uno.",
+  "exercise": {
+   "prompt": "Calcola il fattoriale in modo ricorsivo.",
+   "lines": [
+    "public class Fat {",
+    "    static long fat(int n) {",
+    "        if (n <= 1) return 1;",
+    "        return n * fat(n - 1);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        return n * fat(n);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa ferma la ricorsione?",
+    "options": [
+     "Il caso base",
+     "Il passo ricorsivo",
+     "Il main",
+     "Il compilatore"
+    ],
+    "answer": 0,
+    "explain": "Il caso base."
+   },
+   {
+    "q": "Cosa succede senza caso base raggiungibile?",
+    "options": [
+     "Ciclo normale",
+     "Risultato 0",
+     "StackOverflowError",
+     "Nulla"
+    ],
+    "answer": 2,
+    "explain": "Lo stack si esaurisce."
+   },
+   {
+    "q": "Quanto vale fat(4)?",
+    "options": [
+     "24",
+     "16",
+     "10",
+     "12"
+    ],
+    "answer": 0,
+    "explain": "4*3*2*1 = 24."
+   }
+  ]
+ },
+ {
+  "id": 21,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Metodi e parametri",
+  "lesson": "Un metodo è un blocco di codice con un nome, riutilizzabile. La firma è «tipoRitorno nome(tipo param, ...)». Se il metodo non restituisce nulla, il tipo è void. Con return si restituisce un valore e si termina il metodo. Ogni percorso di un metodo non void deve concludere con un return, altrimenti il compilatore segnala errore.\n\nPer ora scriviamo metodi static dentro la stessa classe di main, richiamabili per nome: «int a = area(3, 4);». I parametri sono le variabili dichiarate nella firma, gli argomenti sono i valori passati alla chiamata.\n\nUn punto fondamentale: Java passa sempre per valore. Per i primitivi il metodo riceve una copia, quindi modificarla non cambia l'originale. Per gli oggetti e gli array la copia è del riferimento: il metodo può modificare il contenuto dell'oggetto puntato (per esempio un elemento dell'array), ma riassegnare il parametro a un nuovo oggetto non ha effetti all'esterno.\n\nLe variabili locali esistono solo dentro il metodo. Metodi brevi, con un solo compito e un nome che dice cosa fanno, rendono il codice più leggibile, testabile e riutilizzabile rispetto a un unico lungo main.",
+  "example": "public class Metodi {\n    static int area(int base, int altezza) {\n        return base * altezza;\n    }\n\n    static void saluta(String nome) {\n        System.out.println(\"Ciao \" + nome);\n    }\n\n    static void azzera(int x) {\n        x = 0; // modifica solo la copia\n    }\n}",
+  "help": "Dichiara il metodo static int con due parametri e restituisci il prodotto. Chiudi metodo e classe.",
+  "exercise": {
+   "prompt": "Scrivi un metodo che calcola l'area di un rettangolo.",
+   "lines": [
+    "public class Area {",
+    "    static int area(int l, int h) {",
+    "        return l * h;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        return l + h;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Come passa gli argomenti Java?",
+    "options": [
+     "Per riferimento",
+     "Per nome",
+     "Per puntatore",
+     "Per valore"
+    ],
+    "answer": 3,
+    "explain": "Sempre per valore."
+   },
+   {
+    "q": "Quale tipo di ritorno indica nessun valore?",
+    "options": [
+     "null",
+     "void",
+     "none",
+     "empty"
+    ],
+    "answer": 1,
+    "explain": "void."
+   },
+   {
+    "q": "Modificare un parametro int dentro il metodo cambia l'originale?",
+    "options": [
+     "Sì",
+     "Solo se final",
+     "Solo se static",
+     "No"
+    ],
+    "answer": 3,
+    "explain": "È una copia."
+   }
+  ]
+ },
+ {
+  "id": 22,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Overloading",
+  "lesson": "L'overloading (sovraccarico) consiste nel definire più metodi con lo stesso nome nella stessa classe ma con parametri diversi per numero, tipo o ordine. Per esempio println ha una versione per int, una per String, una per double e molte altre. Il compilatore sceglie la versione giusta guardando i tipi degli argomenti al momento della compilazione.\n\nIl tipo di ritorno da solo non basta a distinguere due metodi: «int f(int x)» e «double f(int x)» sono in conflitto e non compilano. Anche i nomi dei parametri non contano. Contano il nome del metodo e la lista dei tipi dei parametri, che insieme formano la firma del metodo.\n\nQuando nessuna versione corrisponde esattamente, Java applica conversioni automatiche in un ordine preciso: prima l'ampliamento dei primitivi (int diventa long o double), poi l'autoboxing, poi i varargs. Se più metodi sono ugualmente adatti, il compilatore segnala un errore di ambiguità.\n\nL'overloading rende le API più comode, perché evita nomi diversi per operazioni equivalenti, per esempio somma, sommaDouble e sommaTre. Da non confondere con l'override, che riguarda l'ereditarietà.",
+  "example": "public class Somme {\n    static int somma(int a, int b) { return a + b; }\n    static double somma(double a, double b) { return a + b; }\n    static int somma(int a, int b, int c) { return a + b + c; }\n\n    public static void main(String[] args) {\n        System.out.println(somma(1, 2));\n        System.out.println(somma(1.5, 2.5));\n        System.out.println(somma(1, 2, 3));\n    }\n}",
+  "help": "Servono tre versioni di somma: due int, due double e tre int. Non puoi avere due metodi con la stessa lista di parametri.",
+  "exercise": {
+   "prompt": "Definisci tre versioni sovraccaricate di somma.",
+   "lines": [
+    "public class O {",
+    "    static int somma(int a, int b) { return a + b; }",
+    "    static double somma(double a, double b) { return a + b; }",
+    "    static int somma(int a, int b, int c) { return a + b + c; }",
+    "}"
+   ],
+   "distractors": [
+    "    static double somma(int a, int b) { return a + b; }"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa distingue due metodi sovraccaricati?",
+    "options": [
+     "Il tipo di ritorno",
+     "Il nome dei parametri",
+     "La lista dei parametri",
+     "La visibilità"
+    ],
+    "answer": 2,
+    "explain": "Numero, tipo o ordine dei parametri."
+   },
+   {
+    "q": "Quando viene scelta la versione da chiamare?",
+    "options": [
+     "A compile time",
+     "A runtime",
+     "Mai",
+     "Nel main"
+    ],
+    "answer": 0,
+    "explain": "Il compilatore la risolve."
+   },
+   {
+    "q": "int f(int x) e double f(int x) possono coesistere?",
+    "options": [
+     "Sì",
+     "Solo static",
+     "No",
+     "Solo public"
+    ],
+    "answer": 2,
+    "explain": "Il solo tipo di ritorno non basta."
+   }
+  ]
+ },
+ {
+  "id": 23,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Varargs",
+  "lesson": "I varargs (variable arguments) permettono a un metodo di accettare un numero variabile di argomenti dello stesso tipo. Si dichiarano con tre puntini dopo il tipo: «static int somma(int... numeri)». All'interno del metodo il parametro è un normale array, quindi si possono usare numeri.length, l'indicizzazione e il for-each.\n\nIl metodo si può chiamare con zero, uno o più argomenti: «somma()», «somma(5)», «somma(1, 2, 3)». Si può anche passare direttamente un array: «somma(new int[]{1, 2})». Il compilatore crea l'array al posto dell'utente.\n\nRegole importanti: il parametro varargs deve essere l'ultimo della lista e ce ne può essere uno solo per metodo, per esempio «static void log(String fmt, Object... args)». Il metodo String.format e il metodo List.of usano proprio questo meccanismo.\n\nCon l'overloading i varargs hanno la priorità più bassa: una versione con parametri fissi viene preferita. Attenzione ad usarli con i generici e con tipi oggetto, perché può comparire un avviso di heap pollution. Per tipi di uso frequente con pochi argomenti, a volte è meglio fornire anche versioni con parametri fissi.",
+  "example": "public class Varargs {\n    static int somma(int... numeri) {\n        int s = 0;\n        for (int n : numeri) {\n            s += n;\n        }\n        return s;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(somma());\n        System.out.println(somma(5));\n        System.out.println(somma(1, 2, 3, 4));\n    }\n}",
+  "help": "Usa int... come parametro e scorrilo con il for-each come un array. Ricorda di restituire la somma.",
+  "exercise": {
+   "prompt": "Somma un numero variabile di interi.",
+   "lines": [
+    "public class Va {",
+    "    static int somma(int... n) {",
+    "        int s = 0;",
+    "        for (int x : n) s += x;",
+    "        return s;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    static int somma(int n...) {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Che tipo ha int... all'interno del metodo?",
+    "options": [
+     "List",
+     "int[]",
+     "Integer",
+     "Object"
+    ],
+    "answer": 1,
+    "explain": "È un array."
+   },
+   {
+    "q": "Dove va il parametro varargs?",
+    "options": [
+     "Per primo",
+     "Nel mezzo",
+     "Ovunque",
+     "Per ultimo"
+    ],
+    "answer": 3,
+    "explain": "Deve essere l'ultimo."
+   },
+   {
+    "q": "Quanti parametri varargs può avere un metodo?",
+    "options": [
+     "Due",
+     "Uno",
+     "Tre",
+     "Infiniti"
+    ],
+    "answer": 1,
+    "explain": "Al massimo uno."
+   }
+  ]
+ },
+ {
+  "id": 24,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Array monodimensionali",
+  "lesson": "Un array è una sequenza di elementi dello stesso tipo, con dimensione fissa decisa alla creazione. Si dichiara «int[] v;» e si crea con «new»: «int[] v = new int[5];» riserva cinque posizioni inizializzate a valore predefinito (0 per i numeri, false per boolean, null per gli oggetti). Si può anche usare l'inizializzatore: «int[] v = {4, 8, 15};».\n\nGli indici partono da 0 e arrivano a lunghezza meno uno. La lunghezza si legge con la proprietà v.length (senza parentesi, a differenza di String.length()). Accedere a un indice fuori dai limiti lancia un'ArrayIndexOutOfBoundsException. Gli elementi si leggono e scrivono con «v[2]» e «v[2] = 9».\n\nGli array sono oggetti: la variabile contiene un riferimento. Perciò «int[] b = a;» non copia i dati ma crea un secondo riferimento allo stesso array: modificando b si modifica anche a. Per una copia vera servono Arrays.copyOf o clone.\n\nPer stampare il contenuto non basta println(v), che mostra un identificativo poco leggibile: si usa Arrays.toString(v). Si scorre con un for classico, quando serve l'indice, oppure con il for-each.",
+  "example": "import java.util.Arrays;\n\npublic class Array1 {\n    public static void main(String[] args) {\n        int[] v = {5, 8, 2};\n        v[1] = 9;\n        System.out.println(v.length);\n        System.out.println(Arrays.toString(v));\n        int[] zeri = new int[3];\n        System.out.println(zeri[0]);\n    }\n}",
+  "help": "Crea l'array con l'inizializzatore tra graffe, cambia l'elemento di indice 1 e stampa il valore modificato.",
+  "exercise": {
+   "prompt": "Crea un array, modificane un elemento e stampalo.",
+   "lines": [
+    "public class A1 {",
+    "    public static void main(String[] args) {",
+    "        int[] v = {5, 8, 2};",
+    "        v[1] = 9;",
+    "        System.out.println(v[1] + v.length);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        int[] v = new int[3]{5, 8, 2};"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Qual è l'indice del primo elemento?",
+    "options": [
+     "0",
+     "1",
+     "-1",
+     "dipende"
+    ],
+    "answer": 0,
+    "explain": "Gli array iniziano da 0."
+   },
+   {
+    "q": "Come si ottiene la lunghezza di un array?",
+    "options": [
+     "v.length()",
+     "v.size()",
+     "v.length",
+     "len(v)"
+    ],
+    "answer": 2,
+    "explain": "length è un campo, senza parentesi."
+   },
+   {
+    "q": "Valore predefinito di un elemento di new int[3]?",
+    "options": [
+     "0",
+     "null",
+     "-1",
+     "indefinito"
+    ],
+    "answer": 0,
+    "explain": "I numeri partono da 0."
+   }
+  ]
+ },
+ {
+  "id": 25,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Array multidimensionali",
+  "lesson": "Un array multidimensionale è un array di array. Il caso più comune è la matrice bidimensionale: «int[][] m = new int[3][4];» crea 3 righe e 4 colonne, tutte a zero. Si accede con due indici: «m[1][2] = 7;» scrive nella riga 1, colonna 2. Si può inizializzare direttamente: «int[][] t = { {1, 2}, {3, 4}, {5, 6} };».\n\nPoiché in realtà sono array di array, le righe possono avere lunghezze diverse (array «jagged» o irregolari): «int[][] r = new int[3][];» crea le tre righe ma vuote, e poi si assegna «r[0] = new int[2];» e così via. La lunghezza delle righe è m.length, quella di una colonna m[0].length.\n\nPer scorrere una matrice si annidano due cicli: il primo sulle righe, il secondo sugli elementi di ciascuna riga. Con il for-each: «for (int[] riga : m) for (int x : riga) ...». Per stampare tutto in una volta si usa Arrays.deepToString(m), perché Arrays.toString mostrerebbe solo i riferimenti alle righe.\n\nAttenzione agli indici: m[riga][colonna], e ricordare che l'ultimo valido è length - 1. Le matrici sono utili per griglie, tabelle, immagini e giochi da tavolo.",
+  "example": "import java.util.Arrays;\n\npublic class Matrice {\n    public static void main(String[] args) {\n        int[][] m = new int[2][3];\n        m[1][2] = 7;\n        for (int[] riga : m) {\n            for (int x : riga) {\n                System.out.print(x + \" \");\n            }\n            System.out.println();\n        }\n        System.out.println(Arrays.deepToString(m));\n    }\n}",
+  "help": "Crea la matrice con due dimensioni tra parentesi quadre, assegna il valore alla cella [1][2] e stampala.",
+  "exercise": {
+   "prompt": "Crea una matrice 2x3 e scrivi in una cella.",
+   "lines": [
+    "public class A2 {",
+    "    public static void main(String[] args) {",
+    "        int[][] m = new int[2][3];",
+    "        m[1][2] = 7;",
+    "        System.out.println(m[1][2]);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        int[][] m = new int[2, 3];"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa crea new int[3][4]?",
+    "options": [
+     "3 colonne e 4 righe",
+     "Errore",
+     "Un array di 12 byte",
+     "3 righe e 4 colonne"
+    ],
+    "answer": 3,
+    "explain": "Prima dimensione: righe."
+   },
+   {
+    "q": "Come si stampa una matrice in modo leggibile?",
+    "options": [
+     "Arrays.toString",
+     "Arrays.deepToString",
+     "println(m)",
+     "m.print()"
+    ],
+    "answer": 1,
+    "explain": "deepToString entra negli array annidati."
+   },
+   {
+    "q": "Le righe possono avere lunghezze diverse?",
+    "options": [
+     "No",
+     "Solo con final",
+     "Solo con List",
+     "Sì (array jagged)"
+    ],
+    "answer": 3,
+    "explain": "Sono array indipendenti."
+   }
+  ]
+ }
+]

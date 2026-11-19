@@ -1,0 +1,1419 @@
+[
+ {
+  "id": 26,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Arrays: sort, fill, copyOf",
+  "lesson": "La classe java.util.Arrays contiene metodi statici di utilità per lavorare sugli array, che da soli non hanno metodi utili oltre alla proprietà length.\nArrays.toString(v) restituisce una rappresentazione leggibile; stampare direttamente un array con println mostra invece un indirizzo poco utile. Arrays.sort(v) ordina l'array sul posto in ordine crescente, mentre Arrays.fill(v, x) riempie tutti gli elementi con lo stesso valore (esiste anche la versione con intervallo da-a).\nArrays.copyOf(v, n) crea un nuovo array di lunghezza n: se n è più grande i nuovi elementi valgono 0, false o null, se è più piccolo l'array viene troncato. Arrays.copyOfRange copia un intervallo. Arrays.equals confronta il contenuto di due array, cosa che == non fa, perché == confronta solo i riferimenti.\nArrays.binarySearch(v, chiave) cerca un valore in modo efficiente, ma funziona correttamente solo su array già ordinati. Se la chiave non c'è, restituisce un numero negativo. Per array di oggetti si può passare un Comparator a sort. Ricorda che v.clone() produce una copia superficiale dello stesso array.",
+  "example": "import java.util.Arrays;\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] v = {5, 3, 9, 1};\n        Arrays.sort(v);\n        System.out.println(Arrays.toString(v));\n        int[] w = Arrays.copyOf(v, 6);\n        Arrays.fill(w, 4, 6, 0);\n        System.out.println(Arrays.toString(w));\n        System.out.println(Arrays.binarySearch(v, 5));\n    }\n}",
+  "help": "Ordina l'array con Arrays.sort, poi crea una copia di 2 elementi con copyOf. Infine stampa la copia con Arrays.toString, perché println su un array direttamente non mostra il contenuto.",
+  "exercise": {
+   "prompt": "Ordina l'array, copia i primi due elementi e stampali.",
+   "lines": [
+    "int[] v = {5, 3, 9, 1};",
+    "Arrays.sort(v);",
+    "int[] c = Arrays.copyOf(v, 2);",
+    "System.out.println(Arrays.toString(c));"
+   ],
+   "distractors": [
+    "v.sort();",
+    "System.out.println(c);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa Arrays.copyOf(v, 6) se v ha 4 elementi?",
+    "options": [
+     "Lancia un'eccezione",
+     "Crea un array di 6 elementi con i nuovi a 0",
+     "Modifica v portandolo a 6",
+     "Restituisce v invariato"
+    ],
+    "answer": 1,
+    "explain": "Restituisce un nuovo array più lungo con valori di default."
+   },
+   {
+    "q": "Quando Arrays.binarySearch dà risultati corretti?",
+    "options": [
+     "Solo su array ordinati",
+     "Solo su array di stringhe",
+     "Sempre",
+     "Solo su array vuoti"
+    ],
+    "answer": 0,
+    "explain": "La ricerca binaria richiede dati ordinati."
+   },
+   {
+    "q": "Come si confronta il contenuto di due array?",
+    "options": [
+     "a == b",
+     "a.equals(b)",
+     "Arrays.equals(a, b)",
+     "a.compareTo(b)"
+    ],
+    "answer": 2,
+    "explain": "== confronta i riferimenti e equals degli array fa lo stesso."
+   }
+  ]
+ },
+ {
+  "id": 27,
+  "category": "Metodi, Array e Stringhe",
+  "title": "String e metodi principali",
+  "lesson": "String è una classe immutabile: ogni metodo che sembra modificare una stringa in realtà restituisce una nuova stringa, lasciando l'originale invariata. I letterali stringa sono tenuti in un pool, quindi due letterali uguali possono essere lo stesso oggetto.\nI metodi più usati: length() per la lunghezza, charAt(i) per il carattere in posizione i (gli indici partono da 0), substring(a, b) per estrarre da a incluso a b escluso, indexOf per trovare una sottostringa (-1 se assente), contains, startsWith, endsWith, toUpperCase e toLowerCase, replace per sostituire.\nPer togliere gli spazi ai bordi usa strip() (più corretto di trim() perché gestisce Unicode); isBlank() verifica se la stringa è vuota o composta solo da spazi. repeat(n) ripete la stringa, split(regex) la divide in un array, String.join(sep, ...) unisce più parti.\nIl confronto del contenuto va fatto con equals() o equalsIgnoreCase(), mai con ==, che confronta i riferimenti. Per l'ordinamento alfabetico c'è compareTo. String.valueOf converte altri tipi in stringa.",
+  "example": "public class Main {\n    public static void main(String[] args) {\n        String s = \"  Ciao Java  \";\n        String t = s.strip();\n        System.out.println(t.length());\n        System.out.println(t.substring(0, 4));\n        System.out.println(t.indexOf(\"Java\"));\n        System.out.println(String.join(\"-\", t.split(\" \")));\n        System.out.println(\"ab\".repeat(3));\n        System.out.println(t.equals(\"Ciao Java\"));\n    }\n}",
+  "help": "Prima si tolgono gli spazi con strip(), poi si converte in maiuscolo. Alla fine si stampa la lunghezza della stringa ottenuta, usando il metodo length() con le parentesi.",
+  "exercise": {
+   "prompt": "Pulisci la stringa, mettila in maiuscolo e stampa la sua lunghezza.",
+   "lines": [
+    "String s = \"  Java 25  \";",
+    "String t = s.strip();",
+    "String u = t.toUpperCase();",
+    "System.out.println(u.length());"
+   ],
+   "distractors": [
+    "u.length = 7;",
+    "String t = s.trim;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce \"Java\".substring(1, 3)?",
+    "options": [
+     "\"av\"",
+     "\"ava\"",
+     "\"Ja\"",
+     "\"va\""
+    ],
+    "answer": 0,
+    "explain": "L'indice finale è escluso: caratteri 1 e 2."
+   },
+   {
+    "q": "Come si confronta il contenuto di due String?",
+    "options": [
+     "s1 == s2",
+     "s1.equals(s2)",
+     "s1 = s2",
+     "s1.same(s2)"
+    ],
+    "answer": 1,
+    "explain": "equals confronta il contenuto, == i riferimenti."
+   },
+   {
+    "q": "Cosa significa che String è immutabile?",
+    "options": [
+     "Non si può stampare",
+     "Non si può usare in un if",
+     "Ha lunghezza fissa 10",
+     "I metodi restituiscono una nuova stringa"
+    ],
+    "answer": 3,
+    "explain": "L'oggetto originale non cambia mai."
+   }
+  ]
+ },
+ {
+  "id": 28,
+  "category": "Metodi, Array e Stringhe",
+  "title": "StringBuilder",
+  "lesson": "Poiché String è immutabile, concatenare molte stringhe in un ciclo crea tanti oggetti temporanei e rallenta il programma. StringBuilder risolve il problema: è un buffer modificabile di caratteri che cresce in modo efficiente.\nSi crea con new StringBuilder() oppure partendo da una stringa. I metodi principali sono append, che aggiunge in coda e restituisce lo stesso oggetto (quindi si possono concatenare le chiamate: sb.append(1).append('x')), insert(pos, testo) per inserire in una posizione, delete(a, b) e deleteCharAt(i) per cancellare, replace, reverse per invertire, setCharAt per cambiare un carattere, length e charAt come in String.\nAlla fine si ottiene la stringa normale con toString(); println accetta direttamente anche un StringBuilder e ne stampa il contenuto.\nStringBuilder non è thread-safe: esiste StringBuffer, sincronizzato ma più lento e raramente necessario. Usa StringBuilder quando costruisci testo in un ciclo; per concatenazioni semplici fuori da cicli l'operatore + va benissimo, perché il compilatore lo ottimizza.",
+  "example": "public class Main {\n    public static void main(String[] args) {\n        StringBuilder sb = new StringBuilder(\"Java\");\n        sb.append(' ').append(25);\n        sb.insert(0, \"Evviva \");\n        sb.setCharAt(0, 'e');\n        sb.reverse();\n        System.out.println(sb);\n        System.out.println(sb.length());\n    }\n}",
+  "help": "Crea il builder, aggiungi due pezzi con append (anche concatenando le chiamate), poi inverti con reverse() e stampa. Il tipo deve essere StringBuilder, non String.",
+  "exercise": {
+   "prompt": "Costruisci un testo con StringBuilder, invertilo e stampalo.",
+   "lines": [
+    "StringBuilder sb = new StringBuilder();",
+    "sb.append(\"Ciao\");",
+    "sb.append(' ').append(\"Java\");",
+    "sb.reverse();",
+    "System.out.println(sb);"
+   ],
+   "distractors": [
+    "String sb = new StringBuilder();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Perché usare StringBuilder in un ciclo?",
+    "options": [
+     "Evita di creare molte stringhe temporanee",
+     "Perché è case-insensitive",
+     "Perché ordina i caratteri",
+     "Perché è obbligatorio"
+    ],
+    "answer": 0,
+    "explain": "Modifica un buffer invece di creare nuovi oggetti."
+   },
+   {
+    "q": "Cosa restituisce sb.append(\"x\")?",
+    "options": [
+     "void",
+     "Una nuova String",
+     "Lo stesso StringBuilder",
+     "La lunghezza"
+    ],
+    "answer": 2,
+    "explain": "Restituisce this, per concatenare le chiamate."
+   },
+   {
+    "q": "Come si ottiene una String da un StringBuilder?",
+    "options": [
+     "sb.string()",
+     "sb.toString()",
+     "(String) sb",
+     "sb.value"
+    ],
+    "answer": 1,
+    "explain": "toString() restituisce la stringa corrente."
+   }
+  ]
+ },
+ {
+  "id": 29,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Wrapper, autoboxing e Math",
+  "lesson": "Ogni tipo primitivo ha una classe wrapper: Integer per int, Double per double, Boolean, Character, Long e così via. Servono quando serve un oggetto, per esempio nelle collezioni generiche come List<Integer>, che non accettano primitivi.\nL'autoboxing converte automaticamente un primitivo nel wrapper (Integer a = 5;) e l'unboxing fa il contrario. Attenzione: un Integer può essere null, e fare unboxing di null lancia NullPointerException. Inoltre == tra due Integer confronta i riferimenti e funziona per caso solo nell'intervallo -128..127 (cache): usa sempre equals.\nI wrapper offrono utilità come Integer.parseInt(\"42\"), Integer.valueOf, Integer.MAX_VALUE, Double.parseDouble, Character.isDigit.\nLa classe Math offre metodi statici: max, min, abs, pow (restituisce double), sqrt, round, floor, ceil, floorMod, random. Per evitare l'overflow silenzioso esistono addExact, multiplyExact e simili, che lanciano ArithmeticException. Math.round restituisce un long se riceve un double, un int se riceve un float.",
+  "example": "public class Main {\n    public static void main(String[] args) {\n        Integer a = 127, b = 127;\n        System.out.println(a.equals(b));\n        int n = Integer.parseInt(\"42\");\n        Double d = Double.valueOf(\"3.5\");\n        System.out.println(Math.max(n, 10) + \" \" + Math.abs(-7));\n        System.out.println(Math.pow(2, 10) + \" \" + Math.round(d));\n        System.out.println(Math.floorMod(-3, 5));\n        System.out.println(Math.addExact(1, 2));\n    }\n}",
+  "help": "Converti la stringa con Integer.parseInt, calcola il massimo con Math.max e usa Math.sqrt, che restituisce un double. Il risultato va quindi salvato in una variabile double.",
+  "exercise": {
+   "prompt": "Calcola il massimo tra due numeri e la radice quadrata di (massimo + 4).",
+   "lines": [
+    "Integer a = 10;",
+    "int b = Integer.parseInt(\"32\");",
+    "int m = Math.max(a, b);",
+    "double r = Math.sqrt(m + 4);",
+    "System.out.println(r);"
+   ],
+   "distractors": [
+    "int x = Math.sqrt(16);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa succede con Integer x = null; int y = x;?",
+    "options": [
+     "y vale 0",
+     "NullPointerException",
+     "Errore di compilazione",
+     "y vale -1"
+    ],
+    "answer": 1,
+    "explain": "L'unboxing di null lancia NPE."
+   },
+   {
+    "q": "Che tipo restituisce Math.pow(2, 3)?",
+    "options": [
+     "int",
+     "long",
+     "double",
+     "Integer"
+    ],
+    "answer": 2,
+    "explain": "pow lavora e restituisce double."
+   },
+   {
+    "q": "Cosa fa Math.addExact(Integer.MAX_VALUE, 1)?",
+    "options": [
+     "Restituisce un valore negativo",
+     "Lancia ArithmeticException",
+     "Restituisce 0",
+     "Non compila"
+    ],
+    "answer": 1,
+    "explain": "Le versioni Exact segnalano l'overflow."
+   }
+  ]
+ },
+ {
+  "id": 30,
+  "category": "Metodi, Array e Stringhe",
+  "title": "Date e ora con java.time",
+  "lesson": "Il package java.time (Java 8) sostituisce le vecchie Date e Calendar, con classi immutabili e thread-safe. Le principali: LocalDate (solo data), LocalTime (solo ora), LocalDateTime (data e ora senza fuso), ZonedDateTime (con fuso orario), Instant (un istante sulla linea del tempo), Duration (durata in ore, minuti, secondi) e Period (periodo in anni, mesi, giorni).\nSi creano con i metodi factory: LocalDate.of(2025, 9, 16), LocalDate.now(), LocalTime.of(10, 30). Non esiste new. Gli oggetti sono immutabili, quindi plusDays, minusMonths, withDayOfMonth restituiscono un nuovo oggetto: bisogna salvarlo in una variabile.\nPer ottenere informazioni ci sono getYear, getMonth, getDayOfWeek, isBefore, isAfter. Per contare le unità tra due date si usa ChronoUnit.DAYS.between(a, b), oppure Period.between.\nDateTimeFormatter converte da e verso testo: DateTimeFormatter.ofPattern(\"dd/MM/yyyy\") per formattare con date.format(f) o interpretare con LocalDate.parse(testo, f). Attenzione: MM indica il mese, mm i minuti.",
+  "example": "import java.time.*;\nimport java.time.format.DateTimeFormatter;\nimport java.time.temporal.ChronoUnit;\n\npublic class Main {\n    public static void main(String[] args) {\n        LocalDate d = LocalDate.of(2025, 9, 16);\n        LocalDate fine = d.plusMonths(3).withDayOfMonth(1);\n        System.out.println(ChronoUnit.DAYS.between(d, fine));\n        LocalDateTime dt = LocalDateTime.of(2025, 9, 16, 10, 30);\n        System.out.println(dt.format(DateTimeFormatter.ofPattern(\"dd/MM/yyyy HH:mm\")));\n        System.out.println(Duration.ofMinutes(135).toHours());\n    }\n}",
+  "help": "Crea la data con il metodo factory LocalDate.of, aggiungi giorni con plusDays e salva il nuovo oggetto. Poi crea il formatter con ofPattern e usalo per formattare e stampare.",
+  "exercise": {
+   "prompt": "Aggiungi 30 giorni a una data e stampala nel formato gg/mm/aaaa.",
+   "lines": [
+    "LocalDate d = LocalDate.of(2025, 9, 16);",
+    "LocalDate next = d.plusDays(30);",
+    "DateTimeFormatter f = DateTimeFormatter.ofPattern(\"dd/MM/yyyy\");",
+    "System.out.println(next.format(f));"
+   ],
+   "distractors": [
+    "LocalDate d = new LocalDate(2025, 9, 16);"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce d.plusDays(1)?",
+    "options": [
+     "void, modifica d",
+     "Un nuovo LocalDate",
+     "Un int",
+     "Una String"
+    ],
+    "answer": 1,
+    "explain": "Le classi java.time sono immutabili."
+   },
+   {
+    "q": "Nel pattern di DateTimeFormatter, cosa indica MM?",
+    "options": [
+     "Minuti",
+     "Millisecondi",
+     "Mese",
+     "Meridiano"
+    ],
+    "answer": 2,
+    "explain": "MM è il mese, mm sono i minuti."
+   },
+   {
+    "q": "Quale classe rappresenta data e ora senza fuso orario?",
+    "options": [
+     "LocalDateTime",
+     "Instant",
+     "ZonedDateTime",
+     "Period"
+    ],
+    "answer": 0,
+    "explain": "LocalDateTime non ha fuso orario."
+   }
+  ]
+ },
+ {
+  "id": 31,
+  "category": "Programmazione a oggetti",
+  "title": "Classi e oggetti",
+  "lesson": "Una classe è lo stampo, un oggetto è un esemplare creato da quello stampo. La classe definisce i campi (lo stato dell'oggetto) e i metodi (il comportamento). Ogni oggetto ha la propria copia dei campi di istanza.\nSi dichiara con class Persona { String nome; int eta; }. Per creare un oggetto si usa new: Persona p = new Persona(); L'operatore new alloca l'oggetto nello heap e restituisce un riferimento, che viene memorizzato nella variabile. I campi si leggono e scrivono con l'operatore punto: p.nome = \"Anna\".\nI campi non inizializzati ricevono un valore di default: 0 per i numeri, false per boolean, null per i riferimenti. Le variabili locali invece non hanno default e vanno inizializzate.\nLe variabili di tipo classe contengono riferimenti, non oggetti: Persona q = p; non copia l'oggetto, ma fa puntare q allo stesso oggetto di p. Una modifica fatta tramite q è visibile anche da p. Con null un riferimento non punta a nulla e chiamare un metodo su di esso lancia NullPointerException. Per convenzione i nomi delle classi iniziano con la maiuscola.",
+  "example": "class Persona {\n    String nome;\n    int eta;\n    void saluta() { System.out.println(\"Ciao, sono \" + nome); }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Persona p = new Persona();\n        p.nome = \"Anna\";\n        Persona q = p;\n        q.nome = \"Bruno\";\n        p.saluta();\n    }\n}",
+  "help": "Crea l'oggetto con new e il costruttore con le parentesi. Poi assegna i campi con l'operatore punto e infine chiama il metodo saluta().",
+  "exercise": {
+   "prompt": "Crea un oggetto Persona, imposta i campi e chiama saluta().",
+   "lines": [
+    "Persona p = new Persona();",
+    "p.nome = \"Luca\";",
+    "p.eta = 25;",
+    "p.saluta();"
+   ],
+   "distractors": [
+    "Persona p = Persona();",
+    "p->nome = \"Luca\";"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa Persona q = p; ?",
+    "options": [
+     "Copia l'oggetto",
+     "Crea un nuovo oggetto vuoto",
+     "Fa puntare q allo stesso oggetto di p",
+     "Non compila"
+    ],
+    "answer": 2,
+    "explain": "Si copia il riferimento, non l'oggetto."
+   },
+   {
+    "q": "Che valore ha di default un campo String non inizializzato?",
+    "options": [
+     "\"\"",
+     "null",
+     "0",
+     "\"null\""
+    ],
+    "answer": 1,
+    "explain": "I riferimenti valgono null."
+   },
+   {
+    "q": "Quale parola chiave crea un oggetto?",
+    "options": [
+     "make",
+     "create",
+     "alloc",
+     "new"
+    ],
+    "answer": 3,
+    "explain": "Si usa new seguito dal costruttore."
+   }
+  ]
+ },
+ {
+  "id": 32,
+  "category": "Programmazione a oggetti",
+  "title": "Costruttori e this",
+  "lesson": "Il costruttore è un metodo speciale che inizializza un oggetto appena creato. Ha lo stesso nome della classe e non dichiara alcun tipo di ritorno, nemmeno void. Viene eseguito automaticamente da new.\nSe non scrivi alcun costruttore, il compilatore ne aggiunge uno senza parametri (costruttore di default). Appena ne dichiari uno tuo, quello di default sparisce: se serve anche la versione senza parametri, devi scriverla esplicitamente.\nLe classi possono avere più costruttori con parametri diversi (overloading). La parola chiave this ha due usi: this.campo si riferisce al campo dell'oggetto corrente, utile quando un parametro ha lo stesso nome (this.nome = nome;), mentre this(...) come prima istruzione di un costruttore ne richiama un altro della stessa classe, evitando di duplicare codice.\nI campi final devono essere assegnati esattamente una volta, tipicamente nel costruttore, così l'oggetto diventa immutabile. Con Java 25 è possibile eseguire alcune istruzioni prima di super(...) o this(...), purché non usino this (flexible constructor bodies).",
+  "example": "class Punto {\n    final int x, y;\n    Punto(int x, int y) {\n        this.x = x;\n        this.y = y;\n    }\n    Punto() {\n        this(0, 0);\n    }\n}\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(new Punto().x + \" \" + new Punto(2, 3).y);\n    }\n}",
+  "help": "Il costruttore ha il nome della classe e nessun tipo di ritorno. Dentro, this.marca indica il campo, marca da solo il parametro: assegna il parametro al campo.",
+  "exercise": {
+   "prompt": "Scrivi una classe Auto con un costruttore che inizializza il campo marca.",
+   "lines": [
+    "class Auto {",
+    "    private String marca;",
+    "    Auto(String marca) {",
+    "        this.marca = marca;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    void Auto(String marca) {",
+    "        marca = this.marca;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale tipo di ritorno ha un costruttore?",
+    "options": [
+     "void",
+     "Nessuno",
+     "Il nome della classe",
+     "Object"
+    ],
+    "answer": 1,
+    "explain": "I costruttori non dichiarano tipo di ritorno."
+   },
+   {
+    "q": "A cosa serve this(0, 0) in un costruttore?",
+    "options": [
+     "Crea un nuovo oggetto",
+     "Chiama il costruttore della superclasse",
+     "Chiama un altro costruttore della stessa classe",
+     "Azzera i campi"
+    ],
+    "answer": 2,
+    "explain": "this(...) delega a un altro costruttore."
+   },
+   {
+    "q": "Se dichiari un costruttore con parametri, cosa succede a quello di default?",
+    "options": [
+     "Resta disponibile",
+     "Non viene più generato",
+     "Diventa privato",
+     "Genera un errore"
+    ],
+    "answer": 1,
+    "explain": "Il costruttore di default esiste solo se non ne scrivi nessuno."
+   }
+  ]
+ },
+ {
+  "id": 33,
+  "category": "Programmazione a oggetti",
+  "title": "Incapsulamento",
+  "lesson": "L'incapsulamento consiste nel nascondere lo stato interno di una classe e nel permettere l'accesso solo tramite metodi controllati. In questo modo la classe può garantire che i suoi dati restino sempre validi e può cambiare l'implementazione senza rompere il codice che la usa.\nSi ottiene dichiarando i campi private e offrendo metodi pubblici: i getter leggono (getSaldo) e i setter modificano (setNome), magari con controlli di validità. Spesso conviene non offrire un setter ma metodi che esprimono un'operazione, come deposita(importo), che verifica che l'importo sia positivo.\nI modificatori di accesso sono quattro: private (solo la stessa classe), nessuno o package-private (stesso package), protected (stesso package e sottoclassi), public (ovunque). La regola pratica è usare il livello più restrittivo possibile.\nAttenzione a non esporre riferimenti a oggetti mutabili interni: un getter che restituisce direttamente una lista permette a chiunque di modificarla. In quel caso restituisci una copia o una vista non modificabile. Per i dati semplici e immutabili, i record offrono un'alternativa più concisa.",
+  "example": "class Conto {\n    private double saldo;\n    public void deposita(double v) {\n        if (v <= 0) throw new IllegalArgumentException(\"importo non valido\");\n        saldo += v;\n    }\n    public double getSaldo() { return saldo; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Conto c = new Conto();\n        c.deposita(50);\n        System.out.println(c.getSaldo());\n    }\n}",
+  "help": "Il campo deve essere private. Il getter è un metodo pubblico che restituisce il valore del campo con return, con tipo di ritorno double.",
+  "exercise": {
+   "prompt": "Scrivi una classe con campo privato saldo e il relativo getter.",
+   "lines": [
+    "class Conto {",
+    "    private double saldo;",
+    "    public double getSaldo() {",
+    "        return saldo;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    private double getSaldo;",
+    "        return this;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale modificatore limita l'accesso alla sola classe stessa?",
+    "options": [
+     "public",
+     "protected",
+     "private",
+     "static"
+    ],
+    "answer": 2,
+    "explain": "private è visibile solo dentro la classe."
+   },
+   {
+    "q": "Perché usare un setter con validazione?",
+    "options": [
+     "Per velocizzare il codice",
+     "Per garantire dati sempre validi",
+     "Per evitare i costruttori",
+     "Per usare static"
+    ],
+    "answer": 1,
+    "explain": "Il setter può rifiutare valori errati."
+   },
+   {
+    "q": "Quale accesso ha un membro senza modificatore?",
+    "options": [
+     "private",
+     "Visibile ovunque",
+     "Solo sottoclassi",
+     "Visibile nello stesso package"
+    ],
+    "answer": 3,
+    "explain": "È package-private."
+   }
+  ]
+ },
+ {
+  "id": 34,
+  "category": "Programmazione a oggetti",
+  "title": "Il modificatore static",
+  "lesson": "Un membro static appartiene alla classe e non alle singole istanze: esiste in un'unica copia condivisa e si usa con il nome della classe, per esempio Math.max o Contatore.totale. Non serve creare oggetti per usarlo.\nUn campo static è utile per contatori, costanti e dati condivisi. Le costanti si dichiarano static final con nome in maiuscolo: static final double IVA = 0.22;. Un metodo static non ha this: non può accedere direttamente ai campi o metodi di istanza, perché non sa su quale oggetto lavorare. Il contrario invece è possibile: un metodo di istanza può usare membri static.\nIl blocco static { ... } viene eseguito una sola volta, quando la classe viene caricata, e serve per inizializzazioni complesse. Anche il metodo main è static perché la JVM lo chiama senza creare un oggetto.\nÈ bene non abusare di static: uno stato statico modificabile è globale e rende il codice difficile da testare. Va benissimo invece per metodi di utilità senza stato e per costanti. Le classi nested possono essere static, come vedrai più avanti.",
+  "example": "class Contatore {\n    static int totale = 0;\n    static final double IVA = 0.22;\n    Contatore() { totale++; }\n    static double conIva(double p) { return p * (1 + IVA); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        new Contatore();\n        new Contatore();\n        System.out.println(Contatore.totale);\n        System.out.println(Contatore.conIva(100));\n    }\n}",
+  "help": "Il campo totale è static, quindi condiviso da tutti gli oggetti. Il costruttore lo incrementa con totale++ ogni volta che si crea un'istanza.",
+  "exercise": {
+   "prompt": "Conta quante istanze della classe vengono create con un campo static.",
+   "lines": [
+    "class Contatore {",
+    "    static int totale = 0;",
+    "    Contatore() {",
+    "        totale++;",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        this.totale = 0;",
+    "    int totale = 0;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quante copie esistono di un campo static?",
+    "options": [
+     "Una per oggetto",
+     "Una sola per classe",
+     "Due",
+     "Nessuna"
+    ],
+    "answer": 1,
+    "explain": "È condiviso da tutte le istanze."
+   },
+   {
+    "q": "Un metodo static può usare this?",
+    "options": [
+     "Sì, sempre",
+     "Solo nei costruttori",
+     "Solo se è public",
+     "No, non ha un'istanza corrente"
+    ],
+    "answer": 3,
+    "explain": "I metodi static non sono legati a un oggetto."
+   },
+   {
+    "q": "Come si dichiara una costante di classe?",
+    "options": [
+     "static final",
+     "const",
+     "final class",
+     "static var"
+    ],
+    "answer": 0,
+    "explain": "Java usa static final."
+   }
+  ]
+ },
+ {
+  "id": 35,
+  "category": "Programmazione a oggetti",
+  "title": "Ereditarietà",
+  "lesson": "L'ereditarietà permette a una classe (sottoclasse) di riusare e specializzare un'altra classe (superclasse). Si dichiara con la parola chiave extends: class Cane extends Animale. La sottoclasse eredita i campi e i metodi non privati della superclasse e può aggiungerne di nuovi.\nIn Java una classe può estendere una sola classe (ereditarietà singola), ma può implementare più interfacce. Tutte le classi estendono implicitamente Object, la radice della gerarchia, da cui ereditano metodi come toString, equals e hashCode.\nIl modificatore protected rende un membro visibile nelle sottoclassi e nello stesso package. I membri private esistono nell'oggetto ma non sono accessibili direttamente dalla sottoclasse.\nL'ereditarietà esprime una relazione \"è un\": un Cane è un Animale. Se la relazione è invece \"ha un\", è meglio la composizione, cioè avere un campo del tipo desiderato. Una classe dichiarata final non può essere estesa (String è final). Un oggetto sottoclasse può essere usato dove ci si aspetta la superclasse, ed è il punto di partenza del polimorfismo.",
+  "example": "class Animale {\n    protected String nome = \"generico\";\n    void mangia() { System.out.println(nome + \" mangia\"); }\n}\nclass Cane extends Animale {\n    void abbaia() { System.out.println(\"Bau\"); }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Cane c = new Cane();\n        c.mangia();\n        c.abbaia();\n    }\n}",
+  "help": "Si usa extends per l'ereditarietà tra classi. La classe base viene prima, poi le due sottoclassi che la estendono.",
+  "exercise": {
+   "prompt": "Definisci Animale e due sottoclassi Cane e Gatto che lo estendono.",
+   "lines": [
+    "class Animale { void mangia() { } }",
+    "class Cane extends Animale {",
+    "    void abbaia() { }",
+    "}",
+    "class Gatto extends Animale { }"
+   ],
+   "distractors": [
+    "class Cane implements Animale {",
+    "class Gatto extends Animale, Cane { }"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale parola chiave indica l'ereditarietà tra classi?",
+    "options": [
+     "inherits",
+     "extends",
+     "implements",
+     "super"
+    ],
+    "answer": 1,
+    "explain": "Si usa extends."
+   },
+   {
+    "q": "Quante superclassi dirette può avere una classe Java?",
+    "options": [
+     "Una",
+     "Due",
+     "Quante se ne vuole",
+     "Nessuna"
+    ],
+    "answer": 0,
+    "explain": "Ereditarietà singola di classi."
+   },
+   {
+    "q": "Quale classe è radice di tutte le classi?",
+    "options": [
+     "Base",
+     "Class",
+     "Main",
+     "Object"
+    ],
+    "answer": 3,
+    "explain": "Ogni classe estende Object."
+   }
+  ]
+ },
+ {
+  "id": 36,
+  "category": "Programmazione a oggetti",
+  "title": "Override e super",
+  "lesson": "L'override (sovrascrittura) consiste nel ridefinire in una sottoclasse un metodo ereditato, con la stessa firma (nome e parametri) e un tipo di ritorno compatibile. Così la sottoclasse può cambiarne il comportamento.\nÈ buona norma annotare il metodo con @Override: se sbagli il nome o i parametri, il compilatore segnala l'errore invece di creare per sbaglio un nuovo metodo. Il metodo che sovrascrive non può avere un accesso più restrittivo (non puoi trasformare un metodo public in protected) e non può essere sovrascritto se nella superclasse è final, private o static.\nLa parola chiave super serve per accedere alla superclasse: super.info() chiama la versione originale del metodo, utile per estenderla invece di sostituirla. super(...) come prima istruzione di un costruttore invoca un costruttore della superclasse. Se non lo scrivi, il compilatore inserisce super() senza argomenti, che deve esistere.\nNon confondere override con overloading: l'overloading crea metodi con lo stesso nome ma parametri diversi nella stessa classe, e viene risolto a tempo di compilazione.",
+  "example": "class Base {\n    Base() { System.out.println(\"Base\"); }\n    String info() { return \"base\"; }\n}\nclass Figlia extends Base {\n    Figlia() { super(); System.out.println(\"Figlia\"); }\n    @Override\n    String info() { return super.info() + \"+figlia\"; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(new Figlia().info());\n    }\n}",
+  "help": "Nel metodo sovrascritto, super.info() chiama la versione della classe base. Il risultato viene concatenato al testo aggiuntivo e restituito con return.",
+  "exercise": {
+   "prompt": "Sovrascrivi info() in Figlia riusando la versione della superclasse.",
+   "lines": [
+    "class Base { String info() { return \"base\"; } }",
+    "class Figlia extends Base {",
+    "    @Override",
+    "    String info() {",
+    "        return super.info() + \"+figlia\";",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "        return super + \"+figlia\";"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "A cosa serve @Override?",
+    "options": [
+     "Rende il metodo più veloce",
+     "Fa controllare al compilatore la sovrascrittura",
+     "Rende il metodo static",
+     "Nasconde il metodo"
+    ],
+    "answer": 1,
+    "explain": "Segnala errori se la firma non corrisponde."
+   },
+   {
+    "q": "Cosa fa super.info()?",
+    "options": [
+     "Chiama info() della superclasse",
+     "Chiama info() della sottoclasse",
+     "Crea un oggetto Base",
+     "Restituisce null"
+    ],
+    "answer": 0,
+    "explain": "super accede ai membri della superclasse."
+   },
+   {
+    "q": "Quale metodo NON può essere sovrascritto?",
+    "options": [
+     "public",
+     "protected",
+     "final",
+     "di istanza"
+    ],
+    "answer": 2,
+    "explain": "final impedisce l'override."
+   }
+  ]
+ },
+ {
+  "id": 37,
+  "category": "Programmazione a oggetti",
+  "title": "Polimorfismo",
+  "lesson": "Il polimorfismo permette di trattare oggetti di classi diverse attraverso un tipo comune. Una variabile di tipo Animale può riferirsi a un Cane, a un Gatto o a qualsiasi altra sottoclasse: Animale a = new Cane();\nQuando chiami un metodo di istanza, Java sceglie la versione da eseguire in base al tipo reale dell'oggetto a tempo di esecuzione, non al tipo della variabile. Questo meccanismo si chiama dynamic dispatch (late binding). Così un array di Animale può contenere oggetti diversi e a.verso() eseguirà ogni volta il metodo giusto, senza if o switch.\nL'assegnazione verso la superclasse (upcast) è implicita e sicura. Il contrario (downcast) richiede un cast esplicito e può lanciare ClassCastException, quindi conviene prima controllare con instanceof, oggi con il pattern matching: if (a instanceof Cane c) { c.abbaia(); }.\nAttenzione: il tipo della variabile determina quali metodi puoi chiamare. Con Animale a puoi chiamare solo i metodi di Animale. Il polimorfismo vale solo per i metodi di istanza: i campi e i metodi static non sono polimorfici.",
+  "example": "class Animale { String verso() { return \"...\"; } }\nclass Cane extends Animale { @Override String verso() { return \"Bau\"; } }\nclass Gatto extends Animale { @Override String verso() { return \"Miao\"; } }\n\npublic class Main {\n    public static void main(String[] args) {\n        Animale[] zoo = { new Cane(), new Gatto(), new Animale() };\n        for (Animale a : zoo) System.out.println(a.verso());\n        Animale x = zoo[0];\n        if (x instanceof Cane c) System.out.println(\"e un cane\");\n    }\n}",
+  "help": "Dichiara le due classi, poi crea un oggetto B ma usa una variabile di tipo A. Il metodo v() chiamato sarà quello di B per dynamic dispatch.",
+  "exercise": {
+   "prompt": "Usa una variabile di tipo A che punta a un oggetto B e chiama v().",
+   "lines": [
+    "class A { String v() { return \"A\"; } }",
+    "class B extends A { String v() { return \"B\"; } }",
+    "A x = new B();",
+    "System.out.println(x.v());"
+   ],
+   "distractors": [
+    "B x = new A();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale versione di un metodo di istanza viene eseguita?",
+    "options": [
+     "Quella del tipo dichiarato della variabile",
+     "Quella del tipo reale dell'oggetto",
+     "Sempre quella della superclasse",
+     "Quella scelta a caso"
+    ],
+    "answer": 1,
+    "explain": "È il dynamic dispatch a tempo di esecuzione."
+   },
+   {
+    "q": "Cosa serve per assegnare un Animale a una variabile Cane?",
+    "options": [
+     "Niente, è automatico",
+     "Un cast esplicito",
+     "Un nuovo costruttore",
+     "La parola final"
+    ],
+    "answer": 1,
+    "explain": "Il downcast richiede cast esplicito."
+   },
+   {
+    "q": "Cosa verifica instanceof?",
+    "options": [
+     "Il nome della variabile",
+     "Se due oggetti sono uguali",
+     "La memoria usata",
+     "Il tipo reale di un oggetto"
+    ],
+    "answer": 3,
+    "explain": "Controlla se l'oggetto è di un certo tipo."
+   }
+  ]
+ },
+ {
+  "id": 38,
+  "category": "Programmazione a oggetti",
+  "title": "Classi astratte",
+  "lesson": "Una classe astratta si dichiara con abstract e non può essere istanziata: serve come base comune per altre classi. Può contenere metodi astratti, cioè dichiarati senza corpo (abstract double area();), che le sottoclassi concrete sono obbligate a implementare, oltre a campi, costruttori e metodi normali.\nÈ utile quando più classi condividono codice e stato ma ognuna deve fornire una parte specifica. Per esempio Forma può avere un metodo stampa() che usa area(), mentre Quadrato e Cerchio calcolano l'area in modo diverso. È un esempio del pattern template method.\nUna sottoclasse che non implementa tutti i metodi astratti deve essere dichiarata a sua volta abstract. Una classe astratta può non avere metodi astratti, ma se ne ha almeno uno deve essere abstract. Un metodo astratto non può essere private, final o static.\nLa differenza con le interfacce: una classe astratta può avere stato (campi di istanza) e costruttori, ma una classe può estenderne una sola. Le interfacce permettono implementazioni multiple. Scegli la classe astratta quando c'è una relazione forte e codice da condividere.",
+  "example": "abstract class Forma {\n    abstract double area();\n    void stampa() { System.out.println(\"Area: \" + area()); }\n}\nclass Quadrato extends Forma {\n    private final double l;\n    Quadrato(double l) { this.l = l; }\n    double area() { return l * l; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        new Quadrato(3).stampa();\n    }\n}",
+  "help": "Il metodo astratto non ha corpo e termina con il punto e virgola. La sottoclasse concreta lo implementa e restituisce l * l.",
+  "exercise": {
+   "prompt": "Dichiara una classe astratta con un metodo astratto e implementalo.",
+   "lines": [
+    "abstract class Forma { abstract double area(); }",
+    "class Quadrato extends Forma {",
+    "    double l = 2;",
+    "    double area() { return l * l; }",
+    "}"
+   ],
+   "distractors": [
+    "    abstract double area() { return 0; }",
+    "class Quadrato implements Forma {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa non si può fare con una classe astratta?",
+    "options": [
+     "Estenderla",
+     "Dichiarare campi",
+     "Istanziarla con new",
+     "Dichiarare costruttori"
+    ],
+    "answer": 2,
+    "explain": "Non si può creare direttamente un'istanza."
+   },
+   {
+    "q": "Un metodo astratto ha...",
+    "options": [
+     "Un corpo vuoto {}",
+     "Nessun corpo",
+     "Sempre static",
+     "Solo parametri int"
+    ],
+    "answer": 1,
+    "explain": "Termina con ; senza corpo."
+   },
+   {
+    "q": "Quale vantaggio ha una classe astratta rispetto a un'interfaccia?",
+    "options": [
+     "Si possono estendere più classi",
+     "Non servono metodi",
+     "Può avere campi di istanza e costruttori",
+     "È più veloce"
+    ],
+    "answer": 2,
+    "explain": "Può mantenere stato."
+   }
+  ]
+ },
+ {
+  "id": 39,
+  "category": "Programmazione a oggetti",
+  "title": "Classi nested, inner e anonime",
+  "lesson": "Java permette di dichiarare classi dentro altre classi. Esistono quattro tipi. La classe static nested è un membro static della classe esterna: non ha un riferimento all'istanza esterna e si crea con new Esterna.Nested(). È utile per raggruppare classi di supporto, come un Builder.\nLa classe inner (non static) è legata a un'istanza della classe esterna e può accedere ai suoi campi, anche privati. Si crea a partire da un'istanza: esterna.new Inner(). La classe locale si dichiara dentro un metodo e può usare le variabili locali effectively final.\nLa classe anonima dichiara e istanzia in un colpo solo una sottoclasse senza nome, di una classe o di un'interfaccia: new Runnable() { public void run() { ... } }. Era molto usata prima delle lambda; oggi, per le interfacce con un solo metodo, si preferisce la lambda.\nRegola pratica: se la classe interna non ha bisogno dell'istanza esterna, rendila static, per evitare riferimenti nascosti e possibili memory leak. Anche record, enum e interfacce possono essere dichiarati nested.",
+  "example": "public class Main {\n    static class Nested { String v() { return \"nested\"; } }\n    class Inner { String v() { return \"inner\"; } }\n\n    public static void main(String[] args) {\n        System.out.println(new Nested().v());\n        System.out.println(new Main().new Inner().v());\n        Runnable r = new Runnable() {\n            public void run() { System.out.println(\"anonima\"); }\n        };\n        r.run();\n    }\n}",
+  "help": "Una classe anonima si crea con new e il nome dell'interfaccia, seguito dal corpo tra graffe. L'istruzione termina con un punto e virgola. Poi si chiama run().",
+  "exercise": {
+   "prompt": "Crea un Runnable come classe anonima ed eseguilo.",
+   "lines": [
+    "Runnable r = new Runnable() {",
+    "    public void run() {",
+    "        System.out.println(\"ciao\");",
+    "    }",
+    "};",
+    "r.run();"
+   ],
+   "distractors": [
+    "Runnable r = new Runnable();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quale classe nested non ha riferimento all'istanza esterna?",
+    "options": [
+     "Inner",
+     "Locale",
+     "static nested",
+     "Anonima"
+    ],
+    "answer": 2,
+    "explain": "La static nested è indipendente dall'istanza."
+   },
+   {
+    "q": "Cosa è una classe anonima?",
+    "options": [
+     "Una classe senza metodi",
+     "Una classe con nome nascosto in un file",
+     "Una classe abstract",
+     "Una classe senza nome istanziata subito"
+    ],
+    "answer": 3,
+    "explain": "Dichiarata e istanziata in un'unica espressione."
+   },
+   {
+    "q": "Come si crea un'istanza di una classe inner?",
+    "options": [
+     "new Inner()",
+     "esterna.new Inner()",
+     "Inner.create()",
+     "static Inner()"
+    ],
+    "answer": 1,
+    "explain": "Serve un'istanza della classe esterna."
+   }
+  ]
+ },
+ {
+  "id": 40,
+  "category": "Programmazione a oggetti",
+  "title": "Object: equals, hashCode, toString",
+  "lesson": "Object è la superclasse di ogni classe e fornisce tre metodi da conoscere bene. toString() restituisce una descrizione testuale: l'implementazione di default stampa nome della classe e hash, poco utile, quindi conviene sovrascriverlo. println e la concatenazione con + lo chiamano automaticamente.\nequals(Object o) stabilisce l'uguaglianza logica. Di default confronta i riferimenti, come ==. Sovrascrivendolo puoi dire che due oggetti con gli stessi campi sono uguali. Deve essere riflessivo, simmetrico, transitivo, coerente e false per null.\nhashCode() restituisce un intero usato da HashMap e HashSet. Vale il contratto: se a.equals(b) è true, allora a.hashCode() == b.hashCode(). Se sovrascrivi equals devi sovrascrivere anche hashCode, altrimenti gli oggetti uguali finiscono in posizioni diverse nelle collezioni basate su hash. Si può usare Objects.hash(x, y) per calcolarlo.\nIl parametro di equals è Object, non il tipo della classe: con un altro tipo staresti facendo overloading e non override. I record generano automaticamente equals, hashCode e toString.",
+  "example": "import java.util.Objects;\nclass P {\n    final int x, y;\n    P(int x, int y) { this.x = x; this.y = y; }\n    @Override public boolean equals(Object o) {\n        return o instanceof P p && p.x == x && p.y == y;\n    }\n    @Override public int hashCode() { return Objects.hash(x, y); }\n    @Override public String toString() { return \"P(\" + x + \",\" + y + \")\"; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(new P(1, 2).equals(new P(1, 2)) + \" \" + new P(1, 2));\n    }\n}",
+  "help": "equals riceve un Object e usa instanceof con pattern per fare il cast. Confronta il campo e restituisce un boolean. Ricorda di scrivere anche hashCode coerente.",
+  "exercise": {
+   "prompt": "Implementa equals e hashCode coerenti per la classe P.",
+   "lines": [
+    "class P {",
+    "    int x;",
+    "    @Override public boolean equals(Object o) {",
+    "        return o instanceof P p && p.x == x;",
+    "    }",
+    "    @Override public int hashCode() { return x; }",
+    "}"
+   ],
+   "distractors": [
+    "    public boolean equals(P o) {",
+    "        return o == this;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa afferma il contratto tra equals e hashCode?",
+    "options": [
+     "Oggetti uguali hanno stesso hashCode",
+     "Oggetti diversi hanno hashCode diversi",
+     "hashCode deve essere sempre 0",
+     "equals deve usare =="
+    ],
+    "answer": 0,
+    "explain": "Se equals è true, gli hashCode coincidono."
+   },
+   {
+    "q": "Cosa confronta l'equals di default di Object?",
+    "options": [
+     "I campi",
+     "I riferimenti",
+     "Le stringhe",
+     "I nomi di classe"
+    ],
+    "answer": 1,
+    "explain": "Si comporta come ==."
+   },
+   {
+    "q": "Quale tipo ha il parametro di equals per fare override?",
+    "options": [
+     "La classe stessa",
+     "String",
+     "Object",
+     "var"
+    ],
+    "answer": 2,
+    "explain": "Deve essere Object, altrimenti è un overload."
+   }
+  ]
+ },
+ {
+  "id": 41,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Interfacce",
+  "lesson": "Un'interfaccia definisce un contratto: un insieme di metodi che una classe si impegna a fornire, senza dire come. Si dichiara con interface e i metodi sono implicitamente public e abstract. Una classe la realizza con implements e deve implementare tutti i metodi, dichiarandoli public.\nA differenza delle classi, una classe può implementare più interfacce: class Anatra implements Volante, Nuotatore. È il modo di Java di ottenere una forma di ereditarietà multipla del tipo. Un'interfaccia può estenderne altre con extends.\nI campi di un'interfaccia sono implicitamente public static final, cioè costanti. Le interfacce non hanno costruttori e non si possono istanziare con new, ma si possono usare come tipo di variabile, parametro o ritorno: Volante v = new Anatra();\nProgrammare verso le interfacce (per esempio List invece di ArrayList) rende il codice flessibile e facile da testare, perché si può sostituire l'implementazione senza modificare chi la usa. Esempi nella libreria standard: Comparable, Runnable, List, Map.",
+  "example": "interface Volante { void vola(); }\ninterface Nuotatore { void nuota(); }\n\nclass Anatra implements Volante, Nuotatore {\n    public void vola() { System.out.println(\"vola\"); }\n    public void nuota() { System.out.println(\"nuota\"); }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Volante v = new Anatra();\n        v.vola();\n    }\n}",
+  "help": "La classe usa implements, non extends, per un'interfaccia. Il metodo implementato deve essere public, perché i metodi di interfaccia sono implicitamente pubblici.",
+  "exercise": {
+   "prompt": "Implementa l'interfaccia Suono nella classe Gatto.",
+   "lines": [
+    "interface Suono { void emetti(); }",
+    "class Gatto implements Suono {",
+    "    public void emetti() {",
+    "        System.out.println(\"miao\");",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "class Gatto extends Suono {",
+    "    void emetti() {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quante interfacce può implementare una classe?",
+    "options": [
+     "Una",
+     "Due",
+     "Solo se astratta",
+     "Quante se ne vuole"
+    ],
+    "answer": 3,
+    "explain": "L'implementazione multipla è permessa."
+   },
+   {
+    "q": "Quale visibilità hanno i metodi di un'interfaccia?",
+    "options": [
+     "public",
+     "private",
+     "protected",
+     "package-private"
+    ],
+    "answer": 0,
+    "explain": "Sono implicitamente public."
+   },
+   {
+    "q": "Si può fare new su un'interfaccia?",
+    "options": [
+     "Sì, sempre",
+     "No, solo su classi concrete o anonime",
+     "Solo se ha un metodo",
+     "Solo in main"
+    ],
+    "answer": 1,
+    "explain": "Si istanzia una classe che la implementa."
+   }
+  ]
+ },
+ {
+  "id": 42,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Metodi default e static nelle interfacce",
+  "lesson": "Dalla versione 8 le interfacce possono contenere metodi con implementazione. Un metodo default ha il corpo e viene ereditato dalle classi che implementano l'interfaccia, che possono comunque sovrascriverlo. È stato introdotto per poter aggiungere metodi a interfacce esistenti, come List.sort o Collection.stream, senza rompere le classi già scritte.\nUn metodo static dell'interfaccia appartiene all'interfaccia stessa e si chiama con il suo nome (Saluto.di(\"Java\")): non viene ereditato dalle classi implementatrici. Si usa per metodi di utilità e factory, come List.of.\nDalla versione 9 esistono anche i metodi private (e private static), utili per condividere codice tra i metodi default senza esporlo.\nSe una classe implementa due interfacce con lo stesso metodo default, il compilatore segnala un conflitto e la classe deve risolverlo sovrascrivendo il metodo; può richiamare una versione specifica con Interfaccia.super.metodo(). Le interfacce restano senza stato di istanza: non hanno campi non costanti. Se un'interfaccia ha un solo metodo astratto, è una interfaccia funzionale.",
+  "example": "interface Saluto {\n    String nome();\n    default String ciao() { return \"Ciao \" + nome(); }\n    static Saluto di(String n) { return () -> n; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Saluto s = Saluto.di(\"Java\");\n        System.out.println(s.ciao());\n    }\n}",
+  "help": "Un metodo default richiede la parola default e un corpo con return. Il metodo static usa static e un corpo. Il metodo privato serve solo per uso interno.",
+  "exercise": {
+   "prompt": "Scrivi un'interfaccia con un metodo default e uno static.",
+   "lines": [
+    "interface Saluto {",
+    "    default String ciao() { return \"Ciao\"; }",
+    "    static Saluto base() { return new Saluto() { }; }",
+    "}"
+   ],
+   "distractors": [
+    "    default String ciao();",
+    "    default static void x() { }"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Perché sono stati introdotti i metodi default?",
+    "options": [
+     "Per rendere le interfacce private",
+     "Per sostituire le classi astratte",
+     "Per aggiungere metodi senza rompere le implementazioni",
+     "Per velocizzare la JVM"
+    ],
+    "answer": 2,
+    "explain": "Permettono di evolvere interfacce già esistenti."
+   },
+   {
+    "q": "Come si chiama un metodo static di interfaccia?",
+    "options": [
+     "Con il nome dell'interfaccia",
+     "Da un'istanza",
+     "Con super",
+     "Non si può chiamare"
+    ],
+    "answer": 0,
+    "explain": "Es. List.of(...): si usa il nome dell'interfaccia."
+   },
+   {
+    "q": "Cosa succede con due default dello stesso metodo?",
+    "options": [
+     "Vince il primo",
+     "Vince l'ultimo",
+     "La classe deve risolvere il conflitto",
+     "Si sceglie a caso"
+    ],
+    "answer": 2,
+    "explain": "Serve un override esplicito."
+   }
+  ]
+ },
+ {
+  "id": 43,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Interfacce funzionali",
+  "lesson": "Un'interfaccia funzionale ha esattamente un metodo astratto (può avere altri metodi default o static e anche quelli di Object come equals). Può essere implementata con una lambda o un method reference al posto di una classe anonima.\nL'annotazione @FunctionalInterface è facoltativa ma consigliata: il compilatore verifica che l'interfaccia abbia un solo metodo astratto e segnala l'errore se qualcuno ne aggiunge un altro. Esempi della libreria: Runnable, Comparator<T>, Callable<V> e quelle di java.util.function come Function<T,R>, Predicate<T>, Supplier<T>, Consumer<T>.\nLa sintassi di una lambda è (parametri) -> espressione oppure (parametri) -> { istruzioni; }. I tipi dei parametri sono dedotti dal contesto: Op somma = (a, b) -> a + b;. La lambda può usare variabili locali solo se sono final o effectively final, cioè mai riassegnate.\nIl tipo di una lambda dipende dal contesto, dal cosiddetto target type: la stessa lambda può essere un Op o un altro tipo con la stessa forma. Le interfacce funzionali sono la base di stream e programmazione funzionale, che affronteremo presto.",
+  "example": "import java.util.function.*;\n\n@FunctionalInterface\ninterface Op { int applica(int a, int b); }\n\npublic class Main {\n    public static void main(String[] args) {\n        Op somma = (a, b) -> a + b;\n        Op molt = (a, b) -> a * b;\n        System.out.println(somma.applica(2, 3) + \" \" + molt.applica(2, 3));\n        Function<Integer, Integer> doppio = x -> x * 2;\n        System.out.println(doppio.apply(21));\n    }\n}",
+  "help": "Dichiara l'interfaccia con un solo metodo astratto, poi assegna una lambda con la freccia ->. Infine chiama il metodo dell'interfaccia sulla variabile.",
+  "exercise": {
+   "prompt": "Dichiara un'interfaccia funzionale Op e usala con una lambda.",
+   "lines": [
+    "@FunctionalInterface",
+    "interface Op { int applica(int a, int b); }",
+    "Op somma = (a, b) -> a + b;",
+    "System.out.println(somma.applica(2, 3));"
+   ],
+   "distractors": [
+    "Op somma = (a, b) => a + b;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quanti metodi astratti ha un'interfaccia funzionale?",
+    "options": [
+     "Nessuno",
+     "Esattamente uno",
+     "Almeno due",
+     "Quanti si vuole"
+    ],
+    "answer": 1,
+    "explain": "Esattamente uno."
+   },
+   {
+    "q": "Quale simbolo separa parametri e corpo in una lambda?",
+    "options": [
+     "=>",
+     "::",
+     "->",
+     "<-"
+    ],
+    "answer": 2,
+    "explain": "La freccia è ->."
+   },
+   {
+    "q": "Quali variabili locali può usare una lambda?",
+    "options": [
+     "Qualsiasi",
+     "Solo static",
+     "Solo int",
+     "Solo final o effectively final"
+    ],
+    "answer": 3,
+    "explain": "Non possono essere riassegnate."
+   }
+  ]
+ },
+ {
+  "id": 44,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Enum",
+  "lesson": "Un enum definisce un insieme fisso di costanti con nome, come i giorni della settimana o gli stati di un ordine. È più sicuro di usare int o String, perché il compilatore impedisce valori non previsti: enum Giorno { LUN, MAR, MER }.\nOgni costante è un'unica istanza del tipo enum. Si confrontano con == (e anche con equals). Metodi utili: values() restituisce un array con tutte le costanti, valueOf(\"MAR\") converte una stringa nella costante (lanciando IllegalArgumentException se non esiste), name() restituisce il nome come stringa, ordinal() la posizione partendo da 0, compareTo confronta per posizione.\nGli enum funzionano molto bene con lo switch: con una switch expression il compilatore verifica che tutti i casi siano coperti e in tal caso non serve default. Nei case si scrive il nome semplice della costante, senza il nome dell'enum.\nUn enum non può estendere altre classi (estende implicitamente java.lang.Enum), ma può implementare interfacce. Non si può creare un'istanza con new e il costruttore è implicitamente privato. Ogni enum può essere dichiarato anche dentro un'altra classe.",
+  "example": "enum Giorno { LUN, MAR, MER }\n\npublic class Main {\n    public static void main(String[] args) {\n        Giorno g = Giorno.valueOf(\"MAR\");\n        System.out.println(g + \" \" + g.ordinal());\n        for (Giorno x : Giorno.values()) System.out.print(x.name() + \" \");\n        String s = switch (g) {\n            case LUN -> \"inizio\";\n            case MAR, MER -> \"meta\";\n        };\n        System.out.println(s);\n    }\n}",
+  "help": "Dichiara l'enum, assegna una costante con il nome dell'enum e un punto. Poi usa switch con le frecce e i nomi semplici delle costanti nei case.",
+  "exercise": {
+   "prompt": "Dichiara un enum Giorno e usa uno switch sul valore scelto.",
+   "lines": [
+    "enum Giorno { LUN, MAR, MER }",
+    "Giorno g = Giorno.MAR;",
+    "switch (g) {",
+    "    case MAR -> System.out.println(\"martedi\");",
+    "    default -> System.out.println(\"altro\");",
+    "}"
+   ],
+   "distractors": [
+    "Giorno g = new Giorno();"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa restituisce Giorno.values()?",
+    "options": [
+     "Un array con tutte le costanti",
+     "Il numero di costanti",
+     "Una stringa",
+     "La prima costante"
+    ],
+    "answer": 0,
+    "explain": "È un array delle costanti, nell'ordine di dichiarazione."
+   },
+   {
+    "q": "Come si confrontano due costanti enum?",
+    "options": [
+     "Solo con equals",
+     "Con ==",
+     "Con compare",
+     "Solo con switch"
+    ],
+    "answer": 1,
+    "explain": "== è sicuro, perché esiste una sola istanza per costante."
+   },
+   {
+    "q": "Si può creare un enum con new?",
+    "options": [
+     "Sì",
+     "Solo dentro main",
+     "No, istanze fisse",
+     "Solo se ha campi"
+    ],
+    "answer": 2,
+    "explain": "Le istanze sono solo le costanti dichiarate."
+   }
+  ]
+ },
+ {
+  "id": 45,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Enum avanzati: campi, metodi, EnumMap",
+  "lesson": "Un enum è una classe a tutti gli effetti: può avere campi, costruttori e metodi. Le costanti passano i valori al costruttore tra parentesi: TERRA(5.97). Dopo l'ultima costante si mette un punto e virgola, poi si scrivono i membri. Il costruttore è sempre privato, anche se non lo scrivi, e i campi di solito sono final.\nOgni costante può anche avere un corpo proprio che sovrascrive un metodo dell'enum, utile quando il comportamento cambia per costante. Un enum può dichiarare un metodo astratto che ogni costante deve implementare. Può inoltre implementare interfacce.\nPer le collezioni esistono strutture ottimizzate: EnumMap<K, V> è una mappa con chiavi enum, implementata con un array interno, quindi più veloce e compatta di HashMap, e mantiene le chiavi nell'ordine dell'enum. EnumSet è l'equivalente per gli insiemi, con metodi factory come EnumSet.of, EnumSet.allOf e EnumSet.noneOf.\nEvita di basarti su ordinal() per logica di business: se riordini le costanti il comportamento cambia. È meglio un campo esplicito.",
+  "example": "import java.util.*;\nenum Pianeta {\n    TERRA(5.97), MARTE(0.64);\n    private final double massa;\n    Pianeta(double massa) { this.massa = massa; }\n    double massa() { return massa; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        EnumMap<Pianeta, String> nomi = new EnumMap<>(Pianeta.class);\n        nomi.put(Pianeta.MARTE, \"rosso\");\n        System.out.println(nomi + \" \" + Pianeta.TERRA.massa());\n    }\n}",
+  "help": "Le costanti con valori stanno sulla prima riga, terminate da punto e virgola. Il costruttore è senza modificatori public e inizializza il campo final.",
+  "exercise": {
+   "prompt": "Scrivi un enum Pianeta con campo massa e costruttore.",
+   "lines": [
+    "enum Pianeta {",
+    "    TERRA(5.97), MARTE(0.64);",
+    "    private final double massa;",
+    "    Pianeta(double massa) { this.massa = massa; }",
+    "    double massa() { return massa; }",
+    "}"
+   ],
+   "distractors": [
+    "    public Pianeta(double massa) { this.massa = massa; }"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Che visibilità ha il costruttore di un enum?",
+    "options": [
+     "public",
+     "protected",
+     "Sempre privato",
+     "static"
+    ],
+    "answer": 2,
+    "explain": "Non si possono creare altre istanze."
+   },
+   {
+    "q": "Quando conviene EnumMap?",
+    "options": [
+     "Con chiavi enum",
+     "Con chiavi String",
+     "Con chiavi null",
+     "Con valori int"
+    ],
+    "answer": 0,
+    "explain": "È una mappa efficiente per chiavi enum."
+   },
+   {
+    "q": "Perché evitare ordinal() nella logica?",
+    "options": [
+     "Non esiste",
+     "Restituisce una stringa",
+     "È lento",
+     "Cambia se si riordinano le costanti"
+    ],
+    "answer": 3,
+    "explain": "Dipende dall'ordine di dichiarazione."
+   }
+  ]
+ },
+ {
+  "id": 46,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Record",
+  "lesson": "Un record è un modo conciso per dichiarare classi che trasportano dati immutabili. Si scrive record Punto(int x, int y) { }: il compilatore genera automaticamente campi privati final, un costruttore canonico, i metodi di accesso x() e y() (senza prefisso get), equals, hashCode e toString basati su tutti i componenti.\nUn record è implicitamente final e estende java.lang.Record, quindi non può estendere altre classi, ma può implementare interfacce. I suoi campi sono final: per \"modificare\" un record si crea una nuova istanza. Non si possono dichiarare campi di istanza aggiuntivi, ma si possono aggiungere metodi di istanza, metodi static e campi static.\nI record sono perfetti per DTO, chiavi di mappe, risultati di calcoli, coppie di valori. Il toString produce qualcosa come Punto[x=3, y=4]. L'uguaglianza è per valore: due record con gli stessi componenti sono uguali.\nSi possono dichiarare anche locali dentro un metodo e generici: record Coppia<A, B>(A primo, B secondo). Attenzione: se un componente è un oggetto mutabile, il record è immutabile solo in modo superficiale.",
+  "example": "record Punto(int x, int y) {\n    double dist() { return Math.sqrt(x * x + y * y); }\n    static Punto origine() { return new Punto(0, 0); }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Punto p = new Punto(3, 4);\n        System.out.println(p + \" \" + p.x() + \" \" + p.dist());\n        System.out.println(p.equals(new Punto(3, 4)));\n    }\n}",
+  "help": "I componenti del record stanno tra parentesi nell'intestazione. Nel corpo puoi aggiungere solo metodi: qui dist() usa x e y con la formula della radice.",
+  "exercise": {
+   "prompt": "Dichiara un record Punto con un metodo che calcola la distanza dall'origine.",
+   "lines": [
+    "record Punto(int x, int y) {",
+    "    double dist() {",
+    "        return Math.sqrt(x * x + y * y);",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    int z;",
+    "record Punto(int x, int y) extends Object {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Come si legge il componente x di un record?",
+    "options": [
+     "p.getX()",
+     "p.x",
+     "p.x()",
+     "p.get(\"x\")"
+    ],
+    "answer": 2,
+    "explain": "Il metodo di accesso ha il nome del componente."
+   },
+   {
+    "q": "Cosa genera automaticamente un record?",
+    "options": [
+     "Solo il costruttore",
+     "Solo i setter",
+     "Solo hashCode",
+     "Costruttore, accessor, equals, hashCode, toString"
+    ],
+    "answer": 3,
+    "explain": "Tutti i membri base."
+   },
+   {
+    "q": "Un record può estendere un'altra classe?",
+    "options": [
+     "No",
+     "Sì",
+     "Solo abstract",
+     "Solo se final"
+    ],
+    "answer": 0,
+    "explain": "Estende già Record, ma può implementare interfacce."
+   }
+  ]
+ },
+ {
+  "id": 47,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Record: compact constructor",
+  "lesson": "Per validare o normalizzare i dati di un record si usa il compact constructor: un costruttore senza lista di parametri, dichiarato con il solo nome del record. Viene eseguito prima dell'assegnazione ai campi, e al suo interno i parametri del record (a, b) sono disponibili come variabili locali.\nSi può lanciare un'eccezione se i dati non sono validi: if (a > b) throw new IllegalArgumentException(...); oppure riassegnare i parametri per normalizzarli (nome = nome.strip();). Non si assegnano esplicitamente i campi con this.a = a: lo fa il compilatore alla fine del blocco, con i valori correnti dei parametri.\nSi può invece dichiarare un costruttore canonico completo, con parametri espliciti, ma allora si devono assegnare tutti i campi. Si possono aggiungere anche costruttori non canonici, che devono delegare a un altro costruttore con this(...), per esempio per fornire valori di default.\nPer i componenti che sono collezioni mutabili, nel compact constructor si può fare una copia difensiva con List.copyOf(lista), che rende il record davvero immutabile.",
+  "example": "record Intervallo(int a, int b) {\n    Intervallo {\n        if (a > b) throw new IllegalArgumentException(\"a > b\");\n    }\n    int ampiezza() { return b - a; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(new Intervallo(2, 9).ampiezza());\n        try { new Intervallo(5, 1); }\n        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }\n    }\n}",
+  "help": "Il compact constructor ha solo il nome, senza parentesi di parametri. Dentro controlli la condizione e lanci l'eccezione con throw se i dati non sono validi.",
+  "exercise": {
+   "prompt": "Valida i componenti di un record con un compact constructor.",
+   "lines": [
+    "record Intervallo(int a, int b) {",
+    "    Intervallo {",
+    "        if (a > b) {",
+    "            throw new IllegalArgumentException();",
+    "        }",
+    "    }",
+    "}"
+   ],
+   "distractors": [
+    "    Intervallo(int a, int b) {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Come si dichiara un compact constructor?",
+    "options": [
+     "Senza lista di parametri",
+     "Con void davanti",
+     "Con la parola compact",
+     "Con parametri solo int"
+    ],
+    "answer": 0,
+    "explain": "Ha solo il nome del record."
+   },
+   {
+    "q": "Cosa non si fa nel compact constructor?",
+    "options": [
+     "Lanciare eccezioni",
+     "Validare",
+     "Assegnare this.a = a",
+     "Normalizzare i parametri"
+    ],
+    "answer": 2,
+    "explain": "L'assegnazione ai campi è automatica."
+   },
+   {
+    "q": "Cosa serve per un costruttore non canonico?",
+    "options": [
+     "Niente",
+     "Chiamare this(...) a un altro costruttore",
+     "La parola final",
+     "Un campo extra"
+    ],
+    "answer": 1,
+    "explain": "Deve delegare in ultima analisi al canonico."
+   }
+  ]
+ },
+ {
+  "id": 48,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Sealed classes e interfacce",
+  "lesson": "Una classe o interfaccia sealed (sigillata) limita quali altre classi possono estenderla o implementarla. Si dichiara con sealed e la clausola permits elenca i sottotipi ammessi: sealed interface Forma permits Cerchio, Quadrato { }. Se i sottotipi sono nello stesso file, permits si può omettere.\nOgni sottotipo diretto deve dichiarare cosa succede alla gerarchia con uno di tre modificatori: final (non può essere esteso, e i record lo sono già), sealed (a sua volta restringe i suoi sottotipi) o non-sealed (riapre la gerarchia a chiunque). I permessi devono stare nello stesso package, oppure nello stesso modulo se usi i moduli.\nA cosa serve? Permette di modellare un insieme chiuso di possibilità, come i tipi algebrici dei linguaggi funzionali. Il compilatore conosce tutti i sottotipi, quindi in uno switch su un tipo sealed può verificare che tutti i casi siano coperti, senza bisogno di default. Si combina in modo ideale con i record.\nCon isSealed() e getPermittedSubclasses() puoi ispezionare le classi sigillate tramite reflection.",
+  "example": "sealed interface Forma permits Cerchio, Quadrato { }\nrecord Cerchio(double r) implements Forma { }\nrecord Quadrato(double l) implements Forma { }\n\npublic class Main {\n    public static void main(String[] args) {\n        Forma f = new Cerchio(1);\n        System.out.println(f instanceof Cerchio);\n        System.out.println(Forma.class.isSealed());\n    }\n}",
+  "help": "L'interfaccia sealed elenca dopo permits tutti i sottotipi ammessi. Ogni sottotipo elencato deve poi implementarla davvero e dichiararsi final, sealed o non-sealed.",
+  "exercise": {
+   "prompt": "Dichiara una gerarchia sigillata con tre sottotipi.",
+   "lines": [
+    "sealed interface Forma permits Cerchio, Quadrato, Triangolo { }",
+    "record Cerchio(double r) implements Forma { }",
+    "record Quadrato(double l) implements Forma { }",
+    "final class Triangolo implements Forma { }"
+   ],
+   "distractors": [
+    "non-sealed class Altro implements Forma { }"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa indica permits?",
+    "options": [
+     "I metodi pubblici",
+     "I sottotipi ammessi",
+     "I package importati",
+     "Le eccezioni lanciate"
+    ],
+    "answer": 1,
+    "explain": "Elenca le classi che possono estendere il tipo sealed."
+   },
+   {
+    "q": "Quale modificatore NON è valido per un sottotipo di una sealed?",
+    "options": [
+     "final",
+     "sealed",
+     "non-sealed",
+     "private"
+    ],
+    "answer": 3,
+    "explain": "Deve essere final, sealed o non-sealed."
+   },
+   {
+    "q": "Quale vantaggio dà sealed con switch?",
+    "options": [
+     "Rende switch più lento",
+     "Evita le eccezioni",
+     "Non serve più break",
+     "Il compilatore verifica l'esaustività"
+    ],
+    "answer": 3,
+    "explain": "Conosce tutti i sottotipi."
+   }
+  ]
+ },
+ {
+  "id": 49,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Pattern matching in switch su sealed",
+  "lesson": "Dalla versione 21 lo switch supporta il pattern matching: nei case si scrive un tipo con una variabile, e il ramo viene scelto in base al tipo reale dell'oggetto. Ad esempio case Cerchio c -> ... ; dentro il ramo la variabile c è già del tipo giusto, senza cast.\nQuando lo switch è su un tipo sealed e tutti i sottotipi sono coperti, lo switch è esaustivo e non serve il ramo default. Questo è un grande vantaggio: se aggiungi un nuovo sottotipo alla gerarchia, il compilatore segnala come errore ogni switch da aggiornare, evitando dimenticanze.\nSi possono aggiungere condizioni con la clausola when: case Cerchio c when c.r() > 10 -> \"grande\". L'ordine dei casi conta: un caso più generale non può precedere uno più specifico che dominerebbe, altrimenti c'è errore di compilazione. Si può usare anche case null per gestire il null, altrimenti lo switch lancia NullPointerException.\nLo switch con pattern può essere sia espressione (restituisce un valore, e deve essere esaustivo) sia istruzione. Con i sealed e i record si ottiene un codice compatto e sicuro per modellare dati e operazioni.",
+  "example": "sealed interface Forma permits Cerchio, Quadrato { }\nrecord Cerchio(double r) implements Forma { }\nrecord Quadrato(double l) implements Forma { }\npublic class Main {\n    static double area(Forma f) {\n        return switch (f) {\n            case Cerchio c -> Math.PI * c.r() * c.r();\n            case Quadrato q -> q.l() * q.l();\n        };\n    }\n    public static void main(String[] args) {\n        System.out.println(area(new Quadrato(3)));\n    }\n}",
+  "help": "Usa uno switch expression con return davanti. Ogni case dichiara il tipo e una variabile, e usa gli accessor del record. Non serve default se tutti i sottotipi sono coperti.",
+  "exercise": {
+   "prompt": "Calcola l'area con uno switch sul tipo sealed Forma, senza default.",
+   "lines": [
+    "static double area(Forma f) {",
+    "    return switch (f) {",
+    "        case Cerchio c -> Math.PI * c.r() * c.r();",
+    "        case Quadrato q -> q.l() * q.l();",
+    "    };",
+    "}"
+   ],
+   "distractors": [
+    "        default -> 0;"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Quando uno switch su sealed non richiede default?",
+    "options": [
+     "Mai",
+     "Se copre tutti i sottotipi",
+     "Se usa break",
+     "Se ha un solo case"
+    ],
+    "answer": 1,
+    "explain": "Il compilatore sa che è esaustivo."
+   },
+   {
+    "q": "A cosa serve la clausola when?",
+    "options": [
+     "A ripetere il ciclo",
+     "A importare tipi",
+     "A fare cast",
+     "A aggiungere una condizione al pattern"
+    ],
+    "answer": 3,
+    "explain": "Raffina il pattern con un controllo booleano."
+   },
+   {
+    "q": "Cosa succede con uno switch su null senza case null?",
+    "options": [
+     "Va in default",
+     "Lancia NullPointerException",
+     "Restituisce 0",
+     "Non compila"
+    ],
+    "answer": 1,
+    "explain": "Per i riferimenti null serve case null."
+   }
+  ]
+ },
+ {
+  "id": 50,
+  "category": "Interfacce, Record, Enum, Sealed",
+  "title": "Record patterns",
+  "lesson": "I record pattern (definitivi in Java 21) permettono di scomporre un record direttamente in un pattern, estraendo i suoi componenti in variabili senza chiamare gli accessor: if (o instanceof Punto(int x, int y)) { ... }. Se l'oggetto è un Punto, x e y vengono assegnate e sono utilizzabili nel blocco.\nSi usano sia in instanceof sia nei case dello switch. I pattern si possono annidare, per esplorare strutture di dati complesse in modo dichiarativo: case Linea(Punto(var x1, var y1), Punto p2) estrae i componenti di una Linea e del suo primo Punto. I tipi dei componenti possono essere scritti esplicitamente oppure dedotti con var.\nLe condizioni si aggiungono con when. Combinati con le interfacce sealed, i record pattern rendono lo switch esaustivo: il compilatore verifica che tutte le combinazioni possibili siano coperte. Se un componente non serve, dalla Java 22 si può scrivere con il carattere underscore (_) come variabile senza nome.\nSono la base della programmazione orientata ai dati in Java moderno: i dati sono modellati con record e sealed, le operazioni sono scritte con switch e pattern, invece di metodi virtuali sparsi nelle classi.",
+  "example": "record Punto(int x, int y) { }\nrecord Linea(Punto a, Punto b) { }\npublic class Main {\n    static String descrivi(Object o) {\n        return switch (o) {\n            case Linea(Punto(var x1, var y1), Punto p2) when x1 == p2.x() -> \"verticale\";\n            case Linea(Punto a, Punto b) -> \"linea\";\n            case Punto(int x, int y) -> \"punto \" + (x + y);\n            default -> \"altro\";\n        };\n    }\n    public static void main(String[] args) {\n        System.out.println(descrivi(new Linea(new Punto(1, 2), new Punto(1, 5))));\n    }\n}",
+  "help": "Nel pattern si scrive il nome del record e tra parentesi i tipi e i nomi dei componenti. Se il test riesce, le variabili x e y sono già disponibili nel blocco.",
+  "exercise": {
+   "prompt": "Scomponi un Punto con un record pattern dentro instanceof.",
+   "lines": [
+    "Object o = new Punto(3, 4);",
+    "if (o instanceof Punto(int x, int y)) {",
+    "    System.out.println(x + y);",
+    "}"
+   ],
+   "distractors": [
+    "if (o instanceof Punto(x, y)) {"
+   ]
+  },
+  "quiz": [
+   {
+    "q": "Cosa fa un record pattern?",
+    "options": [
+     "Scompone un record nei suoi componenti",
+     "Crea un record",
+     "Converte in String",
+     "Ordina i campi"
+    ],
+    "answer": 0,
+    "explain": "Estrae i componenti in variabili."
+   },
+   {
+    "q": "Si possono annidare i record pattern?",
+    "options": [
+     "No",
+     "Sì, anche a più livelli",
+     "Solo con default",
+     "Solo in main"
+    ],
+    "answer": 1,
+    "explain": "Il nesting è supportato."
+   },
+   {
+    "q": "Con cosa si può dedurre il tipo di un componente?",
+    "options": [
+     "auto",
+     "let",
+     "var",
+     "def"
+    ],
+    "answer": 2,
+    "explain": "var deduce il tipo dal componente."
+   }
+  ]
+ }
+]

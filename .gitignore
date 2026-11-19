@@ -1,0 +1,8 @@
+tools/
+dist/
+build/
+exe-unico/
+*.log
+*.class
+*.tmp
+.claude/
