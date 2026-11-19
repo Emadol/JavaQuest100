@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260">
+  <defs>
+    <filter id="glow" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00ff66" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#00ff66" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#00ff66" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="260" rx="18" fill="#0a0a0a"/>
+  <rect x="3" y="3" width="894" height="254" rx="16" fill="none" stroke="#00ff66" stroke-opacity="0.55" stroke-width="2"/>
+  <g font-family="Consolas, 'Courier New', monospace" font-size="13" fill="#00ff66" fill-opacity="0.22">
+    <text x="28" y="40">public static void main(String[] args) {</text>
+    <text x="28" y="62">    var livelli = IntStream.rangeClosed(1, 100);</text>
+    <text x="620" y="205">    record Punteggio(int punti) { }</text>
+    <text x="620" y="227">}</text>
+    <text x="28" y="227">// 100 livelli. 1 linguaggio. Zero scuse.</text>
+  </g>
+  <g filter="url(#glow)" font-family="Consolas, 'Courier New', monospace" text-anchor="middle">
+    <text x="450" y="130" font-size="68" font-weight="bold" fill="#00ff66">&gt; JavaQuest100_</text>
+  </g>
+  <rect x="150" y="150" width="600" height="2" fill="url(#fade)"/>
+  <text x="450" y="188" font-family="Consolas, 'Courier New', monospace" font-size="21" fill="#9dffc4" text-anchor="middle">Impara Java 25 giocando  ☕  terminale verde, cervello acceso</text>
+</svg>
