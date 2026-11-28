@@ -110,3 +110,13 @@ Altri comandi utili: `run.ps1` (avvio in sviluppo), `python data-src/merge.py` (
 **Buon divertimento e che il `NullPointerException` sia con te.** 🚀
 
 </div>
+
+---
+
+## 📜 License
+
+This project is released under the **[MIT License](LICENSE)**. You are free to use, copy, modify and share it, as long as the copyright notice is kept.
+
+- 💡 **Idea & concept:** Emadol
+- 🤖 **Development:** built with the assistance of Claude (Anthropic)
+- 📦 The Windows release bundles OpenJDK and OpenJFX (GPLv2 + Classpath Exception). See [NOTICE.md](NOTICE.md) for credits and third-party licenses.
